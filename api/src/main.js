@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const morgan = require('morgan');
 
 const server = express();
 const hostname = '0.0.0.0';
@@ -10,6 +11,7 @@ const port = 8000;
 server.use(cors());
 server.use(bodyParser.json())
 server.use(bodyParser.urlencoded({ extended : true, useNewUrlParser: true }));
+server.use(morgan('combined'));
 
 // Add router
 server.use('/api', require('./router'));

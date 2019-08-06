@@ -3,7 +3,8 @@ const fs = require('fs');
 const path = require('path');
 
 // ทำการอ่านไฟล์ connection.json
-const ccpPath = path.resolve(__dirname, 'connection1.json');
+const ccpFile = process.env.CONNECTION_FILE || 'connection1.json';
+const ccpPath = path.resolve(__dirname, ccpFile);
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
 const ccp = JSON.parse(ccpJSON);
 
@@ -18,6 +19,7 @@ const FN_QUERY = 'query';
 const FN_DONATE = 'donate';
 const FN_GET_HISTORY = 'getHistory';
 const FN_CREATE_PROJECT = 'createProject';
+const FN_GET_DONATE_HISTORY = 'getDonationHistory';
 const CHANNEL = 'mychannel-1';
 const CONTRACT = 'mychaincode';
 
@@ -105,7 +107,8 @@ exports.donate = async (donation) => {
             FN_DONATE,
             donation.user,
             donation.project,
-            donation.amount.toString()
+            donation.amount.toString(),
+            donation.time
         )
     } catch (err) {
         console.error(err);
@@ -116,7 +119,18 @@ exports.donate = async (donation) => {
 exports.getHistory = async (key) => {
     try {
         const contract = await getContract(USER);
-        const result = await contract.submitTransaction(FN_GET_HISTORY, key);
+        const result = await contract.evaluateTransaction(FN_GET_HISTORY, key);
+        return result;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+exports.getDonationHistory = async (key) => {
+    try {
+        const contract = await getContract(USER);
+        const result = await contract.evaluateTransaction(FN_GET_DONATE_HISTORY, key);
         return result;
     } catch (err) {
         console.error(err);

@@ -141,7 +141,7 @@ docker exec \
 	-e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp" \
 	cli peer chaincode invoke \
 	-o orderer.example.com:7050 \
-	-C mychannel-1 -n $CC_NAME -c '{"Args":["createUser","59070174","Sumrid","089..","true"]}' \
+	-C mychannel-1 -n $CC_NAME -c '{"Args":["createProject","01","title","avaliable","0", "sumrid.k"]}' \
 	--peerAddresses peer0.org1.example.com:7051 \
 	--peerAddresses peer0.org2.example.com:7051
 
@@ -151,7 +151,7 @@ docker exec \
 	-e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp" \
 	cli peer chaincode invoke \
 	-o orderer.example.com:7050 \
-	-C mychannel-1 -n $CC_NAME -c '{"Args":["createWallet","hello-world","9000","Sumrid"]}' \
+	-C mychannel-1 -n $CC_NAME -c '{"Args":["createProject","02","title","avalidable", "0", "34d91a1d6ef"]}' \
 	--peerAddresses peer0.org1.example.com:7051 \
 	--peerAddresses peer0.org2.example.com:7051
 
@@ -177,7 +177,7 @@ docker exec \
 	cli peer chaincode query \
 	-C mychannel-1 \
 	-n $CC_NAME \
-	-c '{"Args":["query", "stdID|59070174"]}'
+	-c '{"Args":["query", "01"]}'
 
 docker exec \
 	-e "CORE_PEER_LOCALMSPID=Org1MSP" \
@@ -187,7 +187,7 @@ docker exec \
 	cli peer chaincode query \
 	-C mychannel-1 \
 	-n $CC_NAME \
-	-c '{"Args":["query", "wallet|hello-world"]}'
+	-c '{"Args":["query", "02"]}'
 
 # echo "========= Query mychannel-2 ========="
 # docker exec \

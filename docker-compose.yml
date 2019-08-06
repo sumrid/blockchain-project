@@ -1,0 +1,34 @@
+version: '3'
+
+services: 
+  api:
+    image: node:10.15.3-stretch-slim
+    container_name: api
+    environment: 
+      - CONNECTION_FILE=connection1.docker.json
+      - DB_URL=mongodb://db:27017
+    volumes: 
+      - ./api:/app
+    working_dir: /app
+    command: npm start
+    ports: 
+      - 8000:8000
+    depends_on: 
+      - db
+    networks: 
+      - default
+
+  db:
+    image: mongo:4.0.11-xenial
+    container_name: mongo
+    volumes: 
+      - ./data/db:/data/db
+    ports: 
+      - 27017:27017
+    networks: 
+      - default
+
+networks:
+  default:
+    external: 
+      name: netdonate_basic

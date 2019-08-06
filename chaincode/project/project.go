@@ -4,30 +4,35 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
-	"strings"
+	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/hyperledger/fabric/protos/peer"
 )
 
-type User struct {
-	StdID  string `json:"stdID"`
-	Name   string `json:"name"`
-	Tel    string `json:"tel"`
-	Status bool   `json:"status"`
-}
-type Wallet struct {
-	WalletName string  `json:"walletName"`
-	Money      float64 `json:"money"`
-	Owner      string  `json:"owner"`
-}
-
+// type User struct {
+// 	StdID  string `json:"stdID"`
+// 	Name   string `json:"name"`
+// 	Tel    string `json:"tel"`
+// 	Status bool   `json:"status"`
+// }
+// type Wallet struct {
+// 	WalletName string  `json:"walletName"`
+// 	Money      float64 `json:"money"`
+// 	Owner      string  `json:"owner"`
+// }
 type Project struct {
 	ID      string  `json:"id"`
 	Title   string  `json:"title"`
 	Status  string  `json:"status"`
 	Balance float64 `json:"balance"`
 	Owner   string  `json:"owner"`
+}
+type Donation struct {
+	UserID    string    `json:"user"`
+	ProjectID string    `json:"project"`
+	Amount    float64   `json:"amount"`
+	Time      time.Time `json:"time"`
 }
 
 type Chaincode struct {
@@ -45,18 +50,14 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 	if fn == "query" {
 		return C.query(stub, args)
-	} else if fn == "createUser" {
-		return C.createUser(stub, args)
-	} else if fn == "createWallet" {
-		return C.createWallet(stub, args)
-	} else if fn == "query2" {
-		return C.query2(stub, args)
 	} else if fn == "createProject" {
 		return C.createProject(stub, args)
 	} else if fn == "donate" {
 		return C.donate(stub, args)
 	} else if fn == "getHistory" {
 		return C.getHistory(stub, args)
+	} else if fn == "getDonationHistory" {
+		return C.getDonationHistory(stub, args)
 	}
 
 	fmt.Println("invoke did not find func: " + fn)
@@ -95,19 +96,26 @@ func (C *Chaincode) createProject(stub shim.ChaincodeStubInterface, args []strin
 }
 
 func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	var err error
+	const DatetimeLayout = "2-01-2006:15:04:05"
+
 	// Check arguments
-	if len(args) != 3 {
+	if len(args) != 4 {
 		return shim.Error("Incorrect number of arguments.")
 	}
 
-	user := args[0]
-	projectID := args[1]
-	amount, err := strconv.ParseFloat(args[2], 64)
+	// Create donation object
+	donation := Donation{}
+	donation.UserID = args[0]
+	donation.ProjectID = args[1]
+	donation.Amount, err = strconv.ParseFloat(args[2], 64)
+	donation.Time, err = time.Parse(DatetimeLayout, args[3])
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 
-	// Check user
+	// TODO อาจจะทำการเช็ค user
+	// Check user exist
 	// userByte, err := stub.GetState(user)
 	// if err != nil {
 	// 	shim.Error(err.Error())
@@ -115,10 +123,9 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 	// if userByte == nil {
 	// 	shim.Error("User id not fond.")
 	// }
-	fmt.Println(user)
 
 	// Get project
-	projectByte, err := stub.GetState(projectID)
+	projectByte, err := stub.GetState(donation.ProjectID)
 	if err != nil {
 		return shim.Error(err.Error())
 	} else if projectByte == nil {
@@ -131,10 +138,27 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 		return shim.Error(err.Error())
 	}
 
-	// Update project
-	p.Balance += amount
+	// Get Donations
+	donationKey := "history_" + donation.ProjectID
+	hisByte, err := stub.GetState(donationKey)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	var donations []Donation
+	if hisByte != nil {
+		err = json.Unmarshal(hisByte, &donations)
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+	}
 
-	// Save
+	// Update project
+	p.Balance += donation.Amount
+
+	// Update donations
+	donations = append(donations, donation)
+
+	// Put project
 	projectByte, err = json.Marshal(p)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -144,7 +168,36 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 		return shim.Error(err.Error())
 	}
 
+	// Put donations
+	hisByte, err = json.Marshal(donations)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	err = stub.PutState(donationKey, hisByte)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	// Return
 	return shim.Success(nil)
+}
+func (C *Chaincode) getDonationHistory(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	if len(args) != 1 {
+		return shim.Error("Incorrect number of arguments.")
+	}
+
+	// Set key for query
+	donationKey := "history_" + args[0]
+
+	// Get state for key
+	bytes, err := stub.GetState(donationKey)
+	if err != nil {
+		return shim.Error(err.Error())
+	} else if bytes == nil {
+		return shim.Error("History not fond.")
+	}
+
+	return shim.Success(bytes)
 }
 
 func (C *Chaincode) getHistory(stub shim.ChaincodeStubInterface, args []string) peer.Response {
@@ -158,15 +211,25 @@ func (C *Chaincode) getHistory(stub shim.ChaincodeStubInterface, args []string) 
 		shim.Error(err.Error())
 	}
 
-	var results []string
+	type item struct {
+		ID    string `json:"id"`
+		Value string `json:"value"`
+	}
+	var results []item
+
 	for his.HasNext() {
 		result, err := his.Next()
 		if err != nil {
 			return shim.Error(err.Error())
 		}
+
+		i := item{result.GetTxId(), string(result.GetValue())}
+
 		// เพิ่มผลลัพธ์ลงไปใน list
-		results = append(results, string(result.Value))
+		results = append(results, i)
 	}
+
+	fmt.Println(results)
 
 	bytes, err := json.Marshal(results)
 	if err != nil {
@@ -205,125 +268,125 @@ func (C *Chaincode) query(stub shim.ChaincodeStubInterface, args []string) peer.
 	return shim.Success(Avalbytes)
 }
 
-func (C *Chaincode) createUser(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	// Check arguments
-	if len(args) != 4 {
-		return shim.Error("Incorrect arguments, Want 4 input.")
-	}
+// func (C *Chaincode) createUser(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+// 	// Check arguments
+// 	if len(args) != 4 {
+// 		return shim.Error("Incorrect arguments, Want 4 input.")
+// 	}
 
-	// Create user object
-	id := strings.ToLower(args[0])
-	name := strings.ToLower(args[1])
-	tel := strings.ToLower(args[2])
-	status, err := strconv.ParseBool(args[3])
-	if err != nil {
-		return shim.Error("Arguments 4 must be 'boolean'" + err.Error())
-	}
+// 	// Create user object
+// 	id := strings.ToLower(args[0])
+// 	name := strings.ToLower(args[1])
+// 	tel := strings.ToLower(args[2])
+// 	status, err := strconv.ParseBool(args[3])
+// 	if err != nil {
+// 		return shim.Error("Arguments 4 must be 'boolean'" + err.Error())
+// 	}
 
-	// Key for query
-	key := "stdID|" + id
+// 	// Key for query
+// 	key := "stdID|" + id
 
-	// Check if User already exists
-	ck, err := stub.GetState(key)
-	if err != nil {
-		return shim.Error(err.Error())
-	} else if ck != nil {
-		fmt.Println("This user already exists :" + args[0])
-		return shim.Error("This user already exists")
-	}
+// 	// Check if User already exists
+// 	ck, err := stub.GetState(key)
+// 	if err != nil {
+// 		return shim.Error(err.Error())
+// 	} else if ck != nil {
+// 		fmt.Println("This user already exists :" + args[0])
+// 		return shim.Error("This user already exists")
+// 	}
 
-	// To JSON byte
-	user := &User{id, name, tel, status}
-	jsonByte, err := json.Marshal(user)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
+// 	// To JSON byte
+// 	user := &User{id, name, tel, status}
+// 	jsonByte, err := json.Marshal(user)
+// 	if err != nil {
+// 		return shim.Error(err.Error())
+// 	}
 
-	// Save key-value
-	err = stub.PutState(key, jsonByte)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
+// 	// Save key-value
+// 	err = stub.PutState(key, jsonByte)
+// 	if err != nil {
+// 		return shim.Error(err.Error())
+// 	}
 
-	// Return
-	fmt.Println("Create user success. user key: " + key)
-	return shim.Success(jsonByte)
-}
+// 	// Return
+// 	fmt.Println("Create user success. user key: " + key)
+// 	return shim.Success(jsonByte)
+// }
 
-func (C *Chaincode) createWallet(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	// Check arguments
-	if len(args) != 3 {
-		return shim.Error("Incorrect arguments, Want 3 input.")
-	}
+// func (C *Chaincode) createWallet(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+// 	// Check arguments
+// 	if len(args) != 3 {
+// 		return shim.Error("Incorrect arguments, Want 3 input.")
+// 	}
 
-	// Create object
-	walletName := strings.ToLower(args[0])
-	money, err := strconv.ParseFloat(args[1], 64)
-	if err != nil {
-		fmt.Sprintln("Arguments 2 must be number. : " + err.Error())
-		return shim.Error("Arguments 2 must be number. : " + err.Error())
-	}
-	owner := strings.ToLower(args[2])
-	wallet := Wallet{walletName, money, owner}
+// 	// Create object
+// 	walletName := strings.ToLower(args[0])
+// 	money, err := strconv.ParseFloat(args[1], 64)
+// 	if err != nil {
+// 		fmt.Sprintln("Arguments 2 must be number. : " + err.Error())
+// 		return shim.Error("Arguments 2 must be number. : " + err.Error())
+// 	}
+// 	owner := strings.ToLower(args[2])
+// 	wallet := Wallet{walletName, money, owner}
 
-	// Key for query
-	key := "wallet|" + walletName
+// 	// Key for query
+// 	key := "wallet|" + walletName
 
-	// Check if already
-	ck, err := stub.GetState(key)
-	if err != nil {
-		return shim.Error(err.Error())
-	} else if ck != nil {
-		fmt.Println("This wallet already exists :" + args[0])
-		return shim.Error("This wallet already exists :" + args[0])
-	}
+// 	// Check if already
+// 	ck, err := stub.GetState(key)
+// 	if err != nil {
+// 		return shim.Error(err.Error())
+// 	} else if ck != nil {
+// 		fmt.Println("This wallet already exists :" + args[0])
+// 		return shim.Error("This wallet already exists :" + args[0])
+// 	}
 
-	// To JSON byte
-	jsonByte, err := json.Marshal(&wallet)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
+// 	// To JSON byte
+// 	jsonByte, err := json.Marshal(&wallet)
+// 	if err != nil {
+// 		return shim.Error(err.Error())
+// 	}
 
-	// Save key-value
-	err = stub.PutState(key, jsonByte)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
+// 	// Save key-value
+// 	err = stub.PutState(key, jsonByte)
+// 	if err != nil {
+// 		return shim.Error(err.Error())
+// 	}
 
-	// Return
-	fmt.Println("Create wallet success. wallet key: " + key)
-	return shim.Success(jsonByte)
-}
+// 	// Return
+// 	fmt.Println("Create wallet success. wallet key: " + key)
+// 	return shim.Success(jsonByte)
+// }
 
-func (C *Chaincode) query2(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	if len(args) != 1 {
-		return shim.Error("ต้องการหนึ่งอินพุท")
-	}
+// func (C *Chaincode) query2(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+// 	if len(args) != 1 {
+// 		return shim.Error("ต้องการหนึ่งอินพุท")
+// 	}
 
-	queryString := args[0]
-	interator, err := stub.GetQueryResult(queryString)
-	defer interator.Close()
-	if err != nil {
-		return shim.Error(err.Error())
-	}
+// 	queryString := args[0]
+// 	interator, err := stub.GetQueryResult(queryString)
+// 	defer interator.Close()
+// 	if err != nil {
+// 		return shim.Error(err.Error())
+// 	}
 
-	var results []string
-	for interator.HasNext() {
-		result, err := interator.Next()
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		// เพิ่มผลลัพธ์ลงไปใน list
-		results = append(results, string(result.Value))
-	}
+// 	var results []string
+// 	for interator.HasNext() {
+// 		result, err := interator.Next()
+// 		if err != nil {
+// 			return shim.Error(err.Error())
+// 		}
+// 		// เพิ่มผลลัพธ์ลงไปใน list
+// 		results = append(results, string(result.Value))
+// 	}
 
-	// Convert to byte
-	resultsByte, err := json.Marshal(results)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-	return shim.Success(resultsByte)
-}
+// 	// Convert to byte
+// 	resultsByte, err := json.Marshal(results)
+// 	if err != nil {
+// 		return shim.Error(err.Error())
+// 	}
+// 	return shim.Success(resultsByte)
+// }
 
 func main() {
 	err := shim.Start(new(Chaincode))
