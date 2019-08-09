@@ -3,6 +3,9 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
 
+require('./config/db');
+require('./config/firebase');
+
 const server = express();
 const hostname = '0.0.0.0';
 const port = 8000;

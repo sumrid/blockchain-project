@@ -28,7 +28,9 @@ type Project struct {
 	Balance float64 `json:"balance"`
 	Owner   string  `json:"owner"`
 }
+
 type Donation struct {
+	TxID      string    `json:"txid"`
 	UserID    string    `json:"user"`
 	ProjectID string    `json:"project"`
 	Amount    float64   `json:"amount"`
@@ -38,9 +40,11 @@ type Donation struct {
 type Chaincode struct {
 }
 
+var logger = shim.NewLogger("chaincode")
+
 // Init เป็นฟังก์ชันเอาไว้เริ่มต้น chaincode
 func (C *Chaincode) Init(stub shim.ChaincodeStubInterface) peer.Response {
-	fmt.Println("Init chaincode success.")
+	logger.Info("Init chaincode success.")
 	return shim.Success([]byte("Init Success"))
 }
 
@@ -58,9 +62,11 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return C.getHistory(stub, args)
 	} else if fn == "getDonationHistory" {
 		return C.getDonationHistory(stub, args)
+	} else if fn == "queryAllProjects" {
+		return C.queryAllProjects(stub, args)
 	}
 
-	fmt.Println("invoke did not find func: " + fn)
+	logger.Error("invoke did not find func: " + fn)
 	return shim.Error("Received unknown function " + fn)
 }
 
@@ -91,13 +97,13 @@ func (C *Chaincode) createProject(stub shim.ChaincodeStubInterface, args []strin
 	}
 
 	// Return success
-	fmt.Println("createProject : success")
+	logger.Info("createProject : success")
 	return shim.Success(pJSON)
 }
 
 func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	var err error
-	const DatetimeLayout = "2-01-2006:15:04:05"
+	const DatetimeLayout = "02-01-2006:15:04:05"
 
 	// Check arguments
 	if len(args) != 4 {
@@ -106,6 +112,7 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 
 	// Create donation object
 	donation := Donation{}
+	donation.TxID = stub.GetTxID()
 	donation.UserID = args[0]
 	donation.ProjectID = args[1]
 	donation.Amount, err = strconv.ParseFloat(args[2], 64)
@@ -194,7 +201,7 @@ func (C *Chaincode) getDonationHistory(stub shim.ChaincodeStubInterface, args []
 	if err != nil {
 		return shim.Error(err.Error())
 	} else if bytes == nil {
-		return shim.Error("History not fond.")
+		return shim.Success([]byte("[]"))
 	}
 
 	return shim.Success(bytes)
@@ -268,125 +275,48 @@ func (C *Chaincode) query(stub shim.ChaincodeStubInterface, args []string) peer.
 	return shim.Success(Avalbytes)
 }
 
-// func (C *Chaincode) createUser(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-// 	// Check arguments
-// 	if len(args) != 4 {
-// 		return shim.Error("Incorrect arguments, Want 4 input.")
-// 	}
+func (C *Chaincode) queryAllProjects(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	// Query all
+	query := `{"selector":{"id":{"$regex":"p_"}}}`
+	results, err := C.queryWithSelector(stub, query)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
 
-// 	// Create user object
-// 	id := strings.ToLower(args[0])
-// 	name := strings.ToLower(args[1])
-// 	tel := strings.ToLower(args[2])
-// 	status, err := strconv.ParseBool(args[3])
-// 	if err != nil {
-// 		return shim.Error("Arguments 4 must be 'boolean'" + err.Error())
-// 	}
+	var projects []Project
+	for _, pByte := range results {
+		p := Project{}
+		json.Unmarshal(pByte, &p)
 
-// 	// Key for query
-// 	key := "stdID|" + id
+		projects = append(projects, p)
+	}
 
-// 	// Check if User already exists
-// 	ck, err := stub.GetState(key)
-// 	if err != nil {
-// 		return shim.Error(err.Error())
-// 	} else if ck != nil {
-// 		fmt.Println("This user already exists :" + args[0])
-// 		return shim.Error("This user already exists")
-// 	}
+	// Return result
+	res, _ := json.Marshal(projects)
+	return shim.Success(res)
+}
 
-// 	// To JSON byte
-// 	user := &User{id, name, tel, status}
-// 	jsonByte, err := json.Marshal(user)
-// 	if err != nil {
-// 		return shim.Error(err.Error())
-// 	}
+func (C *Chaincode) queryWithSelector(stub shim.ChaincodeStubInterface, query string) ([][]byte, error) {
 
-// 	// Save key-value
-// 	err = stub.PutState(key, jsonByte)
-// 	if err != nil {
-// 		return shim.Error(err.Error())
-// 	}
+	queryString := query
+	interator, err := stub.GetQueryResult(queryString)
+	defer interator.Close()
+	if err != nil {
+		return nil, err
+	}
 
-// 	// Return
-// 	fmt.Println("Create user success. user key: " + key)
-// 	return shim.Success(jsonByte)
-// }
+	var results [][]byte
+	for interator.HasNext() {
+		result, err := interator.Next()
+		if err != nil {
+			return nil, err
+		}
+		// เพิ่มผลลัพธ์ลงไปใน list
+		results = append(results, result.Value)
+	}
 
-// func (C *Chaincode) createWallet(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-// 	// Check arguments
-// 	if len(args) != 3 {
-// 		return shim.Error("Incorrect arguments, Want 3 input.")
-// 	}
-
-// 	// Create object
-// 	walletName := strings.ToLower(args[0])
-// 	money, err := strconv.ParseFloat(args[1], 64)
-// 	if err != nil {
-// 		fmt.Sprintln("Arguments 2 must be number. : " + err.Error())
-// 		return shim.Error("Arguments 2 must be number. : " + err.Error())
-// 	}
-// 	owner := strings.ToLower(args[2])
-// 	wallet := Wallet{walletName, money, owner}
-
-// 	// Key for query
-// 	key := "wallet|" + walletName
-
-// 	// Check if already
-// 	ck, err := stub.GetState(key)
-// 	if err != nil {
-// 		return shim.Error(err.Error())
-// 	} else if ck != nil {
-// 		fmt.Println("This wallet already exists :" + args[0])
-// 		return shim.Error("This wallet already exists :" + args[0])
-// 	}
-
-// 	// To JSON byte
-// 	jsonByte, err := json.Marshal(&wallet)
-// 	if err != nil {
-// 		return shim.Error(err.Error())
-// 	}
-
-// 	// Save key-value
-// 	err = stub.PutState(key, jsonByte)
-// 	if err != nil {
-// 		return shim.Error(err.Error())
-// 	}
-
-// 	// Return
-// 	fmt.Println("Create wallet success. wallet key: " + key)
-// 	return shim.Success(jsonByte)
-// }
-
-// func (C *Chaincode) query2(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-// 	if len(args) != 1 {
-// 		return shim.Error("ต้องการหนึ่งอินพุท")
-// 	}
-
-// 	queryString := args[0]
-// 	interator, err := stub.GetQueryResult(queryString)
-// 	defer interator.Close()
-// 	if err != nil {
-// 		return shim.Error(err.Error())
-// 	}
-
-// 	var results []string
-// 	for interator.HasNext() {
-// 		result, err := interator.Next()
-// 		if err != nil {
-// 			return shim.Error(err.Error())
-// 		}
-// 		// เพิ่มผลลัพธ์ลงไปใน list
-// 		results = append(results, string(result.Value))
-// 	}
-
-// 	// Convert to byte
-// 	resultsByte, err := json.Marshal(results)
-// 	if err != nil {
-// 		return shim.Error(err.Error())
-// 	}
-// 	return shim.Success(resultsByte)
-// }
+	return results, nil
+}
 
 func main() {
 	err := shim.Start(new(Chaincode))

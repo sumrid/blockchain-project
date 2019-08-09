@@ -3,11 +3,14 @@ const router = express.Router();
 const contorller = require('./controller');
 
 router.post('/project', contorller.createProject);
-router.post('/donate', contorller.donate);
+router.get('/project', contorller.getAllProjects);
+router.post('/project/donate', contorller.donate);
+router.post('/project/donate/qr', contorller.createQR);
 router.get('/query/:key', contorller.query);
-router.get('/history/:key', contorller.getHistory);
-router.get('/donations/:key', contorller.getDonationHistory);
+router.get('/project/history/:key', contorller.getHistory);
+router.get('/project/donations/:key', contorller.getDonationHistory);
 
+router.post('/test', contorller.test);
 router.get('/', (req, res) => {
     res.send('Hello world! from home');
 });

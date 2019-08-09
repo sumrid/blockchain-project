@@ -14,7 +14,7 @@ const ccp = JSON.parse(ccpJSON);
 
 const WALLET_NAME = 'wallet1';
 const ADMIN = 'admin';
-const USER = 'user1';
+const USER = 'user-na-ja';
 const AFFILIATION = 'org1.department1';
 const MSP = 'Org1MSP';
 

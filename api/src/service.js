@@ -19,6 +19,7 @@ const FN_QUERY = 'query';
 const FN_DONATE = 'donate';
 const FN_GET_HISTORY = 'getHistory';
 const FN_CREATE_PROJECT = 'createProject';
+const FN_QUERY_PROJECTS = 'queryAllProjects';
 const FN_GET_DONATE_HISTORY = 'getDonationHistory';
 const CHANNEL = 'mychannel-1';
 const CONTRACT = 'mychaincode';
@@ -131,6 +132,17 @@ exports.getDonationHistory = async (key) => {
     try {
         const contract = await getContract(USER);
         const result = await contract.evaluateTransaction(FN_GET_DONATE_HISTORY, key);
+        return result;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+exports.getAllProjects = async () => {
+    try {
+        const contract = await getContract(USER);
+        const result = await contract.evaluateTransaction(FN_QUERY_PROJECTS);
         return result;
     } catch (err) {
         console.error(err);
