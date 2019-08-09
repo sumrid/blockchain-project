@@ -92,7 +92,9 @@ exports.createProject = async (project) => {
                 project.title,
                 project.status,
                 project.balance,
-                project.owner);
+                project.owner,
+                project.starttime,
+                project.endtime);
 
         return result;
     } catch (err) {

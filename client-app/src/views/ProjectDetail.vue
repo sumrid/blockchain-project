@@ -3,9 +3,11 @@
     <h2>รายละเอียด... {{project.title}}</h2>
     <div class="row">
       <div>
-        ยอดเงินปัจจุบัน : {{project.balance}}
+        <h3>ยอดเงินปัจจุบัน</h3>
+        : {{project.balance}}
         <br />
-        เจ้าของ : {{project.owner}}
+        <strong>เจ้าของ</strong>
+        : {{project.owner}}
       </div>
     </div>
     <h3>ประวัติการบริจาค</h3>
@@ -31,7 +33,7 @@
     </div>
 
     <h3>ร่วมบริจาค</h3>
-    <b-form @submit="onSubmit">
+    <form>
       <b-form-group
         label="ชื่อของคุณ"
         description="We'll never share your email with anyone else."
@@ -41,7 +43,7 @@
       <b-form-group label="จำนวนเงิน">
         <b-form-input v-model="form.amount" required placeholder="จำนวนเงิน"></b-form-input>
       </b-form-group>
-      <b-button type="submit" variant="primary">
+      <button class="btn btn-info" @click="onSubmit">
         <span
           v-if="loading"
           class="spinner-border spinner-border-sm"
@@ -49,9 +51,9 @@
           aria-hidden="false"
         ></span>
         Submit
-      </b-button>
-    </b-form>
-    <button @click="createQR">QR</button>
+      </button>
+    </form>
+    <button class="btn btn-success" @click="createQR">QR</button>
     <div class="qr" v-html="svg"></div>
   </div>
 </template>
@@ -65,7 +67,7 @@ export default {
   data() {
     return {
       project: {},
-      donations: [],
+      donations: {},
       form: {
         user: "",
         amount: null
@@ -75,16 +77,16 @@ export default {
     };
   },
   methods: {
-    getDetail: function() {
+    getDetail: function(ID) {
       const p_id = this.$route.params.id;
-      axios.default.get("http://localhost:8000/api/query/" + p_id).then(res => {
+      axios.default.get("http://localhost:8000/api/query/" + ID).then(res => {
         this.project = res.data;
       });
     },
-    getDontions: function() {
+    getDontions: function(ID) {
       const p_id = this.$route.params.id;
       axios.default
-        .get("http://localhost:8000/api/project/donations/" + p_id)
+        .get("http://localhost:8000/api/project/donations/" + ID)
         .then(res => {
           console.log(res.data);
           this.donations = res.data;
@@ -99,13 +101,12 @@ export default {
       };
       console.log("[onSubmit] " + donation.project);
 
-      axios.default
+      axios
         .post("http://localhost:8000/api/project/donate", donation)
         .then(res => {
           this.loading = false;
-          console.log(res.data);
-          this.getDetail();
-          this.getDontions();
+          this.getDetail(donation.project);
+          this.getDontions(donation.project);
         });
     },
     createQR: function() {
@@ -117,11 +118,11 @@ export default {
         })
         .then(res => {
           this.svg = res.data;
-          console.log(res.data);
         });
     }
   },
-  beforeCreate() {
+  created() {
+    // get project and donation list
     const p_id = this.$route.params.id;
     axios.default.get("http://localhost:8000/api/query/" + p_id).then(res => {
       console.log(res.data);
@@ -146,4 +147,3 @@ export default {
   width: 500px;
 }
 </style>
-

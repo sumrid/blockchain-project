@@ -21,12 +21,17 @@ import (
 // 	Money      float64 `json:"money"`
 // 	Owner      string  `json:"owner"`
 // }
+
+const DatetimeLayout = "02-01-2006:15:04:05"
+
 type Project struct {
-	ID      string  `json:"id"`
-	Title   string  `json:"title"`
-	Status  string  `json:"status"`
-	Balance float64 `json:"balance"`
-	Owner   string  `json:"owner"`
+	ID        string    `json:"id"`
+	Title     string    `json:"title"`
+	Status    string    `json:"status"`
+	Balance   float64   `json:"balance"`
+	Owner     string    `json:"owner"`
+	StartTime time.Time `json:"starttime"`
+	EndTime   time.Time `json:"endtime"`
 }
 
 type Donation struct {
@@ -72,7 +77,7 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 func (C *Chaincode) createProject(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	// Check arguments
-	if len(args) != 5 {
+	if len(args) != 7 {
 		return shim.Error("Incorrect arguments, Want 5 input.")
 	}
 
@@ -82,18 +87,23 @@ func (C *Chaincode) createProject(stub shim.ChaincodeStubInterface, args []strin
 	status := args[2]
 	balance, _ := strconv.ParseFloat(args[3], 64)
 	owner := args[4]
-	p := Project{id, title, status, balance, owner}
+	start, err := time.Parse(DatetimeLayout, args[5])
+	end, err := time.Parse(DatetimeLayout, args[6])
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	p := Project{id, title, status, balance, owner, start, end}
 
 	pJSON, err := json.Marshal(p)
 	if err != nil {
 		fmt.Println(err.Error())
-		shim.Error(err.Error())
+		return shim.Error(err.Error())
 	}
 
 	// Put state
 	err = stub.PutState(id, pJSON)
 	if err != nil {
-		shim.Error(err.Error())
+		return shim.Error(err.Error())
 	}
 
 	// Return success
@@ -103,7 +113,6 @@ func (C *Chaincode) createProject(stub shim.ChaincodeStubInterface, args []strin
 
 func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	var err error
-	const DatetimeLayout = "02-01-2006:15:04:05"
 
 	// Check arguments
 	if len(args) != 4 {
@@ -121,7 +130,7 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 		return shim.Error(err.Error())
 	}
 
-	// TODO อาจจะทำการเช็ค user
+	// TODO อาจจะทำการเช็ค user in chaincode
 	// Check user exist
 	// userByte, err := stub.GetState(user)
 	// if err != nil {
@@ -138,6 +147,9 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 	} else if projectByte == nil {
 		return shim.Error("Project id not fond.")
 	}
+
+	// TODO ทำให้โปรเจคเปลี่ยนสถานะ เมื่อหมดเวลา
+	// TODO ตรวจด้วยว่าโปรเจคถูกปิดหรือยัง
 
 	p := Project{}
 	err = json.Unmarshal(projectByte, &p)
@@ -317,6 +329,8 @@ func (C *Chaincode) queryWithSelector(stub shim.ChaincodeStubInterface, query st
 
 	return results, nil
 }
+
+// TODO ทำฟังก์ชั่นเปลี่ยน status ของโครงการที่หมดเวลา
 
 func main() {
 	err := shim.Start(new(Chaincode))

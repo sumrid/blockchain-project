@@ -1,4 +1,5 @@
 const service = require('./service');
+const firebase = require('./service.firebase');
 const moment = require('moment');
 
 const generatePayload = require('promptpay-qr')
@@ -14,6 +15,8 @@ const DATETIME_LAYOUT = 'DD-MM-YYYY:HH:mm:ss';
 */
 exports.createProject = async (req, res) => {
     const project = req.body;
+    project.starttime = moment().format(DATETIME_LAYOUT);
+    project.endtime = '23-11-2019:12:00:00';
 
     try {
         const result = await service.createProject(project);
@@ -23,6 +26,9 @@ exports.createProject = async (req, res) => {
     }
 }
 
+/* 
+    donate ทำการบริจาคเงินไปยังโครงการ
+*/
 exports.donate = async (req, res) => {
     const donation = req.body;
     donation.time = moment().format(DATETIME_LAYOUT);
@@ -100,19 +106,15 @@ exports.createQR = async (req, res) => {
 */
 exports.test = async (req, res) => {
     const uid = require('uuid/v4');
-    let project = {};
-    project.id = uid();
-    project.title = "Hello";
+    const project = req.body;
 
-    let asdf = new Project();
-    asdf.id
-
-    console.log(asdf);
-    // try {
-    //     let db = admin.firestore();
-    //     await db.collection('test').doc(project.id).set(project);
-    //     res.json(project);
-    // } catch (err) {
-    //     res.status(500);
-    // }
+    // let p = new Project();
+    project.id = 'p_' + uid();
+    project.starttime = moment().toDate();
+    try {
+        await firebase.saveProject(project);
+        res.json(project);
+    } catch (err) {
+        res.status(500);
+    }
 }
