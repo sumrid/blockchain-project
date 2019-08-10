@@ -18,6 +18,7 @@ const USER = 'user1';
 const FN_QUERY = 'query';
 const FN_DONATE = 'donate';
 const FN_GET_HISTORY = 'getHistory';
+const FN_CLOSE_PROJECT = 'closeProject';
 const FN_CREATE_PROJECT = 'createProject';
 const FN_QUERY_PROJECTS = 'queryAllProjects';
 const FN_GET_DONATE_HISTORY = 'getDonationHistory';
@@ -91,7 +92,7 @@ exports.createProject = async (project) => {
                 project.id,
                 project.title,
                 project.status,
-                project.balance,
+                project.balance.toString(),
                 project.owner,
                 project.starttime,
                 project.endtime);
@@ -151,6 +152,18 @@ exports.getAllProjects = async () => {
         throw err;
     }
 }
+
+exports.closeProject = async (key) => {
+    try {
+        const contract = await getContract(USER);
+        const result = await contract.submitTransaction(FN_CLOSE_PROJECT, key);
+        return result;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
 // ################
 //     Test zone
 // ################
@@ -243,7 +256,10 @@ exports.test = async () => {
     }
 }
 
-// Query โดยใช้ selector
+/**
+ * Query โดยใช้ selector
+ * @param { string } queryString ex. {"selector":{"id":{"$regex":"p_"}}}
+ */
 exports.query2 = async (queryString) => {
     try {
         const contract = await getContract(USER);

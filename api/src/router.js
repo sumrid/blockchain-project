@@ -10,7 +10,8 @@ router.get('/query/:key', contorller.query);
 router.get('/project/history/:key', contorller.getHistory);
 router.get('/project/donations/:key', contorller.getDonationHistory);
 
-router.post('/test', contorller.test);
+router.post('/test', contorller.testSave);
+router.post('/testget', contorller.testGet);
 router.get('/', (req, res) => {
     res.send('Hello world! from home');
 });

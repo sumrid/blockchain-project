@@ -10,19 +10,11 @@ import (
 	"github.com/hyperledger/fabric/protos/peer"
 )
 
-// type User struct {
-// 	StdID  string `json:"stdID"`
-// 	Name   string `json:"name"`
-// 	Tel    string `json:"tel"`
-// 	Status bool   `json:"status"`
-// }
-// type Wallet struct {
-// 	WalletName string  `json:"walletName"`
-// 	Money      float64 `json:"money"`
-// 	Owner      string  `json:"owner"`
-// }
-
-const DatetimeLayout = "02-01-2006:15:04:05"
+const (
+	DatetimeLayout = "02-01-2006:15:04:05"
+	Open           = "open"
+	Closed         = "closed"
+)
 
 type Project struct {
 	ID        string    `json:"id"`
@@ -69,6 +61,8 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return C.getDonationHistory(stub, args)
 	} else if fn == "queryAllProjects" {
 		return C.queryAllProjects(stub, args)
+	} else if fn == "closeProject" {
+		return C.closeProject(stub, args)
 	}
 
 	logger.Error("invoke did not find func: " + fn)
@@ -145,11 +139,8 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 	if err != nil {
 		return shim.Error(err.Error())
 	} else if projectByte == nil {
-		return shim.Error("Project id not fond.")
+		return shim.Error("Project not fond.")
 	}
-
-	// TODO ทำให้โปรเจคเปลี่ยนสถานะ เมื่อหมดเวลา
-	// TODO ตรวจด้วยว่าโปรเจคถูกปิดหรือยัง
 
 	p := Project{}
 	err = json.Unmarshal(projectByte, &p)
@@ -157,7 +148,12 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 		return shim.Error(err.Error())
 	}
 
-	// Get Donations
+	// Check if the project is closed.
+	if p.Status == Closed {
+		return shim.Error("Project closed.")
+	}
+
+	// Get Donations.
 	donationKey := "history_" + donation.ProjectID
 	hisByte, err := stub.GetState(donationKey)
 	if err != nil {
@@ -330,7 +326,43 @@ func (C *Chaincode) queryWithSelector(stub shim.ChaincodeStubInterface, query st
 	return results, nil
 }
 
-// TODO ทำฟังก์ชั่นเปลี่ยน status ของโครงการที่หมดเวลา
+func (C *Chaincode) closeProject(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	if len(args) < 1 {
+		return shim.Error("Expect 1 argument.")
+	}
+
+	// Get state
+	key := args[0]
+	result, err := stub.GetState(key)
+	if err != nil {
+		return shim.Error(err.Error())
+	} else if result == nil {
+		return shim.Error("Project not fond.")
+	}
+
+	p := Project{}
+	err = json.Unmarshal(result, &p)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	// เปลี่ยนสถานะโครงการ
+	if p.Status != Closed {
+		p.Status = Closed
+	}
+
+	// Save project
+	result, err = json.Marshal(p)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	err = stub.PutState(key, result)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	return shim.Success([]byte("Success."))
+}
 
 func main() {
 	err := shim.Start(new(Chaincode))
