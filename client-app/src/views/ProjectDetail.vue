@@ -33,7 +33,7 @@
     </div>
 
     <h3>ร่วมบริจาค</h3>
-    <form>
+    <form @submit.prevent="onSubmit">
       <b-form-group
         label="ชื่อของคุณ"
         description="We'll never share your email with anyone else."
@@ -43,7 +43,7 @@
       <b-form-group label="จำนวนเงิน">
         <b-form-input v-model="form.amount" required placeholder="จำนวนเงิน"></b-form-input>
       </b-form-group>
-      <button class="btn btn-info" @click="onSubmit">
+      <button class="btn btn-info">
         <span
           v-if="loading"
           class="spinner-border spinner-border-sm"
@@ -62,6 +62,8 @@
 // const generatePayload = require("promptpay-qr");
 // const qrcode = require("qrcode");
 const axios = require("axios");
+const util = require("../util");
+const API_IP = util.API_IP;
 
 export default {
   data() {
@@ -70,7 +72,7 @@ export default {
       donations: {},
       form: {
         user: "",
-        amount: null
+        amount: ""
       },
       loading: false,
       svg: null
@@ -78,21 +80,19 @@ export default {
   },
   methods: {
     getDetail: function(ID) {
-      const p_id = this.$route.params.id;
-      axios.default.get("http://localhost:8000/api/query/" + ID).then(res => {
+      axios.default.get(`http://${API_IP}:8000/api/query/` + ID).then(res => {
         this.project = res.data;
       });
     },
     getDontions: function(ID) {
-      const p_id = this.$route.params.id;
       axios.default
-        .get("http://localhost:8000/api/project/donations/" + ID)
+        .get(`http://${API_IP}:8000/api/project/donations/` + ID)
         .then(res => {
           console.log(res.data);
           this.donations = res.data;
         });
     },
-    onSubmit: function() {
+    onSubmit: async function() {
       this.loading = true;
       let donation = {
         user: this.form.user,
@@ -101,19 +101,25 @@ export default {
       };
       console.log("[onSubmit] " + donation.project);
 
-      axios
-        .post("http://localhost:8000/api/project/donate", donation)
-        .then(res => {
-          this.loading = false;
-          this.getDetail(donation.project);
-          this.getDontions(donation.project);
-        });
+      try {
+        await axios.default.post(
+          `http://${API_IP}:8000/api/project/donate`,
+          donation
+        );
+        this.loading = false;
+        this.getDetail(donation.project);
+        this.getDontions(donation.project);
+      } catch (err) {
+        console.error(err);
+      }
     },
     createQR: function() {
       console.log(this.form.amount);
       const a = parseFloat(this.form.amount);
+      // const URL = `http://${API_IP}:8000/api/project/donate/qr/`; // promptpay
+      const URL = `http://${API_IP}:8000/api/project/donate/qr/v2`;
       axios.default
-        .post("http://localhost:8000/api/project/donate/qr", {
+        .post(URL, {
           amount: a || 50
         })
         .then(res => {
@@ -122,15 +128,15 @@ export default {
     }
   },
   created() {
-    // get project and donation list
+    // Get project and donation list
     const p_id = this.$route.params.id;
-    axios.default.get("http://localhost:8000/api/query/" + p_id).then(res => {
+    axios.default.get(`http://${API_IP}:8000/api/query/` + p_id).then(res => {
       console.log(res.data);
       this.project = res.data;
     });
 
     axios.default
-      .get("http://localhost:8000/api/project/donations/" + p_id)
+      .get(`http://${API_IP}:8000/api/project/donations/` + p_id)
       .then(res => {
         console.log(res.data);
         this.donations = res.data;

@@ -15,7 +15,7 @@
       <tbody>
         <tr v-for="p in projects" v-bind:key="p.id">
           <td>{{p.title}}</td>
-          <td>{{p.balance}}</td>
+          <td>{{p.balance | currency}}</td>
           <td>{{updateTime(p.endtime)}}</td>
           <td>
             <router-link :to="{ name: 'detail', params: { id: p.id }}">
@@ -36,6 +36,9 @@ const axios = require("axios");
 const moment = require("moment");
 moment.locale("th");
 
+const util = require("../util");
+const API_IP = util.API_IP;
+
 export default {
   name: "home",
   components: {
@@ -48,7 +51,8 @@ export default {
     };
   },
   beforeCreate() {
-    axios.get("http://localhost:8000/api/project").then(res => {
+    // Get project list
+    axios.get(`http://${API_IP}:8000/api/project`).then(res => {
       this.projects = res.data;
       console.log(this.projects);
     });
@@ -65,6 +69,9 @@ export default {
 
       console.log("end time " + endtime.calendar());
       return endtime.calendar();
+    },
+    onDecode(result) {
+      this.result = result;
     }
   },
   mounted() {

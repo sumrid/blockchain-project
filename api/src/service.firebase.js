@@ -1,6 +1,7 @@
 const admin = require('firebase-admin');
 const db = admin.firestore();
-const collection = db.collection('projects');
+const ProjectCollection = db.collection('projects');
+const QRCollection = db.collection('qr');
 
 const moment = require('moment');
 const DATETIME_LAYOUT = 'DD-MM-YYYY:HH:mm:ss';
@@ -14,7 +15,7 @@ exports.saveProject = async (project) => {
     project.endtime = endtime;
 
     try {
-        await collection.doc(project.id).set(project);
+        await ProjectCollection.doc(project.id).set(project);
         return;
     } catch (err) {
         throw err;
@@ -22,15 +23,33 @@ exports.saveProject = async (project) => {
 }
 
 exports.getProject = async () => {
-    snapshot = await collection.get();
+    snapshot = await ProjectCollection.get();
     return snapshot;
 }
 
 exports.getProjectByID = async (key) => {
     try {
-        const result = await collection.doc(key).get();
+        const result = await ProjectCollection.doc(key).get();
         return result.data();
     } catch (err) {
         throw err;
+    }
+}
+
+/**
+ * สำหรับเก็บข้อมูล qrcode ที่สร้างขึ้นมา
+ */
+exports.saveQR = async (donation) => {
+    try {
+        await QRCollection.doc(donation.id).set(donation);
+    } catch (err) {
+        throw err;
+    }
+}
+exports.deleteQR = async (id) => {
+    try {
+        await QRCollection.doc(id).delete();
+    } catch (err) {
+
     }
 }

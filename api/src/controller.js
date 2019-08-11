@@ -35,9 +35,9 @@ exports.createProject = async (req, res) => {
     }
 }
 
-/* 
-    donate ทำการบริจาคเงินไปยังโครงการ
-*/
+/**
+ * donate ทำการบริจาคเงินไปยังโครงการ
+ */
 exports.donate = async (req, res) => {
     const donation = req.body;
     donation.time = moment().format(DATETIME_LAYOUT);
@@ -91,13 +91,16 @@ exports.getDonationHistory = async (req, res) => {
         res.status(500).json(err);
     }
 }
-
+/**
+ * @function
+ * createQR สำหรับการสร้างพร้อมเพย์ qr code  
+ */
 exports.createQR = async (req, res) => {
     const mobileNumber = "086-312-6030";
     const IDCardNumber = "0-0000-00000-00-0";
     const amount = req.body.amount;
     const payload = generatePayload(mobileNumber, { amount }); // First parameter : mobileNumber || IDCardNumber
-    console.log(payload);
+    console.log('qr payload: ' + payload);
 
     const options = { type: "svg", color: { dark: "#705f5f", light: "#fff" } };
     qrcode.toString(payload, options, (err, svg) => {
@@ -107,10 +110,43 @@ exports.createQR = async (req, res) => {
         const p = path.join(__dirname, 'qr.svg');
         res.sendFile(p);
     });
+}
 
+exports.createQrDonation = async (req, res) => {
+    const donation = req.body;
+    donation.id = uid();
+    try {
+        await firebase.saveQR(donation);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+
+    const options = { type: "svg", color: { dark: "#705f5f", light: "#fff" } };
+    qrcode.toString(JSON.stringify(donation), options, (err, svg) => {
+        if (err) {
+            console.log(err);
+            res.status(500).json(err);
+        }
+        // ส่งไฟล์ qr กลับไป
+        const qrPath = path.join(__dirname, 'qr.svg');
+        fs.writeFileSync(qrPath, svg);
+        res.sendFile(qrPath);
+    });
+}
+exports.readQR = async (req, res) => {
+    const donation = req.body;
+    console.log(donation);
+    try {
+        // TODO อ่าน qr แล้วทำการยืนยันการบริจาค
+        // แล้วค่อยลบออก
+        await firebase.deleteQR(donation.id);
+    } catch (err) {
+        res.status(500).json(err);
+    }
 }
 
 /**
+ * @function
  * This function test to use firebasefirestore
  */
 exports.testSave = async (req, res) => {
@@ -182,4 +218,5 @@ let job = schedlue.scheduleJob('0 12 * * *', async () => {
 //     });
 // });
 
+// TODO read qr code
 // TODO deploy api to cloud
