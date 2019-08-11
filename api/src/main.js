@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
 
-require('./config/db');
+// require('./config/db');
 require('./config/firebase');
 
 const server = express();

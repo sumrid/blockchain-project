@@ -18,6 +18,18 @@ services:
     networks: 
       - default
 
+  client-web:
+    image: node:10.15.3-stretch-slim
+    container_name: web
+    volumes: 
+      - ./client-app:/client-app
+    working_dir: /client-app
+    command: npm run serve
+    ports: 
+      - 8080:8080
+    networks: 
+      - default
+
   db:
     image: mongo:4.0.11-xenial
     container_name: mongo
