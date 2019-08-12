@@ -143,7 +143,7 @@ exports.createQrDonation = async (req, res) => {
  * เมื่อแสกนแล้วให้เปิดหน้าเว็บ
  */
 exports.createQRv3 = async (req, res) => {
-    const ip = require('ip').address();
+    const ip = process.env.HOST_IP || require('ip').address();
     const donation = req.body;
     donation.id = uid();
     // Save to DB
