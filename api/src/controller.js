@@ -2,6 +2,7 @@ const service = require('./service');
 const firebase = require('./service.firebase');
 const moment = require('moment');
 const uid = require('uuid/v4');
+const buildUrl = require('build-url');
 
 const generatePayload = require('promptpay-qr')
 const qrcode = require('qrcode')
@@ -111,16 +112,19 @@ exports.createQR = async (req, res) => {
         res.sendFile(p);
     });
 }
-
+/**
+ * createQR v2
+ */
 exports.createQrDonation = async (req, res) => {
     const donation = req.body;
     donation.id = uid();
+    // Save to DB
     try {
         await firebase.saveQR(donation);
     } catch (err) {
         res.status(500).json(err);
     }
-
+    // Generate QR
     const options = { type: "svg", color: { dark: "#705f5f", light: "#fff" } };
     qrcode.toString(JSON.stringify(donation), options, (err, svg) => {
         if (err) {
@@ -133,6 +137,44 @@ exports.createQrDonation = async (req, res) => {
         res.sendFile(qrPath);
     });
 }
+/**
+ * createQR v3  
+ * สร้าง qr โดยใช้ url 
+ * เมื่อแสกนแล้วให้เปิดหน้าเว็บ
+ */
+exports.createQRv3 = async (req, res) => {
+    const ip = require('ip').address();
+    const donation = req.body;
+    donation.id = uid();
+    // Save to DB
+    // try {
+    //     await firebase.saveQR(donation);
+    // } catch (err) {
+    //     res.status(500).json(err);
+    // }
+
+    const url = `http://${ip}:8080/#/confirm`
+    const payload = buildUrl(url, {
+        queryParams: donation
+    });
+
+    // Generate QR
+    const options = { type: "svg", color: { dark: "#705f5f", light: "#fff" } };
+    qrcode.toString(payload, options, (err, svg) => {
+        if (err) {
+            console.log(err);
+            res.status(500).json(err);
+        }
+        // ส่งไฟล์ qr กลับไป
+        const qrPath = path.join(__dirname, 'qr.svg');
+        fs.writeFileSync(qrPath, svg);
+        res.sendFile(qrPath);
+    });
+}
+
+/**
+ * ใช้คู่กับ createQR v2
+ */
 exports.readQR = async (req, res) => {
     const donation = req.body;
     console.log(donation);
@@ -140,6 +182,7 @@ exports.readQR = async (req, res) => {
         // TODO อ่าน qr แล้วทำการยืนยันการบริจาค
         // แล้วค่อยลบออก
         await firebase.deleteQR(donation.id);
+        res.sendStatus(200);
     } catch (err) {
         res.status(500).json(err);
     }
@@ -181,7 +224,7 @@ const schedlue = require('node-schedule');
  * @private
  */
 let job = schedlue.scheduleJob('0 12 * * *', async () => {
-    results = await firebase.getProject();
+    results = await firebase.getProject(); // TODO อาจจะเปลี่ยนเป็นดึงข้อมูลจาก chaincode
     results.forEach(doc => {
         const project = doc.data();
         const now = moment().utc(true);                         // To local time

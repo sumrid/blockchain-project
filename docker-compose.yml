@@ -18,25 +18,25 @@ services:
     networks: 
       - default
 
-  # client-web:
-  #   image: node:10.15.3-stretch-slim
-  #   container_name: web
-  #   environment: 
-  #     - API_IP=api
-  #   volumes: 
-  #     - ./client-app:/client-app
-  #   working_dir: /client-app
-  #   command: npm run serve
-  #   ports: 
-  #     - 8080:8080
-  #   networks: 
-  #     - default
-  web:
-    image: nginx
+  client-web:
+    image: node:10.15.3-stretch-slim
+    container_name: web
+    environment: 
+      - API_IP=api
     volumes: 
-      - ./client-app/dist:/usr/share/nginx/html
+      - ./client-app:/client-app
+    working_dir: /client-app
+    command: npm run serve
     ports: 
-      - 8080:80
+      - 8080:8080
+    networks: 
+      - default
+  # web:
+  #   image: nginx
+  #   volumes: 
+  #     - ./client-app/dist:/usr/share/nginx/html
+  #   ports: 
+  #     - 8080:80
 
   db:
     image: mongo:4.0.11-xenial

@@ -141,7 +141,7 @@ docker exec \
 	-e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp" \
 	cli peer chaincode invoke \
 	-o orderer.example.com:7050 \
-	-C mychannel-1 -n $CC_NAME -c '{"Args":["createProject","p_01","ช่วยเหลือโรงเรียนห่างไกล","avaliable","0", "sumrid.k", "09-08-2019:13:54:44", "11-08-2019:13:54:44"]}' \
+	-C mychannel-1 -n $CC_NAME -c '{"Args":["createProject","p_01","ช่วยเหลือโรงเรียนห่างไกล","avaliable","0", "sumrid.k", "09-08-2019:13:54:44", "15-08-2019:13:54:44"]}' \
 	--peerAddresses peer0.org1.example.com:7051 \
 	--peerAddresses peer0.org2.example.com:7051
 
