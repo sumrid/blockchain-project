@@ -11,7 +11,7 @@ router.get('/project/donations/:key', contorller.getDonationHistory);
 
 router.post('/project/donate/qr', contorller.createQR);   // v2 ออก QRcode promptpay 
 router.post('/project/donate/readqr', contorller.readQR); // บริจาคและลบ QRcode
-router.post('/project/donate/qr/v2', contorller.createQrDonation);
+router.post('/project/donate/qr/v2', contorller.createQrDonation); // genQR + firebase
 router.post('/project/donate/qr/v3', contorller.createQRv3); // v3 ออกQR เป็นแบบ Url
 
 router.post('/test', contorller.testSave);

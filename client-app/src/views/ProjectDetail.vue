@@ -32,39 +32,48 @@
       </table>
     </div>
 
-    <h3>ร่วมบริจาค</h3>
-    <form @submit.prevent="onSubmit">
-      <b-form-group label="ชื่อของคุณ" description="กรุณาใส่ชื่อของคุณ.">
-        <b-form-input v-model="form.user" required placeholder="ใส่ชื่อของคุณ"></b-form-input>
-      </b-form-group>
+    <div v-if="project.status != 'closed'">
+      <h3>ร่วมบริจาค</h3>
+      <form @submit.prevent="onSubmit">
+        <b-form-group label="ชื่อของคุณ" description="กรุณาใส่ชื่อของคุณ.">
+          <b-form-input v-model="form.user" required placeholder="ใส่ชื่อของคุณ"></b-form-input>
+        </b-form-group>
 
-      <b-form-group label="จำนวนเงิน">
-        <b-form-input v-model="form.amount" required type="number" :state="amountState" placeholder="จำนวนเงิน"></b-form-input>
-      </b-form-group>
-      <button class="btn btn-info" :disabled="!amountState">
-        <span
-          v-if="loading"
-          class="spinner-border spinner-border-sm"
-          role="status"
-          aria-hidden="false"
-        ></span>
-        Submit
-      </button>
-    </form>
-    <div class="col">
-      <button class="btn btn-success" @click="createQR(1)" :disabled="!amountState">promptpay QR</button>
-      <button class="btn btn-success" @click="createQR(2)" :disabled="!amountState">custom QR v2</button>
-      <button class="btn btn-success" @click="createQR(3)" :disabled="!amountState">custom QR v3</button>
+        <b-form-group label="จำนวนเงิน">
+          <b-form-input
+            v-model="form.amount"
+            required
+            type="number"
+            :state="amountState"
+            placeholder="จำนวนเงิน"
+          ></b-form-input>
+        </b-form-group>
+        <button class="btn btn-info" :disabled="!amountState">
+          <span
+            v-if="loading"
+            class="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="false"
+          ></span>
+          Submit
+        </button>
+        <p v-if="error">{{error}}</p>
+      </form>
+      <div class="col">
+        <button class="btn btn-success" @click="createQR(1)" :disabled="!amountState">promptpay QR</button>
+        <button class="btn btn-success" @click="createQR(2)" :disabled="!amountState">custom QR v2</button>
+        <button class="btn btn-success" @click="createQR(3)" :disabled="!amountState">custom QR v3</button>
+      </div>
+      <br />
+      <span
+        v-if="loadingQR"
+        class="spinner-border spinner-border-sm"
+        role="status"
+        aria-hidden="false"
+      ></span>
+      <p v-if="qrmessage">{{qrmessage}}</p>
+      <div class="container qr" v-html="svg"></div>
     </div>
-    <br />
-    <span
-      v-if="loadingQR"
-      class="spinner-border spinner-border-sm"
-      role="status"
-      aria-hidden="false"
-    ></span>
-    <p v-if="qrmessage">{{qrmessage}}</p>
-    <div class="container qr" v-html="svg"></div>
   </div>
 </template>
 
@@ -87,7 +96,8 @@ export default {
       loading: false,
       loadingQR: false,
       svg: null,
-      qrmessage: ""
+      qrmessage: "",
+      error: ""
     };
   },
   computed: {
@@ -133,6 +143,8 @@ export default {
         this.getDetail(donation.project);
         this.getDontions(donation.project);
       } catch (err) {
+        this.loading = false;
+        this.error = err;
         console.error(err);
       }
     },
