@@ -2,7 +2,7 @@ version: 2
 jobs:
   api-test:
     docker:
-      - image: circleci/node:7.10
+      - image: circleci/node:8.10
     working_directory: ~/project/api
 
     steps:
@@ -32,7 +32,7 @@ jobs:
   
   ui-test:
     docker:
-      - image: circleci/node:7.10
+      - image: vuejs/ci
     working_directory: ~/project/client-app
 
     steps:
@@ -58,7 +58,6 @@ jobs:
           name: run tests
           command: |
             npm run test:unit
-            # codecov
 
   chaincode-test:
     docker:

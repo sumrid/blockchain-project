@@ -260,6 +260,3 @@ let job = schedlue.scheduleJob('0 12 * * *', async () => {
 //         }
 //     });
 // });
-
-// TODO read qr code
-// TODO deploy api to cloud

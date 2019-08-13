@@ -39,9 +39,9 @@
       </b-form-group>
 
       <b-form-group label="จำนวนเงิน">
-        <b-form-input v-model="form.amount" required placeholder="จำนวนเงิน"></b-form-input>
+        <b-form-input v-model="form.amount" required type="number" :state="amountState" placeholder="จำนวนเงิน"></b-form-input>
       </b-form-group>
-      <button class="btn btn-info" :disabled="!form.amount">
+      <button class="btn btn-info" :disabled="!amountState">
         <span
           v-if="loading"
           class="spinner-border spinner-border-sm"
@@ -52,9 +52,9 @@
       </button>
     </form>
     <div class="col">
-      <button class="btn btn-success" @click="createQR(1)" :disabled="!form.amount">promptpay QR</button>
-      <button class="btn btn-success" @click="createQR(2)" :disabled="!form.amount">custom QR v2</button>
-      <button class="btn btn-success" @click="createQR(3)" :disabled="!form.amount">custom QR v3</button>
+      <button class="btn btn-success" @click="createQR(1)" :disabled="!amountState">promptpay QR</button>
+      <button class="btn btn-success" @click="createQR(2)" :disabled="!amountState">custom QR v2</button>
+      <button class="btn btn-success" @click="createQR(3)" :disabled="!amountState">custom QR v3</button>
     </div>
     <br />
     <span
@@ -89,6 +89,15 @@ export default {
       svg: null,
       qrmessage: ""
     };
+  },
+  computed: {
+    amountState() {
+      if (this.form.amount <= 0) {
+        return false;
+      } else {
+        return true;
+      }
+    }
   },
   methods: {
     getDetail: function(ID) {

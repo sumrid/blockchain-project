@@ -153,6 +153,8 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 		return shim.Error("Project closed.")
 	}
 
+	// TODO ตรวจสอบเวลาด้วยยย
+
 	// Get Donations.
 	donationKey := "history_" + donation.ProjectID
 	hisByte, err := stub.GetState(donationKey)
