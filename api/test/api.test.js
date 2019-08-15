@@ -8,7 +8,8 @@ const service = require('../src/service');
 const firebase = require('../src/service.firebase');
 const mock = require('./mock.data');
 
-// const server = require('../src/main');
+// To test
+const server = require('../src/main');
 
 chai.use(chaiHttp);
 
@@ -28,23 +29,43 @@ describe('API test', () => {
     const firebaseStub = {};
     firebaseStub.saveProject = sinon.stub();
 
-    test('create project success', () => {
-    //     let project = mock.project;
-    //     serviceStub.createProject.withArgs(project).resolves(Buffer.from(JSON.stringify(project)));
-    //     serviceStub.getAllProjects.resolves(Buffer.from(JSON.stringify([project, project])));
-    //     firebaseStub.saveProject.withArgs(project).resolves();
-    //     sinon.replace(service, 'createProject', serviceStub.createProject);
-    //     sinon.replace(firebase, 'saveProject', firebaseStub.saveProject);
-    //     sinon.replace(service, 'getAllProjects', serviceStub.getAllProjects);
+    test('home', (done) => {
+        let project = mock.project;
+        serviceStub.createProject.withArgs(project).resolves(Buffer.from(JSON.stringify(project)));
+        serviceStub.getAllProjects.resolves(Buffer.from(JSON.stringify([project, project])));
+        serviceStub.closeProject.withArgs(project.id).resolves(Buffer.from('Success.'));
+        firebaseStub.saveProject.withArgs(project).resolves();
+        sinon.replace(service, 'createProject', serviceStub.createProject);
+        sinon.replace(service, 'getAllProjects', serviceStub.getAllProjects);
+        sinon.replace(service, 'closeProject', serviceStub.closeProject);
+        sinon.replace(firebase, 'saveProject', firebaseStub.saveProject);
 
-    //     chai.request(server)
-    //     .post('/api/project')
-    //         .send(project)
-    //         .end((err, res) => {
-    //             // res.status.should.equal(201);
-    //             console.log(res.status);
-                // expect(true).toEqual(true);
-    //             done();
-    //         });
+        chai.request(server)
+            .get('/api').end((err, res) => {
+                res.text.should.equal('Hello world! from home');
+                done();
+            });
+    });
+
+    test('create project success', (done) => {
+        let project = mock.project;
+        serviceStub.createProject.withArgs(project).resolves(Buffer.from(JSON.stringify(project)));
+        serviceStub.getAllProjects.resolves(Buffer.from(JSON.stringify([project, project])));
+        serviceStub.closeProject.withArgs(project.id).resolves();
+        firebaseStub.saveProject.withArgs(project).resolves();
+        sinon.replace(service, 'createProject', serviceStub.createProject);
+        sinon.replace(service, 'getAllProjects', serviceStub.getAllProjects);
+        sinon.replace(service, 'closeProject', serviceStub.closeProject);
+        sinon.replace(firebase, 'saveProject', firebaseStub.saveProject);
+
+        chai.request(server)
+            .post('/api/project')
+            .send(project)
+            .end((err, res) => {
+                res.status.should.equal(201);
+                console.log(res.status);
+                expect(true).toEqual(true);
+                done();
+            });
     });
 });

@@ -4,7 +4,7 @@ const path = require('path');
 
 // ทำการอ่านไฟล์ connection.json
 const ccpFile = process.env.CONNECTION_FILE || 'connection1.json';
-const ccpPath = path.resolve(__dirname, ccpFile);
+const ccpPath = path.resolve(__dirname, 'connection_profile', ccpFile);
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
 const ccp = JSON.parse(ccpJSON);
 
@@ -14,7 +14,8 @@ const walletPath = path.join(__dirname, 'wallet1');
 const wallet = new FileSystemWallet(walletPath);
 console.log(`Wallet path: ${walletPath}`);
 
-const USER = 'user1';
+const USER = 'user1'; // ผู้ใช้เริ่มต้น
+// Function name in chaincode
 const FN_QUERY = 'query';
 const FN_DONATE = 'donate';
 const FN_GET_HISTORY = 'getHistory';
@@ -22,8 +23,8 @@ const FN_CLOSE_PROJECT = 'closeProject';
 const FN_CREATE_PROJECT = 'createProject';
 const FN_QUERY_PROJECTS = 'queryAllProjects';
 const FN_GET_DONATE_HISTORY = 'getDonationHistory';
-const CHANNEL = 'mychannel-1';
-const CONTRACT = 'mychaincode';
+const CHANNEL = 'mychannel-1';  // ชื่อ channel
+const CONTRACT = 'mychaincode'; // ชื่อ chaincode
 
 async function getGateway(user) {
     try {
@@ -32,7 +33,7 @@ async function getGateway(user) {
         if (!userExists) {
             console.log('An identity for the user "user1" does not exist in the wallet');
             console.log('Run the registerUser.js application before retrying');
-            return;
+            throw new Error(`An identity for the user "${user}" does not exist in the wallet`);
         }
 
         // Create a new gateway for connecting to our peer node.

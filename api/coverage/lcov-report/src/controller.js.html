@@ -20,9 +20,9 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">20.49% </span>
+        <span class="strong">26.23% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>25/122</span>
+        <span class='fraction'>32/122</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">0% </span>
@@ -35,9 +35,9 @@
         <span class='fraction'>1/17</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">20.66% </span>
+        <span class="strong">26.45% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>25/121</span>
+        <span class='fraction'>32/121</span>
       </div>
     </div>
     <p class="quiet">
@@ -325,21 +325,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -551,7 +551,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -583,22 +583,22 @@ const DATETIME_LAYOUT = 'DD-MM-YYYY:HH:mm:ss';
     @async
     @function createProject
 */
-exports.createProject = <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
-    const project = <span class="cstat-no" title="statement not covered" >req.body;</span>
+exports.createProject = async (req, res) =&gt; {
+    const project = req.body;
 &nbsp;
     // Generate key for project
     // และกำหนดค่าเริ่มต้น
-<span class="cstat-no" title="statement not covered" >    project.id = 'p_' + uid();</span>
-<span class="cstat-no" title="statement not covered" >    project.starttime = moment().format(DATETIME_LAYOUT);</span>
+    project.id = 'p_' + uid();
+    project.starttime = moment().format(DATETIME_LAYOUT);
     // project.endtime = '11-08-2019:12:00:00';
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    try {</span>
+    try {
         // บันทึกข้อมูลลงทั้ง blockchain and firebase
-        const result = <span class="cstat-no" title="statement not covered" >await service.createProject(project);</span>
-<span class="cstat-no" title="statement not covered" >        await firebase.saveProject(project);</span>
-<span class="cstat-no" title="statement not covered" >        res.status(201).json(JSON.parse(String(result)));</span>
+        const result = await service.createProject(project);
+        await firebase.saveProject(project);
+        res.status(201).json(JSON.parse(String(result)));
     } catch (err) {
-<span class="cstat-no" title="statement not covered" >        res.json(err);</span>
+        res.json(err);
     }
 }
 &nbsp;
@@ -790,7 +790,7 @@ const schedlue = require('node-schedule');
  * @private
  */
 // let job = schedlue.scheduleJob('0 12 * * *', async () =&gt; {
-//     results = await firebase.getProject(); // TODO อาจจะเปลี่ยนเป็นดึงข้อมูลจาก chaincode
+//     results = await firebase.getProject();
 //     results.forEach(doc =&gt; {
 //         const project = doc.data();
 //         const now = moment().utc(true);                         // To local time
@@ -809,8 +809,8 @@ const schedlue = require('node-schedule');
 &nbsp;
 // Interval
 // [test]
-let testJob = schedlue.scheduleJob('*/10 * * * * *', async () =&gt; {
-    const results = await service.getAllProjects();
+schedlue.scheduleJob('*/10 * * * * *', <span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {
+    const results = <span class="cstat-no" title="statement not covered" >await service.getAllProjects();</span>
     const projects = <span class="cstat-no" title="statement not covered" >JSON.parse(String(results));</span>
 <span class="cstat-no" title="statement not covered" >    projects.forEach(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >        if (p.status != 'closed') {</span>
@@ -829,7 +829,7 @@ let testJob = schedlue.scheduleJob('*/10 * * * * *', async () =&gt; {
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Wed Aug 14 2019 16:17:42 GMT+0700 (Indochina Time)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Aug 15 2019 15:32:52 GMT+0700 (Indochina Time)
 </div>
 </div>
 <script src="../prettify.js"></script>
