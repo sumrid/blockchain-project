@@ -16,30 +16,43 @@ const (
 	Closed         = "closed"
 )
 
+// Project เป็นโครงการสำหรับเก็บช้อมูลใน blockchain
 type Project struct {
-	ID        string    `json:"id"`
-	Title     string    `json:"title"`
-	Status    string    `json:"status"`
-	Balance   float64   `json:"balance"`
-	Owner     string    `json:"owner"`
-	StartTime time.Time `json:"starttime"`
-	EndTime   time.Time `json:"endtime"`
+	ID        string    `json:"id"`        // เป็นรหัสของโครงการ จะมีลักษณะเป็น 'p_30d1ea-c0af...'
+	Title     string    `json:"title"`     // ชื่อหรือหัวข้อของโครงการ
+	Status    string    `json:"status"`    // สถานะของโครงการว่าเปิดอยู่ หรือ หมดเวลาแล้ว
+	Balance   float64   `json:"balance"`   // ยอดจำนวนเงินสะสมของโครงการ
+	Owner     string    `json:"owner"`     // เป็น uid ของผู้ที่เป็นเจ้าของโครงการ
+	StartTime time.Time `json:"starttime"` // เวลาที่การสร้างโครงการ
+	EndTime   time.Time `json:"endtime"`   // เวลาที่โครงการสิ้นสุด
+	// TODO เพิ่มไอดีผู้รับเงิน
 }
 
+// Donation ข้อมูลของการบริจาค
 type Donation struct {
-	TxID      string    `json:"txid"`
-	UserID    string    `json:"user"`
-	ProjectID string    `json:"project"`
-	Amount    float64   `json:"amount"`
-	Time      time.Time `json:"time"`
+	TxID      string    `json:"txid"`    // Transaction ID ของการบริจาคครั้งนั้น
+	UserID    string    `json:"user"`    // uid ของผู้บริจาคเงิน
+	ProjectID string    `json:"project"` // uid ของโปรเจค
+	Amount    float64   `json:"amount"`  // จำนวนเงินที่การบริจาคมาในครั้งหนี่ง
+	Time      time.Time `json:"time"`    // เวลาที่ทำการบริจาค
 }
 
+// User ข้อมูลของผู้ใช้
+type User struct {
+	ID   string `json:"id"`   // uid ของฝู้ใช้
+	Name string `json:"name"` // ชื่อผู้ใช้
+}
+
+// TODO สร้างการเก็บข้อมูลของผู้ใช้ว่าจะให้มีอะไรบ้าง  ..คนสร้างโครงการ ..ผู้รับเงิน
+
+// Chaincode ...
 type Chaincode struct {
 }
 
 var logger = shim.NewLogger("chaincode")
 
 // Init เป็นฟังก์ชันเอาไว้เริ่มต้น chaincode
+// จะถูกเรียกใช้ตอนที่ทำการ Instantiate
 func (C *Chaincode) Init(stub shim.ChaincodeStubInterface) peer.Response {
 	logger.Info("Init chaincode success.")
 	return shim.Success([]byte("Init Success"))
@@ -153,7 +166,10 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 		return shim.Error("Project closed.")
 	}
 
-	// TODO ตรวจสอบเวลาด้วยยย
+	// Check if time out.
+	if p.EndTime.Before(time.Now()) {
+		return shim.Error("This project has timed out.")
+	}
 
 	// Get Donations.
 	donationKey := "history_" + donation.ProjectID
@@ -198,6 +214,7 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 	// Return
 	return shim.Success(nil)
 }
+
 func (C *Chaincode) getDonationHistory(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 1 {
 		return shim.Error("Incorrect number of arguments.")

@@ -223,27 +223,27 @@ const schedlue = require('node-schedule');
  * เป็นฟังก์ชันที่จะทำงานทุกเที่ยงของทุกวัน
  * @private
  */
-let job = schedlue.scheduleJob('0 12 * * *', async () => {
-    results = await firebase.getProject(); // TODO อาจจะเปลี่ยนเป็นดึงข้อมูลจาก chaincode
-    results.forEach(doc => {
-        const project = doc.data();
-        const now = moment().utc(true);                         // To local time
-        const end = moment(project.endtime.toDate()).utc(true); // To local time
-        const diff = end.diff(now);
-        console.log(end.diff(now));
-        if (diff <= 0) { // TODO เพิ่มเงื่อนไข ถ้าโปรเจคปิดไปแล้ว
-            try {
-                service.closeProject(project.id);
-            } catch (err) {
-                console.error(err);
-            }
-        }
-    });
-});
+// let job = schedlue.scheduleJob('0 12 * * *', async () => {
+//     results = await firebase.getProject();
+//     results.forEach(doc => {
+//         const project = doc.data();
+//         const now = moment().utc(true);                         // To local time
+//         const end = moment(project.endtime.toDate()).utc(true); // To local time
+//         const diff = end.diff(now);
+//         console.log(end.diff(now));
+//         if (diff <= 0) {
+//             try {
+//                 service.closeProject(project.id);
+//             } catch (err) {
+//                 console.error(err);
+//             }
+//         }
+//     });
+// });
 
-// Interval 5sec
+// Interval
 // [test]
-let testJob = schedlue.scheduleJob('*/10 * * * * *', async () => {
+schedlue.scheduleJob('*/10 * * * * *', async () => {
     const results = await service.getAllProjects();
     const projects = JSON.parse(String(results));
     projects.forEach((p) => {

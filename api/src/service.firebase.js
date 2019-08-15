@@ -1,3 +1,6 @@
+// Init firebase
+require('../src/config/firebase');
+
 const admin = require('firebase-admin');
 const db = admin.firestore();
 const ProjectCollection = db.collection('projects');
@@ -16,7 +19,6 @@ exports.saveProject = async (project) => {
 
     try {
         await ProjectCollection.doc(project.id).set(project);
-        return;
     } catch (err) {
         throw err;
     }
@@ -50,6 +52,6 @@ exports.deleteQR = async (id) => {
     try {
         await QRCollection.doc(id).delete();
     } catch (err) {
-
+        throw err;
     }
 }
