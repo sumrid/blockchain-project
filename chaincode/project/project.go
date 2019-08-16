@@ -26,6 +26,7 @@ type Project struct {
 	StartTime time.Time `json:"starttime"` // เวลาที่การสร้างโครงการ
 	EndTime   time.Time `json:"endtime"`   // เวลาที่โครงการสิ้นสุด
 	// TODO เพิ่มไอดีผู้รับเงิน
+	// TODO เพิ่มยอดเงินที่ต้องการด้วย
 }
 
 // Donation ข้อมูลของการบริจาค
