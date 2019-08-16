@@ -9,7 +9,9 @@ services:
       - DB_URL=mongodb://db:27017
       - HOST_IP=35.198.196.72
     volumes: 
-      - ./api:/app
+      - ./api/api_v2:/app
+      - ./api/wallet1:/wallet1
+      - ./api/wallet2:/wallet2
     working_dir: /app
     command: npm start
     ports: 
@@ -32,6 +34,7 @@ services:
       - 8080:8080
     networks: 
       - default
+      
   # web:
   #   image: nginx
   #   volumes: 
