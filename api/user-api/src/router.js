@@ -8,5 +8,7 @@ router.get('/', (req, res) => {
 
 router.post('/register/donator', contorller.registerDonator);
 router.post('/register/creator', contorller.registerCreator);
+router.post('/profile/', contorller.getProfile);  // TODO อัพเดทโปรไฟล์ย้ายไปทำบน UI
+router.get('/profile/');  // ย้ายไป UI
 
 module.exports = router;

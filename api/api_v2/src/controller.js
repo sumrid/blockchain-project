@@ -180,7 +180,6 @@ exports.readQR = async (req, res) => {
     const donation = req.body;
     console.log(donation);
     try {
-        // TODO อ่าน qr แล้วทำการยืนยันการบริจาค
         // แล้วค่อยลบออก
         await firebase.deleteQR(donation.id);
         res.sendStatus(200);

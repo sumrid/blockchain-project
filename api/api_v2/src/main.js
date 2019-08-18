@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
 
+require('custom-env').env(true); // read from NODE_ENV
 // require('./config/db');
 // require('./config/firebase');
 

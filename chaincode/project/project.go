@@ -31,11 +31,12 @@ type Project struct {
 
 // Donation ข้อมูลของการบริจาค
 type Donation struct {
-	TxID      string    `json:"txid"`    // Transaction ID ของการบริจาคครั้งนั้น
-	UserID    string    `json:"user"`    // uid ของผู้บริจาคเงิน
-	ProjectID string    `json:"project"` // uid ของโปรเจค
-	Amount    float64   `json:"amount"`  // จำนวนเงินที่การบริจาคมาในครั้งหนี่ง
-	Time      time.Time `json:"time"`    // เวลาที่ทำการบริจาค
+	TxID        string    `json:"txid"`        // Transaction ID ของการบริจาคครั้งนั้น
+	UserID      string    `json:"user"`        // uid ของผู้บริจาคเงิน
+	DisplayName string    `json:"displayname"` // ชื่อที่จะแสดงบนรายการบริจาค
+	ProjectID   string    `json:"project"`     // uid ของโปรเจค
+	Amount      float64   `json:"amount"`      // จำนวนเงินที่การบริจาคมาในครั้งหนี่ง
+	Time        time.Time `json:"time"`        // เวลาที่ทำการบริจาค
 }
 
 // User ข้อมูลของผู้ใช้
@@ -123,7 +124,7 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 	var err error
 
 	// Check arguments
-	if len(args) != 4 {
+	if len(args) != 5 {
 		return shim.Error("Incorrect number of arguments.")
 	}
 
@@ -134,6 +135,7 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 	donation.ProjectID = args[1]
 	donation.Amount, err = strconv.ParseFloat(args[2], 64)
 	donation.Time, err = time.Parse(DatetimeLayout, args[3])
+	donation.DisplayName = args[4]
 	if err != nil {
 		return shim.Error(err.Error())
 	}

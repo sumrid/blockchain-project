@@ -3,11 +3,11 @@ const fs = require('fs');
 const path = require('path');
 
 // ทำการอ่านไฟล์ connection.json
-const ccpFile = process.env.CONNECTION_FILE || 'connection1.json';
+const ccpFile = process.env.CCP1 || 'connection1.json';
 const ccpPath = path.resolve(__dirname, 'connection_profile', ccpFile);
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
 const ccp = JSON.parse(ccpJSON);
-const ccpFile2 = process.env.CONNECTION_FILE_2 || 'connection2.json';
+const ccpFile2 = process.env.CCP1 || 'connection2.json';
 const ccpPath2 = path.resolve(__dirname, 'connection_profile', ccpFile2);
 const ccpJSON2 = fs.readFileSync(ccpPath2, 'utf8');
 const ccp2 = JSON.parse(ccpJSON2);
@@ -117,7 +117,7 @@ exports.createProject = async (userID, project) => {
                 project.title,
                 project.status,
                 project.balance.toString(),
-                project.owner,
+                project.owner, // uid of owner
                 project.starttime,
                 project.endtime);
 
@@ -133,10 +133,11 @@ exports.donate = async (userID, donation) => {
         const contract = await getContractOrg1(userID || USER); // ถ้ายังไม่สมัครจะใช้ id ตั้งต้นหรือ ใช้ anonymous ของ firebase
         await contract.submitTransaction(
             FN_DONATE,
-            donation.user,
+            donation.user, // uid of user
             donation.project,
             donation.amount.toString(),
-            donation.time
+            donation.time,
+            donation.displayname
         )
     } catch (err) {
         console.error(err);

@@ -24,7 +24,7 @@
         <tbody>
           <tr v-for="d in donations" v-bind:key="d.id">
             <td>{{d.txid}}</td>
-            <td>{{d.user}}</td>
+            <td>{{d.displayname}}</td>
             <td>{{d.amount}}</td>
             <td>{{d.time}}</td>
           </tr>
@@ -36,7 +36,7 @@
       <h3>ร่วมบริจาค</h3>
       <form @submit.prevent="onSubmit">
         <b-form-group label="ชื่อของคุณ" description="กรุณาใส่ชื่อของคุณ.">
-          <b-form-input v-model="form.user" required placeholder="ใส่ชื่อของคุณ"></b-form-input>
+          <b-form-input v-model="form.displayname" required placeholder="ใส่ชื่อของคุณ"></b-form-input>
         </b-form-group>
 
         <b-form-group label="จำนวนเงิน">
@@ -91,6 +91,7 @@ export default {
       donations: {},
       form: {
         user: "",
+        displayname: "",
         amount: ""
       },
       loading: false,
@@ -125,11 +126,11 @@ export default {
     },
     onSubmit: async function() {
       this.loading = true;
-      // TODO ใช้เป็น userid แทนในการเก็บลอง blockchain
       let donation = {
-        user: this.form.user,
+        user: this.form.user, // TODO ใช้เป็น userid แทนในการเก็บลอง blockchain
         project: this.$route.params.id,
-        amount: this.form.amount
+        amount: this.form.amount,
+        displayname: this.form.displayname
       };
       console.log("[onSubmit] " + donation.project);
 
@@ -164,12 +165,12 @@ export default {
       axios.default
         .post(URL, {
           amount: a || 50,
-          user: this.form.user, // TODO change to user id
+          user: this.form.user, // TODO change to user id เมื่อสมัครfirebase
+          displayname: this.form.displayname,
           project: this.project.id
         })
         .then(res => {
           this.svg = res.data;
-          this.form = { user: "", amount: "" };
           this.loadingQR = false;
         });
     }
