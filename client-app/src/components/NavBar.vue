@@ -6,7 +6,6 @@
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
       <b-collapse id="nav-collapse" is-nav>
-
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
@@ -42,7 +41,14 @@
                   ></b-form-input>
                 </b-form-group>
                 <p v-if="err">Error: {{err}}</p>
-                <b-button class="mt-3 btn-success" type="submit">Login</b-button>
+                <b-button class="mt-3 btn-success" type="submit">
+                  <span
+                    v-if="isLoading"
+                    class="spinner-border spinner-border-sm"
+                    role="status"
+                    aria-hidden="false"
+                  ></span> Login
+                </b-button>
               </form>
             </div>
           </b-modal>
@@ -71,7 +77,8 @@ export default {
         email: "",
         password: ""
       },
-      err: ""
+      err: "",
+      isLoading: false
     };
   },
   methods: {
@@ -79,16 +86,19 @@ export default {
       this.$bvModal.hide("modal-login");
     },
     login: async function() {
+      this.isLoading = true;
       try {
         const user = await auth.default.signInWithEmailAndPassword(
           this.form.email,
           this.form.password
         );
         this.user = user.user;
+        this.isLoading = false;
         localStorage.setItem("user", JSON.stringify(this.user));
         this.hideModal();
       } catch (err) {
         this.err = err.message;
+        this.isLoading = false;
       }
     },
     logout: async function() {

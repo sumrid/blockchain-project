@@ -23,6 +23,8 @@ exports.createProject = async (req, res) => {
     // Generate key for project
     // และกำหนดค่าเริ่มต้น
     project.id = 'p_' + uid();
+    project.balance = 0;
+    project.status = 'open';
     project.starttime = moment().format(DATETIME_LAYOUT);
     // project.endtime = '11-08-2019:12:00:00';
 
@@ -32,7 +34,7 @@ exports.createProject = async (req, res) => {
         await firebase.saveProject(project);
         res.status(201).json(JSON.parse(String(result)));
     } catch (err) {
-        res.json(err);
+        res.status(500).json(err);
     }
 }
 

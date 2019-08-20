@@ -9,9 +9,9 @@ exports.registerDonator = async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     try {
-        const uid = await firebase.regisUser(email, password, name);
-        // await service.registerDonator(uid);
-        res.status(201).json({uid: uid.uid});
+        const user = await firebase.regisUser(email, password, name);
+        await service.registerDonator(user.uid);
+        res.status(201).json({uid: user.uid});
     } catch (err) {
         res.status(500).json(err);
     }

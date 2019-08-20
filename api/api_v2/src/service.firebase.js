@@ -1,5 +1,6 @@
 // Init firebase
 require('../src/config/firebase');
+console.log('connect to firebase');
 
 const admin = require('firebase-admin');
 const db = admin.firestore();
@@ -16,6 +17,9 @@ exports.saveProject = async (project) => {
     const endtime = moment(project.endtime, DATETIME_LAYOUT).toDate();
     project.starttime = moment().toDate();
     project.endtime = endtime;
+    
+    // TODO ลบส่วนที่จะไม่เก็บ
+    delete project.balance;
 
     try {
         await ProjectCollection.doc(project.id).set(project);

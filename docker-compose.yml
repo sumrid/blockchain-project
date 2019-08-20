@@ -16,8 +16,6 @@ services:
     command: npm start
     ports: 
       - 8000:8000
-    depends_on: 
-      - db
     networks: 
       - default
 
@@ -42,15 +40,15 @@ services:
   #   ports: 
   #     - 8080:80
 
-  db:
-    image: mongo:4.0.11-xenial
-    container_name: mongo
-    volumes: 
-      - ./data/db:/data/db
-    ports: 
-      - 27017:27017
-    networks: 
-      - default
+  # db:
+  #   image: mongo:4.0.11-xenial
+  #   container_name: mongo
+  #   volumes: 
+  #     - ./data/db:/data/db
+  #   ports: 
+  #     - 27017:27017
+  #   networks: 
+  #     - default
 
 networks:
   default:

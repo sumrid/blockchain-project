@@ -25,8 +25,8 @@ type Project struct {
 	Owner     string    `json:"owner"`     // เป็น uid ของผู้ที่เป็นเจ้าของโครงการ
 	StartTime time.Time `json:"starttime"` // เวลาที่การสร้างโครงการ
 	EndTime   time.Time `json:"endtime"`   // เวลาที่โครงการสิ้นสุด
-	// TODO เพิ่มไอดีผู้รับเงิน
-	// TODO เพิ่มยอดเงินที่ต้องการด้วย
+	Receiver  string    `json:"receiver"`  // uid ของผู้รับเงิน TODO เพิ่มไอดีผู้รับเงิน
+	Goal      float64   `json:"goal"`      // จำนวนเงินที่ต้องการ TODO เพิ่มยอดเงินที่ต้องการด้วย
 }
 
 // Donation ข้อมูลของการบริจาค
@@ -84,24 +84,29 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	return shim.Error("Received unknown function " + fn)
 }
 
+// createProject - สำหรับสร้างโครงการ
+// มีการรับ agrs ดังนี้
+// 	- args[0] function name
 func (C *Chaincode) createProject(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	// Check arguments
-	if len(args) != 7 {
-		return shim.Error("Incorrect arguments, Want 5 input.")
+	if len(args) != 9 {
+		return shim.Error("Incorrect arguments, Want 9 input.")
 	}
 
 	// Create project object
 	id := args[0]
 	title := args[1]
 	status := args[2]
-	balance, _ := strconv.ParseFloat(args[3], 64)
+	balance, err := strconv.ParseFloat(args[3], 64)
 	owner := args[4]
 	start, err := time.Parse(DatetimeLayout, args[5])
 	end, err := time.Parse(DatetimeLayout, args[6])
+	receiver := args[7]
+	goal, err := strconv.ParseFloat(args[8], 64)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
-	p := Project{id, title, status, balance, owner, start, end}
+	p := Project{id, title, status, balance, owner, start, end, receiver, goal}
 
 	pJSON, err := json.Marshal(p)
 	if err != nil {

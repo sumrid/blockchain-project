@@ -80,6 +80,7 @@
 <script>
 // const generatePayload = require("promptpay-qr");
 // const qrcode = require("qrcode");
+import auth from '../firebase';
 const axios = require("axios");
 const util = require("../util");
 const API_IP = util.API_IP;
@@ -94,6 +95,7 @@ export default {
         displayname: "",
         amount: ""
       },
+      currentUser: null,
       loading: false,
       loadingQR: false,
       svg: null,
@@ -174,6 +176,19 @@ export default {
           this.loadingQR = false;
         });
     }
+  },
+  mounted() {
+    // Check user
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        this.currentUser = user;
+        this.form.displayname = user.displayName;
+        this.form.user = user.uid;
+        console.log("changed: " + JSON.stringify(user));
+      } else {
+        this.form.user = "";
+      }
+    })
   },
   created() {
     // Get project and donation list

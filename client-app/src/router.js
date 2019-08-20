@@ -1,9 +1,11 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+
 import Home from './views/Home.vue';
 import ProjectDetail from './views/ProjectDetail.vue';
 import QRCodeReader from './views/QRCodeReader.vue';
 import ConfirmDonation from './views/ConfirmDonation.vue';
+import CreateProject from './views/CreateProject.vue';
 
 Vue.use(Router)
 
@@ -36,6 +38,11 @@ export default new Router({
       path: '/confirm',
       name: 'confirm',
       component: ConfirmDonation
+    },
+    {
+      path: '/createproject',
+      name: 'createproject',
+      component: CreateProject
     }
   ]
 })

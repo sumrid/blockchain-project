@@ -9,10 +9,12 @@ const fs = require('fs');
 const path = require('path');
 
 // Read connection profile.
-const ccpPath1 = path.resolve(__dirname, 'connection_profile', 'connection1.json');
+const fileOrg1 = process.env.CCP1;
+const fileOrg2 = process.env.CCP2;
+const ccpPath1 = path.resolve(__dirname, 'connection_profile', fileOrg1);
 const ccpJSON1 = fs.readFileSync(ccpPath1, 'utf8');
 const ccpOrg1 = JSON.parse(ccpJSON1);
-const ccpPath2 = path.resolve(__dirname, 'connection_profile', 'connection2.json');
+const ccpPath2 = path.resolve(__dirname, 'connection_profile', fileOrg2);
 const ccpJSON2 = fs.readFileSync(ccpPath2, 'utf8');
 const ccpOrg2 = JSON.parse(ccpJSON2);
 

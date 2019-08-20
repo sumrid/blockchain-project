@@ -119,7 +119,9 @@ exports.createProject = async (userID, project) => {
                 project.balance.toString(),
                 project.owner, // uid of owner
                 project.starttime,
-                project.endtime);
+                project.endtime,
+                project.receiver,
+                project.goal.toString());
 
         return result;
     } catch (err) {

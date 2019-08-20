@@ -32,12 +32,10 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from "@/components/HelloWorld.vue";
-const axios = require("axios");
 const moment = require("moment");
-moment.locale("th");
+import service from '../service'
 
-const util = require("../util");
-const API_IP = util.API_IP;
+moment.locale("th");
 
 export default {
   name: "home",
@@ -50,20 +48,13 @@ export default {
       time: moment().format("LTS")
     };
   },
-  beforeCreate() {
+  async beforeCreate() {
     // Get project list
-    axios.get(`http://${API_IP}:8000/api/project`).then(res => {
-      this.projects = res.data;
-      console.log(this.projects);
-    });
+    this.projects = await service.getProjects();
   },
   methods: {
-    projectDetail: function() {
-      console.log("click");
-    },
     updateTime: function(end) {
       const endtime = moment(end, moment.ISO_8601);
-      console.log(end);
       return endtime.fromNow();
     },
     isTimeExpired: function(endtime) {

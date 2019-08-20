@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
 
+require('custom-env').env(true);
+
 const server = express();
 const hostname = '0.0.0.0';
 const port = 8001;
