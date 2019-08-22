@@ -22,6 +22,7 @@ const FN_CLOSE_PROJECT = 'closeProject';
 const FN_CREATE_PROJECT = 'createProject';
 const FN_QUERY_PROJECTS = 'queryAllProjects';
 const FN_GET_DONATE_HISTORY = 'getDonationHistory';
+const FN_GET_DONATION_BY_USERID = 'queryDonationByUserID';
 const CHANNEL = 'mychannel-1';  // ชื่อ channel
 const CONTRACT = 'mychaincode'; // ชื่อ chaincode
 
@@ -187,6 +188,17 @@ exports.closeProject = async (key) => {
         return result;
     } catch (err) {
         console.error(err);
+        throw err;
+    }
+}
+
+exports.getDonationByUserID = async (userID) => {
+    try {
+        const contract = await getContractOrg1(USER);
+        const result = await contract.evaluateTransaction(FN_GET_DONATION_BY_USERID, userID);
+        return result;
+    } catch (err) {
+        console.log(err);
         throw err;
     }
 }

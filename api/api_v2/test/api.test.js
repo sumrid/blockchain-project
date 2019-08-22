@@ -62,8 +62,9 @@ describe('API test', () => {
             .post('/api/project')
             .send(project)
             .end((err, res) => {
-                res.status.should.equal(201);
                 console.log(res.status);
+                console.log(err);
+                res.status.should.equal(201);
                 expect(true).toEqual(true);
                 done();
             });

@@ -27,6 +27,7 @@ type Project struct {
 	EndTime   time.Time `json:"endtime"`   // เวลาที่โครงการสิ้นสุด
 	Receiver  string    `json:"receiver"`  // uid ของผู้รับเงิน TODO เพิ่มไอดีผู้รับเงิน
 	Goal      float64   `json:"goal"`      // จำนวนเงินที่ต้องการ TODO เพิ่มยอดเงินที่ต้องการด้วย
+	Type      string    `json:"type"`
 }
 
 // Donation ข้อมูลของการบริจาค
@@ -37,12 +38,15 @@ type Donation struct {
 	ProjectID   string    `json:"project"`     // uid ของโปรเจค
 	Amount      float64   `json:"amount"`      // จำนวนเงินที่การบริจาคมาในครั้งหนี่ง
 	Time        time.Time `json:"time"`        // เวลาที่ทำการบริจาค
+	Type        string    `json:"type"`
 }
 
 // User ข้อมูลของผู้ใช้
 type User struct {
 	ID   string `json:"id"`   // uid ของฝู้ใช้
 	Name string `json:"name"` // ชื่อผู้ใช้
+	Role string `json:"role"`
+	Type string `json:"type"`
 }
 
 // TODO สร้างการเก็บข้อมูลของผู้ใช้ว่าจะให้มีอะไรบ้าง  ..คนสร้างโครงการ ..ผู้รับเงิน
@@ -78,6 +82,8 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return C.queryAllProjects(stub, args)
 	} else if fn == "closeProject" {
 		return C.closeProject(stub, args)
+	} else if fn == "queryDonationByUserID" {
+		return C.queryDonationByUserID(stub, args)
 	}
 
 	logger.Error("invoke did not find func: " + fn)
@@ -103,10 +109,11 @@ func (C *Chaincode) createProject(stub shim.ChaincodeStubInterface, args []strin
 	end, err := time.Parse(DatetimeLayout, args[6])
 	receiver := args[7]
 	goal, err := strconv.ParseFloat(args[8], 64)
+	oType := "project" // กำหนดชนิดของข้อมูล
 	if err != nil {
 		return shim.Error(err.Error())
 	}
-	p := Project{id, title, status, balance, owner, start, end, receiver, goal}
+	p := Project{id, title, status, balance, owner, start, end, receiver, goal, oType}
 
 	pJSON, err := json.Marshal(p)
 	if err != nil {
@@ -141,6 +148,7 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 	donation.Amount, err = strconv.ParseFloat(args[2], 64)
 	donation.Time, err = time.Parse(DatetimeLayout, args[3])
 	donation.DisplayName = args[4]
+	donation.Type = "donation" // กำหนดชนิดของข้อมูล
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -219,10 +227,18 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 		return shim.Error(err.Error())
 	}
 
+	// Put donation type
+	dByte, err := json.Marshal(donation)
+	err = stub.PutState(donation.TxID, dByte)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
 	// Return
 	return shim.Success(nil)
 }
 
+// getDonationHistory by project ID
 func (C *Chaincode) getDonationHistory(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 1 {
 		return shim.Error("Incorrect number of arguments.")
@@ -242,6 +258,7 @@ func (C *Chaincode) getDonationHistory(stub shim.ChaincodeStubInterface, args []
 	return shim.Success(bytes)
 }
 
+// getHistory แสดงรายการการเปลี่ยนแปลง ของ key นั้นๆ
 func (C *Chaincode) getHistory(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 1 {
 		return shim.Error("Incorrect number of arguments.")
@@ -282,6 +299,7 @@ func (C *Chaincode) getHistory(stub shim.ChaincodeStubInterface, args []string) 
 	return shim.Success(bytes)
 }
 
+// query all by key
 func (C *Chaincode) query(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	var key string // Entities
 	var err error
@@ -311,7 +329,7 @@ func (C *Chaincode) query(stub shim.ChaincodeStubInterface, args []string) peer.
 }
 
 func (C *Chaincode) queryAllProjects(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	// Query all
+	// Query all projects
 	query := `{"selector":{"id":{"$regex":"p_"}}}`
 	results, err := C.queryWithSelector(stub, query)
 	if err != nil {
@@ -331,10 +349,40 @@ func (C *Chaincode) queryAllProjects(stub shim.ChaincodeStubInterface, args []st
 	return shim.Success(res)
 }
 
+// Query donation by userID
+func (C *Chaincode) queryDonationByUserID(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	userID := args[0]
+	queryString := fmt.Sprintf(`{"selector":{"type":{"$eq": "donation"},"user":{"$eq":"%s"}}}`, userID)
+
+	results, err := C.queryWithSelector(stub, queryString)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	// TODO หาประวัติการบริจาคของ user
+	var donations []Donation
+	for _, dByte := range results {
+		d := Donation{}
+		err = json.Unmarshal(dByte, &d)
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		donations = append(donations, d)
+	}
+
+	payload, err := json.Marshal(donations)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	// Return result
+	return shim.Success(payload)
+}
+
+// ใช้ค้นหาโดยใช้ selector
 func (C *Chaincode) queryWithSelector(stub shim.ChaincodeStubInterface, query string) ([][]byte, error) {
 
-	queryString := query
-	interator, err := stub.GetQueryResult(queryString)
+	interator, err := stub.GetQueryResult(query)
 	defer interator.Close()
 	if err != nil {
 		return nil, err

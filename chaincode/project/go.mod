@@ -20,4 +20,5 @@ require (
 	google.golang.org/genproto v0.0.0-20180831171423-11092d34479b // indirect
 	google.golang.org/grpc v1.22.1 // indirect
 	gopkg.in/jcmturner/goidentity.v3 v3.0.0 // indirect
+	gotest.tools v2.2.0+incompatible
 )

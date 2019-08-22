@@ -189,6 +189,15 @@ exports.readQR = async (req, res) => {
         res.status(500).json(err);
     }
 }
+exports.getDonationByUserID = async (req, res) => {
+    const userid = req.params.id;
+    try {
+        const result = await service.getDonationByUserID(userid);
+        res.json(JSON.parse(String(result)));
+    } catch (err) {
+        res.json(err);
+    }
+}
 
 /**
  * @function
@@ -227,6 +236,9 @@ exports.getTx = async (req, res) => {
     }
 }
 
+// ##############################
+// #   check time has expired.
+// ##############################
 const schedlue = require('node-schedule');
 /**
  * Check if the time has expired.  
@@ -253,7 +265,7 @@ const schedlue = require('node-schedule');
 
 // Interval
 // [test]
-schedlue.scheduleJob('*/10 * * * * *', async () => {
+schedlue.scheduleJob('*/20 * * * * *', async () => {
     const results = await service.getAllProjects();
     const projects = JSON.parse(String(results));
     projects.forEach((p) => {

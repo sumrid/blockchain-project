@@ -14,6 +14,7 @@ router.post('/project/donate/readqr', contorller.readQR); // บริจาค�
 router.post('/project/donate/qr/v2', contorller.createQrDonation); // genQR + firebase
 router.post('/project/donate/qr/v3', contorller.createQRv3); // v3 ออกQR เป็นแบบ Url
 
+router.get('/user/:id/donation', contorller.getDonationByUserID);
 router.get('/tx/:txid', contorller.getTx);
 router.post('/test', contorller.testSave);
 router.post('/testget', contorller.testGet);
