@@ -59,7 +59,7 @@ exports.getAllProjects = async (req, res) => {
         const result = await service.getAllProjects();
         res.json(JSON.parse(String(result)));
     } catch (err) {
-        res.json(err);
+        res.status(500).json(err);
     }
 }
 
@@ -70,7 +70,7 @@ exports.query = async (req, res) => {
         const result = await service.query(key);
         res.json(JSON.parse(String(result)));
     } catch (err) {
-        res.json(err);
+        res.status(500).json(err);
     }
 }
 

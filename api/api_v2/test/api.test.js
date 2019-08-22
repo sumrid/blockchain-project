@@ -1,72 +1,132 @@
-// Lib
-const sinon = require('sinon');
+// Lib for testing
 const chai = require('chai');
-const chaiHttp = require('chai-http');
-const should = require('chai').should();
+const chaihttp = require('chai-http');
+
 // To mock
+const mock = require('./mock.data');
 const service = require('../src/service');
 const firebase = require('../src/service.firebase');
-const mock = require('./mock.data');
+jest.mock('../src/service');
+jest.mock('../src/service.firebase');
 
 // To test
 const server = require('../src/main');
 
-chai.use(chaiHttp);
+chai.use(chaihttp);
 
-describe('API test', () => {
+describe('test controller', () => {
+
+    test('get hello world message.', async () => {
+        try {
+            const res = await chai.request(server).get('/api');
+            console.log(res.body);
+            expect(res.status).toEqual(200);
+            expect(res.text).toEqual('Hello world! from home');
+        } catch (err) {
+            throw err;
+        }
+    });
+
+    test('create project success.', async () => {
+        // mock
+        const project = { id: '001', name: 'hello' };
+        service.createProject.mockResolvedValue(Buffer.from(JSON.stringify(project)));
+        firebase.saveProject.mockResolvedValue(Buffer.from(JSON.stringify(project)));
+
+        const res = await chai.request(server)
+            .post('/api/project')
+            .send(project);
+
+        expect(res.status).toEqual(201);
+        expect(res.body).toEqual(project);
+    });
+
+    test('create project fails.', async () => {
+        // mock
+        const project = { id: '001', name: 'hello' };
+        service.createProject.mockRejectedValue(new Error('Some error'));
+        firebase.saveProject.mockResolvedValue(Buffer.from(JSON.stringify(project)));
+
+        const res = await chai.request(server)
+            .post('/api/project')
+            .send(project);
+
+        expect(res.status).toEqual(500);
+    });
+
+    test('donation should success.', async () => {
+        // mock
+        service.donate.mockResolvedValue('Success.');
+
+        const res = await chai.request(server)
+            .post('/api/project/donate')
+            .send({ hi: 'hello' });
+
+        expect(res.status).toEqual(200);
+        expect(res.body).toEqual('Success.');
+    });
+
+    test('donation should fails.', async () => {
+        // mock
+        service.donate.mockRejectedValue(new Error('Some fails.'));
+
+        const res = await chai.request(server)
+            .post('/api/project/donate')
+            .send({ hi: 'hello' });
+
+        expect(res.status).toEqual(500);
+        expect(res.body.message).toEqual('Some fails.');
+    });
+
+    test('get all project should success.', async () => {
+        // mock
+        const projects = [mock.project];
+        service.getAllProjects.mockResolvedValue(Buffer.from(JSON.stringify(projects)));
+
+        const res = await chai.request(server)
+            .get('/api/project');
+
+        expect(res.status).toEqual(200);
+        expect(res.body).toEqual(projects);
+        expect(res.body.length).toEqual(1);
+    });
+
+    test('get all project should fails.', async () => {
+        // mock
+        service.getAllProjects.mockRejectedValue(new Error('Some error.'));
+
+        const res = await chai.request(server)
+            .get('/api/project');
+
+        expect(res.status).toEqual(500);
+        expect(res.body.message).toEqual('Some error.');
+    });
+
+    test('query should success.', async () => {
+        // mock
+        service.query.mockImplementation((key) => {
+            return Promise.resolve(Buffer.from(JSON.stringify({ key: key })));
+        });
+
+        const res = await chai.request(server)
+            .get('/api/query/001');
+
+        expect(res.status).toEqual(200);
+        expect(res.body).toEqual({ key: '001' });
+    });
+
+    test('query should fails.', async () => {
+        // mock
+        service.query.mockRejectedValue(new Error('Some error.'));
+
+        const res = await chai.request(server)
+            .get('/api/query/001');
+
+        expect(res.status).toEqual(500);
+        expect(res.body.message).toEqual('Some error.');
+    });
 
     afterEach(() => {
-        sinon.restore();
-    });
-
-    const serviceStub = {};
-    serviceStub.createProject = sinon.stub();
-    serviceStub.donate = sinon.stub();
-    serviceStub.getDonationHistory = sinon.stub();
-    serviceStub.getAllProjects = sinon.stub();
-    serviceStub.closeProject = sinon.stub();
-
-    const firebaseStub = {};
-    firebaseStub.saveProject = sinon.stub();
-
-    test('home', (done) => {
-        let project = mock.project;
-        serviceStub.createProject.withArgs(project).resolves(Buffer.from(JSON.stringify(project)));
-        serviceStub.getAllProjects.resolves(Buffer.from(JSON.stringify([project, project])));
-        serviceStub.closeProject.withArgs(project.id).resolves(Buffer.from('Success.'));
-        firebaseStub.saveProject.withArgs(project).resolves();
-        sinon.replace(service, 'createProject', serviceStub.createProject);
-        sinon.replace(service, 'getAllProjects', serviceStub.getAllProjects);
-        sinon.replace(service, 'closeProject', serviceStub.closeProject);
-        sinon.replace(firebase, 'saveProject', firebaseStub.saveProject);
-
-        chai.request(server)
-            .get('/api').end((err, res) => {
-                res.text.should.equal('Hello world! from home');
-                done();
-            });
-    });
-
-    test('create project success', (done) => {
-        let project = mock.project;
-        serviceStub.createProject.withArgs(project).resolves(Buffer.from(JSON.stringify(project)));
-        serviceStub.getAllProjects.resolves(Buffer.from(JSON.stringify([project, project])));
-        serviceStub.closeProject.withArgs(project.id).resolves();
-        firebaseStub.saveProject.withArgs(project).resolves();
-        sinon.replace(service, 'createProject', serviceStub.createProject);
-        sinon.replace(service, 'getAllProjects', serviceStub.getAllProjects);
-        sinon.replace(service, 'closeProject', serviceStub.closeProject);
-        sinon.replace(firebase, 'saveProject', firebaseStub.saveProject);
-
-        chai.request(server)
-            .post('/api/project')
-            .send(project)
-            .end((err, res) => {
-                console.log(res.status);
-                console.log(err);
-                res.status.should.equal(201);
-                expect(true).toEqual(true);
-                done();
-            });
+        jest.resetAllMocks()
     });
 });

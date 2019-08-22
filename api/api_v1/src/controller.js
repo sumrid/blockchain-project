@@ -216,44 +216,47 @@ exports.testGet = async (req, res) => {
     }
 }
 
-const schedlue = require('node-schedule');
+if (process.env.NODE_ENV !== 'test') {
+    console.log('[run conJob]');
+    const schedlue = require('node-schedule');
 
-/**
- * Check if the time has expired.  
- * เป็นฟังก์ชันที่จะทำงานทุกเที่ยงของทุกวัน
- * @private
- */
-// let job = schedlue.scheduleJob('0 12 * * *', async () => {
-//     results = await firebase.getProject();
-//     results.forEach(doc => {
-//         const project = doc.data();
-//         const now = moment().utc(true);                         // To local time
-//         const end = moment(project.endtime.toDate()).utc(true); // To local time
-//         const diff = end.diff(now);
-//         console.log(end.diff(now));
-//         if (diff <= 0) {
-//             try {
-//                 service.closeProject(project.id);
-//             } catch (err) {
-//                 console.error(err);
-//             }
-//         }
-//     });
-// });
+    /**
+     * Check if the time has expired.  
+     * เป็นฟังก์ชันที่จะทำงานทุกเที่ยงของทุกวัน
+     * @private
+     */
+    // let job = schedlue.scheduleJob('0 12 * * *', async () => {
+    //     results = await firebase.getProject();
+    //     results.forEach(doc => {
+    //         const project = doc.data();
+    //         const now = moment().utc(true);                         // To local time
+    //         const end = moment(project.endtime.toDate()).utc(true); // To local time
+    //         const diff = end.diff(now);
+    //         console.log(end.diff(now));
+    //         if (diff <= 0) {
+    //             try {
+    //                 service.closeProject(project.id);
+    //             } catch (err) {
+    //                 console.error(err);
+    //             }
+    //         }
+    //     });
+    // });
 
-// Interval
-// [test]
-schedlue.scheduleJob('*/10 * * * * *', async () => {
-    const results = await service.getAllProjects();
-    const projects = JSON.parse(String(results));
-    projects.forEach((p) => {
-        if (p.status != 'closed') {
-            const endtime = moment(p.endtime, moment.ISO_8601);
-            console.log(endtime.toISOString() + ' ' + endtime.fromNow());
-            if (endtime.diff(moment()) <= 0) {
-                console.log(endtime.diff(moment()));
-                service.closeProject(p.id); // ทำการปิดโปรเจค
+    // Interval
+    // [test]
+    schedlue.scheduleJob('*/10 * * * * *', async () => {
+        const results = await service.getAllProjects();
+        const projects = JSON.parse(String(results));
+        projects.forEach((p) => {
+            if (p.status != 'closed') {
+                const endtime = moment(p.endtime, moment.ISO_8601);
+                console.log(endtime.toISOString() + ' ' + endtime.fromNow());
+                if (endtime.diff(moment()) <= 0) {
+                    console.log(endtime.diff(moment()));
+                    service.closeProject(p.id); // ทำการปิดโปรเจค
+                }
             }
-        }
+        });
     });
-});
+}

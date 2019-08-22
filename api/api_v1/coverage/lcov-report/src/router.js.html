@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Code coverage report for src/main.js</title>
+    <title>Code coverage report for src/router.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../prettify.css" />
     <link rel="stylesheet" href="../base.css" />
@@ -16,13 +16,13 @@
 <div class='wrapper'>
   <div class='pad1'>
     <h1>
-      <a href="../index.html">All files</a> / <a href="index.html">src</a> main.js
+      <a href="../index.html">All files</a> / <a href="index.html">src</a> router.js
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>16/16</span>
+        <span class='fraction'>18/18</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -37,7 +37,7 @@
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>16/16</span>
+        <span class='fraction'>18/18</span>
       </div>
     </div>
     <p class="quiet">
@@ -68,72 +68,57 @@
 <a name='L20'></a><a href='#L20'>20</a>
 <a name='L21'></a><a href='#L21'>21</a>
 <a name='L22'></a><a href='#L22'>22</a>
-<a name='L23'></a><a href='#L23'>23</a>
-<a name='L24'></a><a href='#L24'>24</a>
-<a name='L25'></a><a href='#L25'>25</a>
-<a name='L26'></a><a href='#L26'>26</a>
-<a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<a name='L23'></a><a href='#L23'>23</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const morgan = require('morgan');
+const router = express.Router();
+const contorller = require('./controller');
 &nbsp;
-require('custom-env').env(true); // read from NODE_ENV
-// require('./config/db');
-// require('./config/firebase');
+router.post('/project', contorller.createProject);
+router.get('/project', contorller.getAllProjects);
+router.post('/project/donate', contorller.donate);
+router.get('/query/:key', contorller.query);
+router.get('/project/history/:key', contorller.getHistory);
+router.get('/project/donations/:key', contorller.getDonationHistory);
 &nbsp;
-const server = express();
-const hostname = '0.0.0.0';
-const port = 8000;
+router.post('/project/donate/qr', contorller.createQR);   // v2 ออก QRcode promptpay 
+router.post('/project/donate/readqr', contorller.readQR); // บริจาคและลบ QRcode
+router.post('/project/donate/qr/v2', contorller.createQrDonation); // genQR + firebase
+router.post('/project/donate/qr/v3', contorller.createQRv3); // v3 ออกQR เป็นแบบ Url
 &nbsp;
-// Use middlerware
-server.use(cors());
-server.use(bodyParser.json())
-server.use(bodyParser.urlencoded({ extended : true, useNewUrlParser: true }));
-server.use(morgan('combined'));
-&nbsp;
-// Add router
-server.use('/api', require('./router'));
-&nbsp;
-// Start server
-server.listen(port, hostname, () =&gt; {
-    console.log(`express server is running on port: ${port}`);
+router.post('/test', contorller.testSave);
+router.post('/testget', contorller.testGet);
+router.get('/', (req, res) =&gt; {
+    res.send('Hello world! from home');
 });
 &nbsp;
-module.exports = server;</pre></td></tr>
+module.exports = router;</pre></td></tr>
 </table></pre>
 <div class='push'></div><!-- for sticky footer -->
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Aug 22 2019 16:56:36 GMT+0700 (Indochina Time)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Aug 22 2019 14:44:33 GMT+0700 (Indochina Time)
 </div>
 </div>
 <script src="../prettify.js"></script>
