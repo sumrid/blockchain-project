@@ -69,6 +69,7 @@
 
 <script>
 const auth = require("../firebase");
+
 export default {
   data() {
     return {

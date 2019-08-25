@@ -1,28 +1,77 @@
-const firebase = require('firebase/app');
-require('firebase/auth');
-require('firebase/firestore');
+// const firebase = require('firebase/app');
+// require('firebase/auth');
+// require('firebase/firestore');
 
-const firebaseConfig = {
-apiKey: "AIzaSyAPX4I7LmVTw6PulG1t8NjFzyEU9uB4F5o",
-    authDomain: "donachain-1107.firebaseapp.com",
-    databaseURL: "https://donachain-1107.firebaseio.com",
-    projectId: "donachain-1107",
-    storageBucket: "donachain-1107.appspot.com",
-    messagingSenderId: "906687292873",
-    appId: "1:906687292873:web:eb7ae3452a034641"
-};
+// firebase.initializeApp(firebaseConfig);
+// const db = firebase.firestore();
 
-firebase.initializeApp(firebaseConfig);
+// Init firebase
+require('./config');
+const admin = require('firebase-admin');
+const db = admin.firestore();
+const auth = admin.auth();
 
-exports.getProfile = async (email, password) => {
-    const user = await firebase.auth().signInWithEmailAndPassword(email, password);
-    return user.user;
+async function getProfile(email, password) {
+    try {
+        const user = await auth.getUserByEmail(email);
+        return user;
+    } catch (err) {
+        throw err;
+    }
 }
 
-exports.regisUser = async (email, password, name) => {
-    const user = await firebase.auth().createUserWithEmailAndPassword(email, password);
-    await user.user.updateProfile({
-        displayName: name
-    });
-    return user.user;
+/**
+ * 
+ * @param {string} email 
+ * @param {string} password 
+ * @param {string} name 
+ */
+async function regisUser(email, password, name) {
+    try {
+        const user = await auth.createUser({
+            email: email,
+            password: password,
+            displayName: name
+        });
+        return user;
+    } catch (err) {
+        throw err;
+    }
+}
+
+/**
+ * setUserRole สร้างข้อมูลผู้ใช้เก็บลง firestore
+ * @param {string} uid 
+ * @param {string[]} role 
+ */
+async function setUserRole(uid, role) {
+    const data = {
+        uid: uid,
+        role: role
+    }
+    try {
+        await db.collection('users').doc(uid).set(data);
+    } catch (err) {
+        throw err;
+    }
+}
+
+/**
+ * updateUserRole
+ * @param {string} uid 
+ * @param {string[]} role 
+ */
+async function updateUserRole(uid, role) {
+    try {
+        await db.collection('users').doc(uid).update({ role: role });
+    } catch (err) {
+        throw err;
+    }
+}
+
+module.exports = {
+    regisUser,
+    setUserRole,
+    updateUserRole,
+    getProfile
 }

@@ -359,7 +359,6 @@ func (C *Chaincode) queryDonationByUserID(stub shim.ChaincodeStubInterface, args
 		return shim.Error(err.Error())
 	}
 
-	// TODO หาประวัติการบริจาคของ user
 	var donations []Donation
 	for _, dByte := range results {
 		d := Donation{}

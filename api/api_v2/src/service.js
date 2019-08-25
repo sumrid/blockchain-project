@@ -320,6 +320,7 @@ exports.queryTx = async (txID) => {
     }
 }
 
+// Exports for testing
 if (process.env.NODE_ENV === 'test') {
     exports.getContractOrg1 = getContractOrg1;
 }

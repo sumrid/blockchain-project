@@ -40,7 +40,15 @@ exports.registerCreator = async (userID) => {
         throw err;
     }
 }
-
+/**
+ * register **ทำการลงทะเบียนแล้วเก็บ key ไว้ใน wallet**
+ * @param {string} userID uid ของผู้ใช้งาน
+ * @param {string} admin admin name
+ * @param {string} msp ชื่อ MSP
+ * @param {string} walletName wallet name
+ * @param {string} affiliation ...
+ * @param {*} ccp connection profile
+ */
 async function register(userID, admin, msp, walletName, affiliation, ccp) {
     try {
         // Create a new file system based wallet for managing identities.

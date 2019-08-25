@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1566467796058" clover="3.2.0">
-  <project timestamp="1566467796059" name="All files">
-    <metrics statements="377" coveredstatements="141" conditionals="33" coveredconditionals="5" methods="44" coveredmethods="6" elements="454" coveredelements="152" complexity="0" loc="377" ncloc="377" packages="3" files="7" classes="7"/>
+<coverage generated="1566645338602" clover="3.2.0">
+  <project timestamp="1566645338602" name="All files">
+    <metrics statements="377" coveredstatements="148" conditionals="33" coveredconditionals="6" methods="44" coveredmethods="7" elements="454" coveredelements="161" complexity="0" loc="377" ncloc="377" packages="3" files="7" classes="7"/>
     <package name="src">
-      <metrics statements="373" coveredstatements="137" conditionals="33" coveredconditionals="5" methods="44" coveredmethods="6"/>
+      <metrics statements="373" coveredstatements="144" conditionals="33" coveredconditionals="6" methods="44" coveredmethods="7"/>
       <file name="controller.js" path="/home/sumrid/project/api/api_v2/src/controller.js">
         <metrics statements="137" coveredstatements="53" conditionals="12" coveredconditionals="0" methods="19" coveredmethods="4"/>
         <line num="1" count="1" type="stmt"/>
@@ -223,7 +223,7 @@
         <line num="59" count="0" type="stmt"/>
       </file>
       <file name="service.js" path="/home/sumrid/project/api/api_v2/src/service.js">
-        <metrics statements="167" coveredstatements="35" conditionals="21" coveredconditionals="5" methods="18" coveredmethods="0"/>
+        <metrics statements="167" coveredstatements="42" conditionals="21" coveredconditionals="6" methods="18" coveredmethods="1"/>
         <line num="1" count="2" type="stmt"/>
         <line num="2" count="2" type="stmt"/>
         <line num="3" count="2" type="stmt"/>
@@ -246,17 +246,17 @@
         <line num="25" count="2" type="stmt"/>
         <line num="26" count="2" type="stmt"/>
         <line num="27" count="2" type="stmt"/>
-        <line num="37" count="0" type="stmt"/>
-        <line num="38" count="0" type="stmt"/>
-        <line num="39" count="0" type="stmt"/>
-        <line num="42" count="0" type="stmt"/>
-        <line num="43" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="44" count="0" type="stmt"/>
+        <line num="37" count="1" type="stmt"/>
+        <line num="38" count="1" type="stmt"/>
+        <line num="39" count="1" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
+        <line num="43" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="44" count="1" type="stmt"/>
         <line num="46" count="0" type="stmt"/>
         <line num="47" count="0" type="stmt"/>
         <line num="48" count="0" type="stmt"/>
         <line num="49" count="0" type="stmt"/>
-        <line num="51" count="0" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
         <line num="56" count="0" type="stmt"/>
         <line num="57" count="0" type="stmt"/>
         <line num="58" count="0" type="stmt"/>
@@ -389,8 +389,8 @@
         <line num="316" count="0" type="stmt"/>
         <line num="317" count="0" type="stmt"/>
         <line num="319" count="0" type="stmt"/>
-        <line num="323" count="2" type="cond" truecount="1" falsecount="1"/>
-        <line num="324" count="2" type="stmt"/>
+        <line num="324" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="325" count="2" type="stmt"/>
       </file>
     </package>
     <package name="src.config">

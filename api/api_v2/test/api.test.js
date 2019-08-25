@@ -19,7 +19,6 @@ describe('test controller', () => {
     test('get hello world message.', async () => {
         try {
             const res = await chai.request(server).get('/api');
-            console.log(res.body);
             expect(res.status).toEqual(200);
             expect(res.text).toEqual('Hello world! from home');
         } catch (err) {

@@ -33,7 +33,7 @@
 // @ is an alias to /src
 // import HelloWorld from "@/components/HelloWorld.vue";
 const moment = require("moment");
-import service from '../service'
+import service from '../service';
 
 moment.locale("th");
 
