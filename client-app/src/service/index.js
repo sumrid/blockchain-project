@@ -24,6 +24,15 @@ async function getProjects() {
     }
 }
 
+async function getProjectByID(id) {
+    try {
+        const res = await axios.get(SERVICE_URL + '/api/query/' + id);
+        return res.data;
+    } catch (err) {
+        throw err;
+    }
+}
+
 /**
  * @function
  * donate ทำการบริจาคไปยังโครงการที่ต้องการ
@@ -64,6 +73,7 @@ async function getUserInfo(uid) {
 export default {
     createProject,
     getProjects,
+    getProjectByID,
     donate,
     getDonationHistory,
     getUserInfo

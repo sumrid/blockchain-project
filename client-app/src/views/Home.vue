@@ -33,7 +33,8 @@
 // @ is an alias to /src
 // import HelloWorld from "@/components/HelloWorld.vue";
 const moment = require("moment");
-import service from '../service';
+import service from "../service";
+import socket from '../service/socket';
 
 moment.locale("th");
 
@@ -70,6 +71,9 @@ export default {
     setInterval(() => {
       this.time = moment().format("LTS");
     }, 1000);
+    socket.on("reload", async () => {
+      this.projects = await service.getProjects();
+    });
   }
 };
 </script>

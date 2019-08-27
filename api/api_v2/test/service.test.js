@@ -7,6 +7,12 @@ const serJest = require('../src/service')
 
 describe('service test', () => {
 
+    afterEach(() => {
+        // jest.clearAllMocks();
+        jest.resetAllMocks();
+        // jest.restoreAllMocks();
+    })
+
     test('query should success.', async () => {
         // mock contract
         let contract = {};
@@ -45,5 +51,25 @@ describe('service test', () => {
         await expect(serJest.getContractOrg1(user))
             .rejects
             .toThrow(`An identity for the user "${user}" does not exist in the wallet`);
+    });
+
+    test('getContractOrg2 fails (user identity does not exist).', async () => {
+        const user = 'some-user';
+        await expect(serJest.getContractOrg2(user))
+            .rejects
+            .toThrow(`An identity for the user "${user}" does not exist in the wallet`);
+    });
+
+    test('test constant is valid', () => {
+        expect(serJest.FN_CLOSE_PROJECT).toEqual('closeProject');
+        expect(serJest.FN_CREATE_PROJECT).toEqual('createProject');
+        expect(serJest.FN_DONATE).toEqual('donate');
+        expect(serJest.FN_GET_DONATE_HISTORY).toEqual('getDonationHistory');
+        expect(serJest.FN_GET_DONATION_BY_USERID).toEqual('queryDonationByUserID');
+        expect(serJest.FN_GET_HISTORY).toEqual('getHistory');
+        expect(serJest.FN_QUERY).toEqual('query');
+        expect(serJest.FN_QUERY_PROJECTS).toEqual('queryAllProjects');
+        expect(serJest.CHANNEL).toEqual('mychannel-1');
+        expect(serJest.CONTRACT).toEqual('mychaincode');
     });
 });

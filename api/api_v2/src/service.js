@@ -323,4 +323,15 @@ exports.queryTx = async (txID) => {
 // Exports for testing
 if (process.env.NODE_ENV === 'test') {
     exports.getContractOrg1 = getContractOrg1;
+    exports.getContractOrg2 = getContractOrg2;
+    exports.FN_CLOSE_PROJECT = FN_CLOSE_PROJECT;
+    exports.FN_CREATE_PROJECT = FN_CREATE_PROJECT;
+    exports.FN_DONATE = FN_DONATE;
+    exports.FN_GET_DONATE_HISTORY = FN_GET_DONATE_HISTORY;
+    exports.FN_GET_DONATION_BY_USERID = FN_GET_DONATION_BY_USERID;
+    exports.FN_GET_HISTORY = FN_GET_HISTORY;
+    exports.FN_QUERY = FN_QUERY;
+    exports.FN_QUERY_PROJECTS = FN_QUERY_PROJECTS;
+    exports.CHANNEL = CHANNEL;
+    exports.CONTRACT = CONTRACT;
 }

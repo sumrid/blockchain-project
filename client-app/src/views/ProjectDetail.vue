@@ -57,6 +57,7 @@
           ></span>
           Submit
         </button>
+        <p>{{form}}</p>
         <p v-if="error">{{error}}</p>
       </form>
       <div class="col">
@@ -80,10 +81,13 @@
 <script>
 // const generatePayload = require("promptpay-qr");
 // const qrcode = require("qrcode");
-import auth from '../firebase';
+import auth from "../firebase";
 const axios = require("axios");
 const util = require("../util");
 const API_IP = util.API_IP;
+
+import socket from "../service/socket";
+import service from "../service";
 
 export default {
   data() {
@@ -91,8 +95,8 @@ export default {
       project: {},
       donations: {},
       form: {
-        user: "",
-        displayname: "",
+        user: "", // user uid
+        displayname: "", // user displayName
         amount: ""
       },
       currentUser: null,
@@ -130,7 +134,7 @@ export default {
       this.loading = true;
       let donation = {
         user: this.form.user, // TODO ใช้เป็น userid แทนในการเก็บลอง blockchain
-        project: this.$route.params.id,
+        project: this.$route.params.id, // ID ของโครงการ
         amount: this.form.amount,
         displayname: this.form.displayname
       };
@@ -145,6 +149,7 @@ export default {
         this.loading = false;
         this.getDetail(donation.project);
         this.getDontions(donation.project);
+        socket.emit("donate");
       } catch (err) {
         this.loading = false;
         this.error = err;
@@ -160,6 +165,7 @@ export default {
         this.qrmessage = "พร้อมเพย์ สามารถแสกนได้ผ่านทาง application ของธนาคาร";
       } else if (version == 2) {
         URL = `http://${API_IP}:8000/api/project/donate/qr/v2`;
+        this.qrmessage = "";
       } else {
         URL = `http://${API_IP}:8000/api/project/donate/qr/v3`;
         this.qrmessage = "แสกนโดยใช้มือถือของท่าน";
@@ -167,7 +173,7 @@ export default {
       axios.default
         .post(URL, {
           amount: a || 50,
-          user: this.form.user, // TODO change to user id เมื่อสมัครfirebase
+          user: this.form.user, // UID ของผู้ใช้งาน
           displayname: this.form.displayname,
           project: this.project.id
         })
@@ -179,16 +185,22 @@ export default {
   },
   mounted() {
     // Check user
-    auth.onAuthStateChanged((user) => {
+    auth.onAuthStateChanged(user => {
       if (user) {
         this.currentUser = user;
         this.form.displayname = user.displayName;
-        this.form.user = user.uid;
+        this.form.user = user.uid; // UID of user.
         console.log("changed: " + JSON.stringify(user));
       } else {
         this.form.user = "";
       }
-    })
+    });
+    // Event listener
+    socket.on("reload", async () => {
+      this.project = await service.getProjectByID(this.project.id);
+      this.donations = await service.getDonationHistory(this.project.id);
+      console.log("reloaded.");
+    });
   },
   created() {
     // Get project and donation list

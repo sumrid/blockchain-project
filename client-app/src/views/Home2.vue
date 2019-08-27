@@ -1,71 +1,5 @@
 <template>
   <div>
-    <!-- <nav class="navbar navbar-inverse">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button
-            type="button"
-            class="navbar-toggle"
-            data-toggle="collapse"
-            data-target="#myNavbar"
-          >
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="home.html">DoWeb</a>
-        </div>
-        <div class="collapse navbar-collapse" id="myNavbar">
-          <ul class="nav navbar-nav">
-            <li class="active">
-              <a href="#">หน้าแรก</a>
-            </li>
-            <li class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                โครงการ
-                <span class="caret"></span>
-              </a>
-              <ul class="dropdown-menu">
-                <li>
-                  <a href="#">เร่งด่วน</a>
-                </li>
-                <li>
-                  <a href="#">การศึกษา</a>
-                </li>
-                <li>
-                  <a href="#">สิ่งแวดล้อม</a>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <a href="#">ความเคลื่อนไหว</a>
-            </li>
-            <li>
-              <a href="#">ติดต่อเรา</a>
-            </li>
-          </ul>
-          <ul class="nav navbar-nav">
-            <li>
-              <input type="text" name="search" placeholder="Search.." />
-            </li>
-          </ul>
-          <button class="btn btn-success" type="submit">Search</button>
-          <ul class="nav navbar-nav navbar-right">
-            <li>
-              <a href="#">
-                <span class="glyphicon glyphicon-user"></span> Sign Up
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <span class="glyphicon glyphicon-log-in"></span> Login
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>-->
-
     <!-- Clarity Section -->
     <div class="container" style="background-color:#f1f1f1">
       <div class="row">
@@ -94,7 +28,7 @@
     <!-- สร้างคอลัมน์ ซ้าย กลาง ขวา -->
     <div class="container">
       <div class="row">
-        <div class="col-sm-4">
+        <div class="col-sm-4" v-for="p in projects" :key="p.id">
           <div class="card">
             <img
               src="https://qph.fs.quoracdn.net/main-qimg-5cb8123242dfc2b4d146c6ae154a30a0"
@@ -102,18 +36,14 @@
               width="500"
               height="200"
             />
-            <h3>โครงการ อาหารกลางวันเพื่อแมวจรจัด</h3>
+            <h3>{{p.title}}</h3>
             <p>ในชีวิตคุณ คงจะมีหลายครั้งที่คุณเจอแมวถูกทิ้งและแมวจรจัด สัตว์ที่อาศัยอยู่นอกบ้านเหล่านี้ทำบุญกับใครไม่ค่อยขึ้น ไม่ว่าคุณจะเห็นมันหลังบ้านของคุณ รอบ ๆ ที่ทำงาน สวนสาธารณะ หรือขณะเดินทางไปต่างประเทศ</p>
-
-            <a
-              href="file:///C:/Users/User/Desktop/internproject/Front%20page/projectpage.html#"
-              title="eduation"
-            >
+            <router-link :to="{ name: 'detail', params: { id: p.id }}">
               <button type="button" class="btn btn-outline-secondary">Read more</button>
-            </a>
+            </router-link>
           </div>
         </div>
-        <div class="col-sm-4">
+        <!-- <div class="col-sm-4">
           <div class="card">
             <img
               src="https://www.matichon.co.th/wp-content/uploads/2018/07/%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%9E%E0%B8%A2%E0%B8%B2%E0%B8%9A%E0%B8%B2%E0%B8%A5%E0%B9%80%E0%B8%95%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%A1-1.jpg"
@@ -144,7 +74,7 @@
               <button type="button" class="btn btn-outline-secondary">Read more</button>
             </a>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
     <!-- Footer -->
@@ -292,6 +222,49 @@
   </div>
   <!-- main div -->
 </template>
+
+<script>
+const moment = require("moment");
+import service from "../service";
+
+moment.locale("th");
+
+export default {
+  name: "home",
+  components: {
+    // HelloWorld
+  },
+  data() {
+    return {
+      projects: [],
+      time: moment().format("LTS")
+    };
+  },
+  async beforeCreate() {
+    // Get project list
+    this.projects = await service.getProjects();
+  },
+  methods: {
+    updateTime: function(end) {
+      const endtime = moment(end, moment.ISO_8601);
+      return endtime.fromNow();
+    },
+    isTimeExpired: function(endtime) {
+      return moment(endtime, moment.ISO_8601).diff(moment()) <= 0
+        ? "table-danger"
+        : "";
+    },
+    onDecode(result) {
+      this.result = result;
+    }
+  },
+  mounted() {
+    setInterval(() => {
+      this.time = moment().format("LTS");
+    }, 1000);
+  }
+};
+</script>
 
 <style scoped>
 /* @import 'https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css';
