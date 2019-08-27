@@ -3,7 +3,7 @@ jobs:
   api-test:
     docker:
       - image: circleci/node:8.10
-    working_directory: ~/project/api/api_v1
+    working_directory: ~/project/api/api_v2
 
     steps:
       - checkout:

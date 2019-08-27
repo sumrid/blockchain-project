@@ -7,6 +7,7 @@ import QRCodeReader from './views/QRCodeReader.vue';
 import ConfirmDonation from './views/ConfirmDonation.vue';
 import CreateProject from './views/CreateProject.vue';
 import HomeV2 from './views/Home2.vue'
+import ProjectDetail2 from './views/ProjectDetail2.vue';
 
 Vue.use(Router)
 
@@ -28,7 +29,7 @@ export default new Router({
     {
       path: '/detail/:id',
       name: 'detail',
-      component: ProjectDetail
+      component: ProjectDetail2
     },
     {
       path: '/qr',
@@ -49,6 +50,11 @@ export default new Router({
       path: '/v2',
       name: 'homev2',
       component: HomeV2
+    },
+    {
+      path: '/detail/:id/v2',
+      name: 'detailv2',
+      component: ProjectDetail2
     }
   ]
 })
