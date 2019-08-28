@@ -12,9 +12,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package.json" }}
+            - api-dependencies-{{ checksum "package.json" }}
             # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+            - api-dependencies-
 
       - run: npm install
       # - run: sudo npm install -g codecov
@@ -22,7 +22,7 @@ jobs:
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+          key: api-dependencies-{{ checksum "package.json" }}
 
       - run:
           name: run tests
@@ -66,11 +66,19 @@ jobs:
     steps:
       - checkout:
           path: ~/project
+      - restore_cache:
+          keys:
+            - chaincode-pkg-{{ checksum "go.sum" }}
+            - chaincode-pkg-
       - run:
           name: Install dependencies
           command: |
             go mod tidy
             go mod download
+      - save_cache:
+          key: chaincode-pkg-{{ checksum "go.sum" }}
+          paths:
+            - "/go/pkg/mod"
       - run:
           name: Test chaincode
           command: |
