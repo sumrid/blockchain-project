@@ -54,7 +54,7 @@ async function getContractOrg1(user) {
 
 async function getContractOrg2(user) {
     try {
-        const walletPath = path.join(process.cwd(), '..', 'wallet1');
+        const walletPath = path.join(process.cwd(), '..', 'wallet2');
         const wallet = new FileSystemWallet(walletPath);
 
         // ตรวจสอบ user ว่ามีอยู่ใน wallet ไหม

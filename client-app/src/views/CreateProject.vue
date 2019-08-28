@@ -24,7 +24,13 @@
           </div>
           <div class="form-group">
             <label>จำนวนเงิน</label>
-            <input class="form-control" placeholder="จำนวน" required type="number" v-model="form.goal" />
+            <input
+              class="form-control"
+              placeholder="จำนวน"
+              required
+              type="number"
+              v-model="form.goal"
+            />
           </div>
           <div class="form-group">
             <label>รายละเอียด</label>
@@ -70,9 +76,11 @@
 import Datepicker from "vuejs-datepicker";
 import VueTagsInput from "@johmun/vue-tags-input";
 import { th } from "vuejs-datepicker/dist/locale";
-import service from '../service';
+import service from "../service";
 import moment from "moment";
 import { DATE_LAYOUT } from "../util";
+import { mapGetters, mapState } from "vuex";
+import auth from '../firebase';
 
 export default {
   components: {
@@ -85,7 +93,7 @@ export default {
         tags: [],
         title: "",
         detail: "",
-        owner: "user1",
+        owner: '',
         goal: null,
         receiver: "",
         date: ""
@@ -99,9 +107,17 @@ export default {
       th: th
     };
   },
+  computed: {
+    ...mapGetters([
+      'getUser'
+    ]),
+    ...mapState([
+      'user'
+    ])
+  },
   methods: {
     onSubmit: async function() {
-      this.isLoading = true
+      this.isLoading = true;
       try {
         this.form.endtime = moment(this.form.date).format(DATE_LAYOUT);
         const res = await service.createProject(this.form);
@@ -112,7 +128,16 @@ export default {
         this.isLoading = false;
       }
     }
-  }
+  },
+  mounted() {
+    auth.onAuthStateChanged((user)=>{
+      if (user) {
+        this.form.owner = user.uid;
+      } else {
+        this.form.owner = '';
+      }
+    })
+  },
 };
 </script>
 

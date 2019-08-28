@@ -43,7 +43,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#" @click="showModal">
+          <a class="nav-link" href="" @click.prevent="showModal">
             <icon icon="sign-in-alt" />Login
           </a>
         </li>
@@ -51,10 +51,10 @@
 
       <ul class="nav navbar-nav navbar-right" v-if="getUser">
         <li class="nav-item">
-          <a class="nav-link" href="#">{{getUser.displayName}}</a>
+          <a class="nav-link">{{getUser.displayName}}</a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link" @click="logout">
+          <a class="nav-link" href="" @click.prevent="logout">
             <icon :icon="icon.signout" />Logout
           </a>
         </li>

@@ -85,7 +85,9 @@
           <b-table striped hover :items="donations" :fields="fields"></b-table>
         </div>
       </div>
+    </div>
 
+    <div class="row">
       <div class="col" id="donate">
         <div v-if="project.status != 'closed'">
           <h3>ร่วมบริจาค</h3>
@@ -144,6 +146,7 @@
         </div>
       </div>
     </div>
+
     <div class="row">
       <div class="col-4">
         <div class="cardprofile">
