@@ -7,28 +7,24 @@
     </div>
     <div class="row">
       <div class="col-lg-8" style="background-color:#ececec;">
-        <div class="container">
+        <div class="row justify-content-center">
           <b-img
             src="https://qph.fs.quoracdn.net/main-qimg-5cb8123242dfc2b4d146c6ae154a30a0"
             alt="manycat"
             fluid
           />
-          <br />
-          <br />
-          <br />
-          <div>
-            <p style="font-family:RSU;">
-              ....แมวจรจัดคือแมวที่เกิดในป่าหรือนอกบ้านโดยมีความสัมพันธุ์กับมนุษย์น้อยมาก ถ้าคุณพยายามเข้าใกล้มันหรือลูบคลำมัน
-              แมวจรจัดเห็นว่ามือของคุณคล้ายกับอุ้งมือที่สามารถทำร้ายมันได้ มันจะขู่คุณและวิ่งหนีไป แมวจรจัดเกิดจากแมวจรจัดหรือจากแมวถูกทิ้งตัวอื่น ๆ
-              อะไรคือความแตกต่างระหว่างแมวทั้งสองประเภทนี้ แมวถูกทิ้งเคยเป็นสัตว์เลี้ยงมาก่อนจนกระทั่งหายออกจากบ้านหรือถูกทิ้งจากเจ้าของ
-              ขณะที่มันกระเสือกกระสนที่จะมีชีวิตรอดในสภาวะแวดล้อมใหม่นอกบ้าน แมวถูกทิ้งบางตัวกลายเป็นแมวที่กลัวคน แม้กระทั่งได้ติดนิสัยแมวจรจัดมาหลังจากที่ออกมาอยู่นอกบ้านได้สักพักหนึ่ง
-              ขึ้นอยู่กับสภาพแวดล้อม อย่างไรก็ตาม แมวถูกทิ้งส่วนมากจำได้ว่ามนุษย์เคยให้อาหารมันและพยายามที่จะอยู่ใกล้อดีตบ้านของตน ที่จอดรถ และบริเวณอื่นที่มนุษย์ใช้ชีวิตอยู่
-            </p>
+        </div>
+        <br />
+        <br />
+        <br />
+        <div class="row">
+          <div class="col">
+            <div v-html="info.detail" style="font-family:RSU;"></div>
           </div>
         </div>
       </div>
       <!-- Donate card -->
-      <div class="col-lg-4">
+      <div class="col-lg-4 text-center">
         <div class="card">
           <div class="progressvalue">
             <p>ยอดขณะนี้</p>
@@ -75,12 +71,12 @@
       </div>
     </div>
     <div class="row">
-      <div class="col">
+      <div class="col text-center">
         <h3>ประวัติการบริจาค</h3>
       </div>
     </div>
     <div class="row">
-      <div class="col">
+      <div class="col text-center">
         <div class="row">
           <b-table striped hover :items="donations" :fields="fields"></b-table>
         </div>
@@ -88,7 +84,7 @@
     </div>
 
     <div class="row">
-      <div class="col" id="donate">
+      <div class="col text-center" id="donate">
         <div v-if="project.status != 'closed'">
           <h3>ร่วมบริจาค</h3>
           <form @submit.prevent="onSubmit">
@@ -177,7 +173,6 @@ import auth from "../firebase";
 const axios = require("axios");
 const util = require("../util");
 const API_IP = util.API_IP;
-
 import socket from "../service/socket";
 import service from "../service";
 
@@ -186,6 +181,7 @@ export default {
     return {
       project: {},
       donations: {},
+      info: {},
       form: {
         user: "", // user uid
         displayname: "", // user displayName
@@ -230,22 +226,27 @@ export default {
   },
   methods: {
     getDetail: function(ID) {
-      axios.default.get(`http://${API_IP}:8000/api/query/` + ID).then(res => {
-        this.project = res.data;
+      // from block
+      service.getProjectByID(ID).then(project => {
+        console.log("get data from block");
+        this.project = project;
+      });
+      // from DB
+      service.getProjectInfo(ID).then(info => {
+        console.log("get data from DB");
+        console.log(info);
+        this.info = info;
       });
     },
     getDontions: function(ID) {
-      axios.default
-        .get(`http://${API_IP}:8000/api/project/donations/` + ID)
-        .then(res => {
-          console.log(res.data);
-          this.donations = res.data;
-        });
+      service.getDonationHistory(ID).then(donations => {
+        this.donations = donations;
+      });
     },
     onSubmit: async function() {
       this.loading = true;
       let donation = {
-        user: this.form.user, // TODO ใช้เป็น userid แทนในการเก็บลอง blockchain
+        user: this.form.user,
         project: this.$route.params.id, // ID ของโครงการ
         amount: this.form.amount,
         displayname: this.form.displayname
@@ -308,26 +309,17 @@ export default {
       }
     });
     // Event listener
-    socket.on("reload", async () => {
-      this.project = await service.getProjectByID(this.project.id);
-      this.donations = await service.getDonationHistory(this.project.id);
+    socket.on("reload", () => {
+      this.getDetail(this.project.id);
+      this.getDontions(this.project.id);
       console.log("reloaded.");
     });
   },
   created() {
     // Get project and donation list
     const p_id = this.$route.params.id;
-    axios.default.get(`http://${API_IP}:8000/api/query/` + p_id).then(res => {
-      console.log(res.data);
-      this.project = res.data;
-    });
-
-    axios.default
-      .get(`http://${API_IP}:8000/api/project/donations/` + p_id)
-      .then(res => {
-        console.log(res.data);
-        this.donations = res.data;
-      });
+    this.getDetail(p_id);
+    this.getDontions(p_id);
   }
 };
 </script>

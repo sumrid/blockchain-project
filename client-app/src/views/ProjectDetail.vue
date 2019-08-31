@@ -133,7 +133,7 @@ export default {
     onSubmit: async function() {
       this.loading = true;
       let donation = {
-        user: this.form.user, // TODO ใช้เป็น userid แทนในการเก็บลอง blockchain
+        user: this.form.user,
         project: this.$route.params.id, // ID ของโครงการ
         amount: this.form.amount,
         displayname: this.form.displayname

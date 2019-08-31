@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row">
       <div class="col">
-        <H1>เพิ่มโครงการ</H1>
+        <H1 class="text-center">เพิ่มโครงการ</H1>
       </div>
     </div>
     <div class="row">
@@ -10,10 +10,15 @@
         <form @submit.prevent="onSubmit" class="textleft">
           <div class="form-group">
             <label>ชื่อโครงการ</label>
-            <b-form-input type="text" placeholder="ใส่ชื่อโครงการ!!" required v-model="form.title"></b-form-input>
+            <input
+              class="form-control"
+              placeholder="ใส่ชื่อโครงการ!!"
+              required
+              v-model="form.title"
+            />
           </div>
           <div class="form-group">
-            <label for="exampleFormControlFile1">รูป</label>
+            <label for="exampleFormControlFile1">รูปหลัก</label>
             <b-form-file
               v-model="file"
               :state="Boolean(file)"
@@ -23,7 +28,7 @@
             ></b-form-file>
           </div>
           <div class="form-group">
-            <label>จำนวนเงิน</label>
+            <label>จำนวนเงินที่ต้องการ</label>
             <input
               class="form-control"
               placeholder="จำนวน"
@@ -32,14 +37,30 @@
               v-model="form.goal"
             />
           </div>
+          <!-- <div class="form-group"> -->
+          <b-form-group label="ผู้ที่ทำการรับเงินจากโครงการนี้">
+            <b-form-input
+              class="form-control"
+              v-model="receiverInput"
+              :state="Boolean(this.isReceiver)"
+              placeholder="กรุณาใส่ id หรือ email ของผู้รับ"
+              trim
+              type="email"
+            ></b-form-input>
+            <b-form-invalid-feedback v-if="!isReceiver">ไม่มีผู้ใช้นี้</b-form-invalid-feedback>
+          </b-form-group>
+          <!-- </div> -->
           <div class="form-group">
             <label>รายละเอียด</label>
-            <textarea
-              class="form-control"
-              id="exampleFormControlTextarea1"
-              rows="10"
-              v-model="form.detail"
-            ></textarea>
+            <vue-editor useCustomImageHandler @image-added="uploadImage" v-model="form.detail"></vue-editor>
+            <p v-if="isUploading">
+              Uploading...
+              <span
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="false"
+              ></span>
+            </p>
           </div>
           <div class="form-group">
             <label for="date">เลือกวันสิ้นสุดโครงการ</label>
@@ -74,18 +95,21 @@
 
 <script>
 import Datepicker from "vuejs-datepicker";
+import { VueEditor } from "vue2-editor";
 import VueTagsInput from "@johmun/vue-tags-input";
 import { th } from "vuejs-datepicker/dist/locale";
 import service from "../service";
 import moment from "moment";
 import { DATE_LAYOUT } from "../util";
 import { mapGetters, mapState } from "vuex";
-import auth from '../firebase';
+import auth from "../firebase";
+import { storage } from "firebase";
 
 export default {
   components: {
     Datepicker,
-    VueTagsInput
+    VueTagsInput,
+    VueEditor
   },
   data() {
     return {
@@ -93,29 +117,49 @@ export default {
         tags: [],
         title: "",
         detail: "",
-        owner: '',
+        owner: "",
         goal: null,
         receiver: "",
         date: ""
       },
+      receiverInput: "",
       file: null,
       isLoading: false,
+      isUploading: false,
       isRequired: true,
+      isReceiver: false,
       tag: "",
       error: "",
       res: "",
-      th: th
+      th: th,
+      timeoutNum: ""
     };
   },
   computed: {
-    ...mapGetters([
-      'getUser'
-    ]),
-    ...mapState([
-      'user'
-    ])
+    ...mapGetters(["getUser"]),
+    ...mapState(["user"])
+  },
+  watch: {
+    receiverInput: function(value) {
+      clearTimeout(this.timeoutNum);
+      this.timeoutNum = setTimeout(this.receiverValid, 500);
+    }
   },
   methods: {
+    uploadImage: async function(file, Editor, cursorLocation, resetUploader) {
+      try {
+        this.isUploading = true;
+        let ref = storage().ref(`project/images/${file.name}`);
+        await ref.put(file);
+        const url = await ref.getDownloadURL();
+        Editor.insertEmbed(cursorLocation, "image", url); // set images
+        resetUploader();
+        this.isUploading = false;
+      } catch (err) {
+        this.error = err;
+        this.isUploading = false;
+      }
+    },
     onSubmit: async function() {
       this.isLoading = true;
       try {
@@ -127,17 +171,26 @@ export default {
         this.error = err;
         this.isLoading = false;
       }
+    },
+    receiverValid: async function() {
+      try {
+        this.form.receiver = await service.checkUserExists(this.receiverInput);
+        this.isReceiver = true;
+      } catch (error) {
+        this.isReceiver = false;
+        this.form.receiver = "";
+      }
     }
   },
   mounted() {
-    auth.onAuthStateChanged((user)=>{
+    auth.onAuthStateChanged(user => {
       if (user) {
         this.form.owner = user.uid;
       } else {
-        this.form.owner = '';
+        this.form.owner = "";
       }
-    })
-  },
+    });
+  }
 };
 </script>
 

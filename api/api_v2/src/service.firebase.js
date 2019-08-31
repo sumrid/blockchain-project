@@ -20,6 +20,7 @@ exports.saveProject = async (project) => {
     
     // TODO ลบส่วนที่จะไม่เก็บ
     delete project.balance;
+    delete project.file;
 
     try {
         await ProjectCollection.doc(project.id).set(project);

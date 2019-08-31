@@ -10,7 +10,9 @@
     <!-- <NavBar id="nav"/> -->
 
     <NavBar2 id="nav" />
-    <router-view />
+    <transition name="fade">
+      <router-view />
+    </transition>
   </div>
 </template>
 firebaseConfig
@@ -31,11 +33,19 @@ export default {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+  /* text-align: center; */
+  color: #3c5369;
 }
 
 #nav a.router-link-exact-active {
-  color: #42b983;
+  color: #4ab486;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>

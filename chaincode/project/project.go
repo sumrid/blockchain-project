@@ -47,9 +47,8 @@ type User struct {
 	Name string `json:"name"` // ชื่อผู้ใช้
 	Role string `json:"role"`
 	Type string `json:"type"`
+	// TODO สร้างการเก็บข้อมูลของผู้ใช้ว่าจะให้มีอะไรบ้าง  ..คนสร้างโครงการ ..ผู้รับเงิน
 }
-
-// TODO สร้างการเก็บข้อมูลของผู้ใช้ว่าจะให้มีอะไรบ้าง  ..คนสร้างโครงการ ..ผู้รับเงิน
 
 // Chaincode ...
 type Chaincode struct {
@@ -68,22 +67,28 @@ func (C *Chaincode) Init(stub shim.ChaincodeStubInterface) peer.Response {
 func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	fn, args := stub.GetFunctionAndParameters()
 
-	if fn == "query" {
+	if fn == "query" { // ดึงข้อมูลใน blockchain จากคีย์
 		return C.query(stub, args)
-	} else if fn == "createProject" {
+	} else if fn == "createProject" { // สร้างโครงการ
 		return C.createProject(stub, args)
-	} else if fn == "donate" {
+	} else if fn == "donate" { // ทำการบริจาคเงินให้กับโครงการ
 		return C.donate(stub, args)
-	} else if fn == "getHistory" {
+	} else if fn == "getHistory" { // ...
 		return C.getHistory(stub, args)
-	} else if fn == "getDonationHistory" {
+	} else if fn == "getDonationHistory" { // ดึงรายการการบริจาคของโครงการนั้นๆ ด้วย uid
 		return C.getDonationHistory(stub, args)
-	} else if fn == "queryAllProjects" {
+	} else if fn == "queryAllProjects" { // ดึงโครงการทั้งหมดออกมา
 		return C.queryAllProjects(stub, args)
-	} else if fn == "closeProject" {
+	} else if fn == "closeProject" { // เปลี่ยนสถานะโครงการเป็นปิด เมื่อเวลาหมดลง
 		return C.closeProject(stub, args)
-	} else if fn == "queryDonationByUserID" {
+	} else if fn == "queryDonationByUserID" { // ดึงรายการบริจาคด้วย uid ของผู้ใช้
 		return C.queryDonationByUserID(stub, args)
+	} else if fn == "queryProjectByUserID" {
+		return C.queryProjectByUserID(stub, args)
+	} else if fn == "queryProjectByReceiverID" {
+		return C.queryProjectByReceiverID(stub, args)
+	} else if fn == "updateStatus" {
+		return C.updateStatus(stub, args)
 	}
 
 	logger.Error("invoke did not find func: " + fn)
@@ -378,6 +383,66 @@ func (C *Chaincode) queryDonationByUserID(stub shim.ChaincodeStubInterface, args
 	return shim.Success(payload)
 }
 
+// Query project by ownerID
+func (C *Chaincode) queryProjectByUserID(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	userID := args[0]
+	queryString := fmt.Sprintf(`{"selector":{"type":{"$eq": "project"},"owner":{"$eq":"%s"}}}`, userID)
+
+	results, err := C.queryWithSelector(stub, queryString)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	var projects []Project
+	for _, pByte := range results {
+		p := Project{}
+		err = json.Unmarshal(pByte, &p)
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		projects = append(projects, p)
+	}
+
+	payload, err := json.Marshal(projects)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	return shim.Success(payload)
+}
+
+func (C *Chaincode) queryProjectByReceiverID(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	reID := args[0]
+	queryString := fmt.Sprintf(`{"selector":{"type":{"$eq": "project"},"receiver":{"$eq":"%s"}}}`, reID)
+
+	results, err := C.queryWithSelector(stub, queryString)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	var projects []Project
+	for _, pByte := range results {
+		p := Project{}
+		err = json.Unmarshal(pByte, &p)
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		projects = append(projects, p)
+	}
+
+	payload, err := json.Marshal(projects)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	return shim.Success(payload)
+}
+
+func (C *Chaincode) queryProjectBySelector(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	// TODO อาจจะทำ query by selector
+	return shim.Success(nil)
+}
+
 // ใช้ค้นหาโดยใช้ selector
 func (C *Chaincode) queryWithSelector(stub shim.ChaincodeStubInterface, query string) ([][]byte, error) {
 
@@ -436,6 +501,44 @@ func (C *Chaincode) closeProject(stub shim.ChaincodeStubInterface, args []string
 	}
 
 	return shim.Success([]byte("Success."))
+}
+
+func (C *Chaincode) updateStatus(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	if len(args) < 3 {
+		return shim.Error("Expect 1 argument.")
+	}
+	user := args[0]
+	id := args[1]
+	status := args[2]
+
+	// Get project
+	result, err := stub.GetState(id)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	p := Project{}
+	err = json.Unmarshal(result, &p)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	// Check permission
+	if p.Receiver != user && p.Owner != user {
+		return shim.Error("401 " + user)
+	}
+
+	// Update
+	p.Status = status
+
+	// Save project
+	result, err = json.Marshal(p)
+	err = stub.PutState(id, result)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	return shim.Success(result)
 }
 
 func main() {

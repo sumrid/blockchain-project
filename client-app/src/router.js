@@ -8,6 +8,7 @@ import ConfirmDonation from './views/ConfirmDonation.vue';
 import CreateProject from './views/CreateProject.vue';
 import HomeV2 from './views/Home2.vue'
 import ProjectDetail2 from './views/ProjectDetail2.vue';
+import Me from '@/views/User.vue';
 
 Vue.use(Router)
 
@@ -55,6 +56,11 @@ export default new Router({
       path: '/detail/:id/v2',
       name: 'detailv2',
       component: ProjectDetail2
+    },
+    {
+      path: '/me',
+      name: 'me',
+      component: Me
     }
   ]
 })

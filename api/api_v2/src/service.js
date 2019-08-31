@@ -23,6 +23,9 @@ const FN_CREATE_PROJECT = 'createProject';
 const FN_QUERY_PROJECTS = 'queryAllProjects';
 const FN_GET_DONATE_HISTORY = 'getDonationHistory';
 const FN_GET_DONATION_BY_USERID = 'queryDonationByUserID';
+const FN_GET_PROJECT_BY_USER = 'queryProjectByUserID';
+const FN_GET_PROJECT_BY_RECEIVER = 'queryProjectByReceiverID'
+const FN_UPDATE_PROJECT_STATUS = 'updateStatus';
 const CHANNEL = 'mychannel-1';  // ชื่อ channel
 const CONTRACT = 'mychaincode'; // ชื่อ chaincode
 
@@ -181,10 +184,53 @@ exports.getAllProjects = async () => {
     }
 }
 
+/**
+ * @param {string} uid UID of project owner.
+ */
+exports.getAllProjectsByUserID = async (uid) => {
+    try {
+        const contract = await getContractOrg2(USER);
+        const result = await contract.evaluateTransaction(FN_GET_PROJECT_BY_USER, uid);
+        return result;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+exports.getAllProjectsByReceiverID = async (uid) => {
+    try {
+        const contract = await getContractOrg2(USER);
+        const result = await contract.evaluateTransaction(FN_GET_PROJECT_BY_RECEIVER, uid);
+        return result;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+/**
+ * @param {string} key project id
+ */
 exports.closeProject = async (key) => {
     try {
         const contract = await getContractOrg2(USER); // ผู้ใช้ตั้งต้น
         const result = await contract.submitTransaction(FN_CLOSE_PROJECT, key);
+        return result;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+/**
+ * @param {string} userID
+ * @param {string} projectID
+ * @param {string} status `Ex. 'open', 'pending', 'close', 'fail'`
+ */
+exports.updateProjectStatus = async (userID, projectID, status) => {
+    try {
+        const contract = await getContractOrg1(userID); // ผู้ใช้ตั
+        const result = await contract.submitTransaction(FN_UPDATE_PROJECT_STATUS, userID, projectID, status);
         return result;
     } catch (err) {
         console.error(err);

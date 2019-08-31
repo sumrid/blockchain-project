@@ -40,6 +40,23 @@ exports.registerCreator = async (userID) => {
         throw err;
     }
 }
+exports.checkUserExists = async (userID) => {
+    try {
+        const walletPath = path.join(process.cwd(), '..', 'wallet1');
+        const wallet = new FileSystemWallet(walletPath);
+        const walletPath2 = path.join(process.cwd(), '..', 'wallet2');
+        const wallet2 = new FileSystemWallet(walletPath2);
+
+        const [ex1, ex2] = await Promise.all([wallet.exists(userID), wallet2.exists(userID)]);
+        if (ex1 || ex2) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (err) {
+        throw err;
+    }
+}
 /**
  * register **ทำการลงทะเบียนแล้วเก็บ key ไว้ใน wallet**
  * @param {string} userID uid ของผู้ใช้งาน

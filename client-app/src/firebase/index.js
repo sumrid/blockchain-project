@@ -1,6 +1,7 @@
 const firebase = require('firebase/app');
 require('firebase/auth');
 require('firebase/firestore');
+require('firebase/storage');
 
 import config from './firebaseConfig';
 const firebaseConfig = {

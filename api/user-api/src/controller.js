@@ -1,5 +1,6 @@
 const service = require('./service');
 const firebase = require('./firebase');
+const validator = require('validator');
 
 /**
  * **ลงทะเบียนผู้บริจาคใน firebase และใน CA**  
@@ -70,6 +71,23 @@ exports.getProfile = async (req, res) => {
     try {
         const user = await firebase.getProfile(email, password);
         res.json(user);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+}
+
+exports.userExists = async (req, res) => {
+    try {
+        const user = req.params.user;
+        const isEmail = validator.isEmail(user);
+        if (isEmail) {
+            const u = await firebase.getProfile(user);
+            res.json(u.uid); // return uid
+        } else {
+            const isExixts = await service.checkUserExists(user);
+            if (isExixts) res.json(user);
+            else res.status(404).json({ message: false });
+        }
     } catch (err) {
         res.status(500).json(err);
     }

@@ -51,7 +51,7 @@
 
       <ul class="nav navbar-nav navbar-right" v-if="getUser">
         <li class="nav-item">
-          <a class="nav-link">{{getUser.displayName}}</a>
+          <router-link to="/me" class="nav-link">{{getUser.displayName}}</router-link>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="" @click.prevent="logout">
