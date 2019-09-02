@@ -4,12 +4,13 @@ const contorller = require('./controller');
 
 router.post('/project', contorller.createProject);
 router.get('/project', contorller.getAllProjects);
+router.put('/project', contorller.updateProject);
 router.post('/project/update/status', contorller.updateProjectStatus);
 router.post('/project/donate', contorller.donate);
 router.get('/query/:key', contorller.query);
 router.get('/project/history/:key', contorller.getHistory);
 router.get('/project/donations/:key', contorller.getDonationHistory);
-
+// TODO : verify token
 router.post('/project/donate/qr', contorller.createQR);             // v2 ออก QRcode promptpay 
 router.post('/project/donate/readqr', contorller.readQR);           // บริจาคและลบ QRcode
 router.post('/project/donate/qr/v2', contorller.createQrDonation);  // genQR + firebase

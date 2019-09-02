@@ -17,6 +17,12 @@ async function createProject(project) {
         throw err;
     }
 }
+
+async function updateProject(project) {
+    const res = await axios.put(SERVICE_URL + '/api/project', project);
+    return res.data;
+}
+
 /**
  * ดึงรายการโครงการทั้งหมดที่มีจาก chaincode
  */
@@ -134,6 +140,7 @@ async function getProjectInfo(uid) {
 
 export default {
     createProject,
+    updateProject,
     getProjects,
     getProjectByID,
     getMyProject,

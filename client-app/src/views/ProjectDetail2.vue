@@ -85,7 +85,7 @@
 
     <div class="row">
       <div class="col text-center" id="donate">
-        <div v-if="project.status != 'closed'">
+        <div v-if="project.status == 'open'">
           <h3>ร่วมบริจาค</h3>
           <form @submit.prevent="onSubmit">
             <b-form-group label="ชื่อของคุณ" description="กรุณาใส่ชื่อของคุณ.">

@@ -137,6 +137,10 @@ func (C *Chaincode) createProject(stub shim.ChaincodeStubInterface, args []strin
 	return shim.Success(pJSON)
 }
 
+func (C *Chaincode) updateProject(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	return shim.Success(nil)
+}
+
 func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	var err error
 

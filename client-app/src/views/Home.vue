@@ -2,7 +2,7 @@
   <div class="home">
     <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
     <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
-    <h1>โครงการ</h1>
+    <h1 class="text-center">โครงการ</h1>
     <table class="table">
       <thead>
         <tr>
@@ -18,7 +18,7 @@
           <td>{{p.balance | currency}}</td>
           <td :class="isTimeExpired(p.endtime)">{{updateTime(p.endtime)}}</td>
           <td>
-            <router-link :to="{ name: 'detail', params: { id: p.id }}">
+            <router-link :to="{ name: 'project', params: { id: p.id }}">
               <button class="btn btn-info">รายละเอียด</button>
             </router-link>
           </td>

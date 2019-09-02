@@ -2,13 +2,14 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import Home from './views/Home.vue';
-import ProjectDetail from './views/ProjectDetail.vue';
 import QRCodeReader from './views/QRCodeReader.vue';
 import ConfirmDonation from './views/ConfirmDonation.vue';
 import CreateProject from './views/CreateProject.vue';
 import HomeV2 from './views/Home2.vue'
 import ProjectDetail2 from './views/ProjectDetail2.vue';
+import EditProject from './views/EditProject.vue';
 import Me from '@/views/User.vue';
+import auth from './firebase';
 
 Vue.use(Router)
 
@@ -28,9 +29,14 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
     },
     {
-      path: '/detail/:id',
-      name: 'detail',
+      path: '/project/:id',
+      name: 'project',
       component: ProjectDetail2
+    },
+    {
+      path: '/project/:id/edit',
+      name: 'editProject',
+      component: EditProject
     },
     {
       path: '/qr',
@@ -53,14 +59,13 @@ export default new Router({
       component: HomeV2
     },
     {
-      path: '/detail/:id/v2',
-      name: 'detailv2',
-      component: ProjectDetail2
-    },
-    {
       path: '/me',
       name: 'me',
-      component: Me
+      component: Me,
+      beforeEnter: (to, from, next) => {
+        if (auth.currentUser) next();
+        else next(from.path);
+      }
     }
   ]
 })

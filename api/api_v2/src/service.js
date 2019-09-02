@@ -134,6 +134,14 @@ exports.createProject = async (userID, project) => {
     }
 }
 
+exports.updateProject = async (userID, project) => {
+    try {
+        const contract = await getContractOrg2(userID);
+    } catch (err) {
+
+    }
+}
+
 exports.donate = async (userID, donation) => {
     try {
         const contract = await getContractOrg1(userID || USER); // ถ้ายังไม่สมัครจะใช้ id ตั้งต้นหรือ ใช้ anonymous ของ firebase
@@ -229,7 +237,7 @@ exports.closeProject = async (key) => {
  */
 exports.updateProjectStatus = async (userID, projectID, status) => {
     try {
-        const contract = await getContractOrg1(userID); // ผู้ใช้ตั
+        const contract = await getContractOrg1(userID); // TODO ...
         const result = await contract.submitTransaction(FN_UPDATE_PROJECT_STATUS, userID, projectID, status);
         return result;
     } catch (err) {

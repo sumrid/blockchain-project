@@ -26,7 +26,7 @@
 
     <div class="container">
       <div class="row">
-        <div class="col-lg-8 col-md-12">
+        <div class="col-lg-12 col-md-12">
           <b-tabs content-class="mt-3">
             <b-tab title="ประวัติการบริจาค" active>
               <p>ประวัติการบริจาค</p>
@@ -34,8 +34,28 @@
                 <b-table striped hover :items="donations" :fields="donationFields"></b-table>
               </div>
             </b-tab>
-            <b-tab title="โครงการที่บริจาค">
+            <b-tab title="โครงการที่รับบริจาค">
               <p>โครงการที่บริจาค</p>
+              <b-table-simple hover responsive>
+                <b-thead>
+                  <b-tr>
+                    <b-th>ชื่อ</b-th>
+                    <b-th>สถานะ</b-th>
+                    <b-th>วันที่สร้าง</b-th>
+                    <b-th>more</b-th>
+                  </b-tr>
+                </b-thead>
+                <b-tbody>
+                  <b-tr v-for="(item, index) in myReceive" :key="index.id">
+                    <b-td>{{item.title}}</b-td>
+                    <b-td>{{item.status}}</b-td>
+                    <b-td>{{item.starttime}}</b-td>
+                    <b-td>
+                      <router-link :to="{ name: 'project', params: { id: item.id }}">click</router-link>
+                    </b-td>
+                  </b-tr>
+                </b-tbody>
+              </b-table-simple>
             </b-tab>
             <b-tab title="โครงการของฉัน">
               <p>โครงการของฉัน</p>
@@ -45,6 +65,7 @@
                     <b-th>ชื่อ</b-th>
                     <b-th>ยอดเงินปัจจุบัน</b-th>
                     <b-th>วันที่สร้าง</b-th>
+                    <b-th>สถานะ</b-th>
                     <b-th></b-th>
                   </b-tr>
                 </b-thead>
@@ -53,8 +74,9 @@
                     <b-td>{{item.title}}</b-td>
                     <b-td>{{item.balance}}</b-td>
                     <b-td>{{item.starttime}}</b-td>
+                    <b-td>{{item.status}}</b-td>
                     <b-td>
-                      <router-link :to="{ name: 'detail', params: { id: item.id }}">click</router-link>
+                      <router-link :to="{ name: 'editProject', params: { id: item.id }}">click</router-link>
                     </b-td>
                   </b-tr>
                 </b-tbody>
@@ -67,7 +89,7 @@
         </div>
 
         <!-- information -->
-        <div class="col-lg-4 col-md-12">
+        <!-- <div class="col-lg-4 col-md-12">
           <div class="panel panel-default">
             <div class="menu_title">Profile</div>
             <div class="panel-body">
@@ -109,7 +131,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div>-->
       </div>
     </div>
   </div>
@@ -145,8 +167,6 @@ export default {
         this.getDonations(user.uid);
         this.getMyProject(user.uid);
         this.getMyReceive(user.uid);
-      } else {
-        this.$router.replace("/");
       }
     });
   },

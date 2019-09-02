@@ -29,6 +29,15 @@ exports.saveProject = async (project) => {
     }
 }
 
+exports.updateProject = async (project) => {
+    try {
+        const result = await ProjectCollection.doc(project.id).update(project);
+        return result;
+    } catch (err) {
+        throw err;
+    }
+}
+
 exports.getProject = async () => {
     snapshot = await ProjectCollection.get();
     return snapshot;

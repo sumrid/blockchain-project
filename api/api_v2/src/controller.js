@@ -38,6 +38,19 @@ exports.createProject = async (req, res) => {
     }
 }
 
+exports.updateProject = async (req, res) => {
+    try {
+        const userID = req.body.owner;
+        const project = req.body;
+        
+        const result = await service.updateProject(userID, project);
+        const updateDB = await firebase.updateProject(project);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
 exports.updateProjectStatus = async (req, res) => {
     try {
         const userID = req.body.user;
