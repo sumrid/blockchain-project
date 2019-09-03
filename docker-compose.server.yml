@@ -35,17 +35,17 @@ services:
     networks:
       - default
 
-  client-web:
-    image: node:10.15.3-stretch-slim
-    container_name: web
-    volumes:
-      - ./client-app:/client-app
-    working_dir: /client-app
-    command: npm run serve
-    ports:
-      - 80:8080
-    networks:
-      - default
+  # client-web:
+  #   image: node:10.15.3-stretch-slim
+  #   container_name: web
+  #   volumes:
+  #     - ./client-app:/client-app
+  #   working_dir: /client-app
+  #   command: npm run serve
+  #   ports:
+  #     - 80:8080
+  #   networks:
+  #     - default
 
   socket:
     image: node:10.15.3-stretch-slim
@@ -59,25 +59,26 @@ services:
     networks:
       - default
 
-  # web:
-  #   image: nginx
-  #   container_name: web_build
-  #   volumes:
-  #     - ./client-app/dist:/usr/share/nginx/html
-  #     - ./client-app/nginx.conf:/etc/nginx/conf.d/nginx.conf
-  #   ports:
-  #     - 80:80
-  #     - 443:443
+web:
+  image: nginx
+  container_name: web_build
+  volumes:
+    - ./client-app/dist:/usr/share/nginx/html
+    - ./client-app/nginx.conf:/etc/nginx/conf.d/nginx.conf
+    - ./data/certbot/conf:/etc/letsencrypt # cert
+  ports:
+    - 80:80
+    - 443:443
 
-  # db:
-  #   image: mongo:4.0.11-xenial
-  #   container_name: mongo
-  #   volumes:
-  #     - ./data/db:/data/db
-  #   ports:
-  #     - 27017:27017
-  #   networks:
-  #     - default
+# db:
+#   image: mongo:4.0.11-xenial
+#   container_name: mongo
+#   volumes:
+#     - ./data/db:/data/db
+#   ports:
+#     - 27017:27017
+#   networks:
+#     - default
 
 networks:
   default:
