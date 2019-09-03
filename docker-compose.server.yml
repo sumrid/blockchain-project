@@ -59,16 +59,16 @@ services:
     networks:
       - default
 
-web:
-  image: nginx
-  container_name: web_build
-  volumes:
-    - ./client-app/dist:/usr/share/nginx/html
-    - ./client-app/nginx.conf:/etc/nginx/conf.d/nginx.conf
-    - ./data/certbot/conf:/etc/letsencrypt # cert
-  ports:
-    - 80:80
-    - 443:443
+  web:
+    image: nginx
+    container_name: web_build
+    volumes:
+      - ./client-app/dist:/usr/share/nginx/html                     # html file
+      - ./client-app/nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf  # config file
+      - ./client-app/nginx/cert:/etc/letsencrypt                    # cert file
+    ports:
+      - 80:80
+      - 443:443
 
 # db:
 #   image: mongo:4.0.11-xenial
