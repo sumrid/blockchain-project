@@ -6,7 +6,7 @@ services:
     container_name: api
     environment:
       - DB_URL=mongodb://db:27017
-      - HOST_IP=35.198.196.72
+      - HOST_IP=35.240.146.136
       - NODE_ENV=docker
     volumes:
       - ./api/api_v2:/app
@@ -18,7 +18,7 @@ services:
       - 8000:8000
     networks:
       - default
-  
+
   user-api:
     image: node:10.15.3-stretch-slim
     container_name: user-api
@@ -30,9 +30,9 @@ services:
       - ./api/wallet2:/wallet2
     working_dir: /user-api
     command: npm start
-    ports: 
+    ports:
       - 8001:8001
-    networks: 
+    networks:
       - default
 
   client-web:
@@ -43,10 +43,10 @@ services:
     working_dir: /client-app
     command: npm run serve
     ports:
-      - 8080:8080
+      - 80:8080
     networks:
       - default
-      
+
   socket:
     image: node:10.15.3-stretch-slim
     container_name: socket
@@ -61,10 +61,14 @@ services:
 
   # web:
   #   image: nginx
+  #   container_name: web_build
   #   volumes:
   #     - ./client-app/dist:/usr/share/nginx/html
+  #     - ./client-app/nginx.conf:/etc/nginx/conf.d/nginx.conf
   #   ports:
-  #     - 8080:80
+  #     - 80:80
+  #     - 443:443
+
   # db:
   #   image: mongo:4.0.11-xenial
   #   container_name: mongo

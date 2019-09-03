@@ -23,6 +23,16 @@ async function updateProject(project) {
     return res.data;
 }
 
+async function updateProjectStatus(user, project, status) {
+    const body = {
+        user: user,
+        project: project,
+        status: status
+    }
+    const res = await axios.post(SERVICE_URL + '/api/project/update/status', body);
+    return res.data;
+}
+
 /**
  * ดึงรายการโครงการทั้งหมดที่มีจาก chaincode
  */
@@ -150,5 +160,6 @@ export default {
     getUserInfo,
     getDonationByUserID,
     getProjectInfo,
-    checkUserExists
+    checkUserExists,
+    updateProjectStatus
 }

@@ -51,7 +51,10 @@
                     <b-td>{{item.status}}</b-td>
                     <b-td>{{item.starttime}}</b-td>
                     <b-td>
-                      <router-link :to="{ name: 'project', params: { id: item.id }}">click</router-link>
+                      <router-link :to="{ name: 'confrimReceive', params: {id: item.id}}" v-if="item.status == 'pending'">
+                        <b-button variant="warning">กดยอมรับ</b-button>
+                      </router-link>  
+                      <router-link :to="{ name: 'project', params: { id: item.id }}">page</router-link>
                     </b-td>
                   </b-tr>
                 </b-tbody>
@@ -87,6 +90,11 @@
             </b-tab>
           </b-tabs>
         </div>
+
+        <!-- confirm modal -->
+        <b-modal id="confirm-project">
+          <confirm-project />
+        </b-modal>
 
         <!-- information -->
         <!-- <div class="col-lg-4 col-md-12">
@@ -141,8 +149,12 @@
 import { mapGetters } from "vuex";
 import service from "../service";
 import auth from "../firebase";
+import confirmProject from "./receiver/ConfirmProject";
 
 export default {
+  components: {
+    confirmProject
+  },
   data() {
     return {
       donations: [],
@@ -167,6 +179,8 @@ export default {
         this.getDonations(user.uid);
         this.getMyProject(user.uid);
         this.getMyReceive(user.uid);
+      } else {
+        if (this.$route.name == "me") this.$router.replace("/");
       }
     });
   },

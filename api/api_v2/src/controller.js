@@ -203,7 +203,7 @@ exports.createQRv3 = async (req, res) => {
     //     res.status(500).json(err);
     // }
 
-    const url = `http://${ip}:8080/#/confirm`
+    const url = `http://${ip}/#/confirm`
     const payload = buildUrl(url, {
         queryParams: donation
     });

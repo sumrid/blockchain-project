@@ -43,7 +43,7 @@ services:
     working_dir: /client-app
     command: npm run serve
     ports:
-      - 8080:8080
+      - 80:8080
     networks:
       - default
 
@@ -61,10 +61,14 @@ services:
 
   # web:
   #   image: nginx
+  #   container_name: web_build
   #   volumes:
   #     - ./client-app/dist:/usr/share/nginx/html
+  #     - ./client-app/nginx.conf:/etc/nginx/conf.d/nginx.conf
   #   ports:
-  #     - 8080:80
+  #     - 80:80
+  #     - 443:443
+
   # db:
   #   image: mongo:4.0.11-xenial
   #   container_name: mongo

@@ -1,14 +1,15 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-import Home from './views/Home.vue';
-import QRCodeReader from './views/QRCodeReader.vue';
-import ConfirmDonation from './views/ConfirmDonation.vue';
-import CreateProject from './views/CreateProject.vue';
-import HomeV2 from './views/Home2.vue'
-import ProjectDetail2 from './views/ProjectDetail2.vue';
-import EditProject from './views/EditProject.vue';
 import Me from '@/views/User.vue';
+import Home from './views/Home.vue';
+import HomeV2 from './views/Home2.vue'
+import EditProject from './views/EditProject.vue';
+import QRCodeReader from './views/QRCodeReader.vue';
+import CreateProject from './views/CreateProject.vue';
+import ProjectDetail2 from './views/ProjectDetail2.vue';
+import ConfirmDonation from './views/ConfirmDonation.vue';
+import ConfirmProject from './views/receiver/ConfirmProject.vue';
 import auth from './firebase';
 
 Vue.use(Router)
@@ -37,6 +38,11 @@ export default new Router({
       path: '/project/:id/edit',
       name: 'editProject',
       component: EditProject
+    },
+    {
+      path: '/project/:id/confirm-receive',
+      name: 'confrimReceive',
+      component: ConfirmProject
     },
     {
       path: '/qr',

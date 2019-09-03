@@ -64,6 +64,11 @@
       "parser": "babel-eslint"
     }
   },
+  "vue":{
+    "devServer": {
+      "disableHostCheck": true
+    }
+  },
   "postcss": {
     "plugins": {
       "autoprefixer": {}
