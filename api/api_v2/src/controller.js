@@ -12,10 +12,10 @@ const path = require('path');
 const DATETIME_LAYOUT = 'DD-MM-YYYY:HH:mm:ss';
 
 /**
-    createProject สำหรับการสร้างโปรเจค
-    @async
-    @function createProject
-*/
+ * **createProject สำหรับการสร้างโปรเจค**
+ * @async
+ * @function createProject
+ */
 exports.createProject = async (req, res) => {
     try {
         const user = req.body.owner; // จำเป็นต้องใช้ในการสร้างโครงการ
@@ -41,11 +41,16 @@ exports.createProject = async (req, res) => {
 exports.updateProject = async (req, res) => {
     try {
         const userID = req.body.owner;
-        const project = req.body;
+        const project = {
+            id: req.body.id,
+            title: req.body.title,
+            detail: req.body.detail
+        }
         
-        const result = await service.updateProject(userID, project);
-        const updateDB = await firebase.updateProject(project);
-        res.json(result);
+        const block = service.updateProject(userID, project);
+        const db = firebase.updateProject(project);
+        const results = await Promise.all([block, db]);
+        res.json(results);
     } catch (error) {
         res.status(500).json(error);
     }
@@ -56,6 +61,7 @@ exports.updateProjectStatus = async (req, res) => {
         const userID = req.body.user;
         const projectID = req.body.project;
         const status = req.body.status;
+
         const result = await service.updateProjectStatus(userID, projectID, status);
         res.json(JSON.parse(String(result)));
     } catch (err) {

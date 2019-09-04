@@ -138,6 +138,10 @@ async function getUserInfo(uid) {
     }
 }
 
+/**
+ * getProjectInfo ทำการดึงข้อมูลของโครงการจาก firebase
+ * @param {string} uid 
+ */
 async function getProjectInfo(uid) {
     try {
         const doc = await firestore().collection('projects').doc(uid).get();

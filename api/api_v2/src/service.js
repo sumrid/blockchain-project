@@ -19,6 +19,7 @@ const FN_QUERY = 'query';
 const FN_DONATE = 'donate';
 const FN_GET_HISTORY = 'getHistory';
 const FN_CLOSE_PROJECT = 'closeProject';
+const FN_UPDATE_PROJECT = 'updateProject'
 const FN_CREATE_PROJECT = 'createProject';
 const FN_QUERY_PROJECTS = 'queryAllProjects';
 const FN_GET_DONATE_HISTORY = 'getDonationHistory';
@@ -96,6 +97,11 @@ async function getChannal(user) {
 // #####################
 // #  Query and Invoke
 // #####################
+
+/**
+ * **query any by key**
+ * @param {string} key
+ */
 exports.query = async (key) => {
     try {
         const contract = await getContractOrg1(USER); // ใช้ผู้ใช้เริ่มต้นก็ได้
@@ -136,9 +142,16 @@ exports.createProject = async (userID, project) => {
 
 exports.updateProject = async (userID, project) => {
     try {
-        const contract = await getContractOrg2(userID);
+        const contract = await getContractOrg2(userID); // TODO func update project
+        const result = await contract.
+            submitTransaction(
+                FN_UPDATE_PROJECT,
+                project.id,
+                project.title
+            )
+        return result;
     } catch (err) {
-
+        throw err;
     }
 }
 
@@ -231,13 +244,13 @@ exports.closeProject = async (key) => {
     }
 }
 /**
- * @param {string} userID
+ * @param {string} userID uid ของผู้ที่มีส่วนเกี่ยวข้องกับโครงการ
  * @param {string} projectID
  * @param {string} status `Ex. 'open', 'pending', 'close', 'fail'`
  */
 exports.updateProjectStatus = async (userID, projectID, status) => {
     try {
-        const contract = await getContractOrg1(userID); // TODO ...
+        const contract = await getContractOrg1(userID); // TODO org3 or org2
         const result = await contract.submitTransaction(FN_UPDATE_PROJECT_STATUS, userID, projectID, status);
         return result;
     } catch (err) {

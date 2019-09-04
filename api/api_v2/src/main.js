@@ -1,11 +1,11 @@
+require('@google-cloud/trace-agent').start();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
 
 require('custom-env').env(true); // read from NODE_ENV
-// require('./config/db');
-// require('./config/firebase');
 
 const server = express();
 const hostname = '0.0.0.0';

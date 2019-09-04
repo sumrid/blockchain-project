@@ -113,7 +113,7 @@ exports.createQR = async (req, res) => {
     });
 }
 /**
- * createQR v2
+ * **createQR v2**
  */
 exports.createQrDonation = async (req, res) => {
     const donation = req.body;
@@ -138,7 +138,7 @@ exports.createQrDonation = async (req, res) => {
     });
 }
 /**
- * createQR v3  
+ * **createQR v3**  
  * สร้าง qr โดยใช้ url 
  * เมื่อแสกนแล้วให้เปิดหน้าเว็บ
  */

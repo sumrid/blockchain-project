@@ -27,6 +27,7 @@
     "socket.io-client": "^2.2.0",
     "vue": "^2.6.10",
     "vue-currency-filter": "^3.4.2",
+    "vue-currency-input": "^1.8.3",
     "vue-qrcode-reader": "^2.0.3",
     "vue-router": "^3.0.3",
     "vue2-editor": "^2.10.2",
@@ -64,7 +65,7 @@
       "parser": "babel-eslint"
     }
   },
-  "vue":{
+  "vue": {
     "devServer": {
       "disableHostCheck": true
     }

@@ -50,6 +50,16 @@ type User struct {
 	// TODO สร้างการเก็บข้อมูลของผู้ใช้ว่าจะให้มีอะไรบ้าง  ..คนสร้างโครงการ ..ผู้รับเงิน
 }
 
+// Event เหตุการณ์ของโครงการ เช่น เปิดโครงการ, ยอมรับ, ปิด, ล้มเหลว เมื่อเวลาไหน
+type Event struct {
+	ID        string `json:"id"`
+	TxID      string `json:"txid"`
+	ProjectID string `json:"project"`
+	Event     string `json:"event"`
+	Message   string `json:"message"`
+	Type      string `json:"type"`
+}
+
 // Chaincode ...
 type Chaincode struct {
 }
@@ -89,6 +99,8 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return C.queryProjectByReceiverID(stub, args)
 	} else if fn == "updateStatus" {
 		return C.updateStatus(stub, args)
+	} else if fn == "updateProject" {
+		return C.updateProject(stub, args)
 	}
 
 	logger.Error("invoke did not find func: " + fn)
@@ -138,7 +150,31 @@ func (C *Chaincode) createProject(stub shim.ChaincodeStubInterface, args []strin
 }
 
 func (C *Chaincode) updateProject(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	return shim.Success(nil)
+	if len(args) < 1 {
+		return shim.Error("Incorrect number of arguments.")
+	}
+	id := args[0]
+	title := args[1]
+
+	// Get
+	pByte, err := stub.GetState(id)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	// Set
+	p := Project{}
+	err = json.Unmarshal(pByte, &p)
+	p.Title = title
+
+	// Put
+	pByte, err = json.Marshal(p)
+	err = stub.PutState(id, pByte)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	return shim.Success(pByte)
 }
 
 func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer.Response {
@@ -444,7 +480,29 @@ func (C *Chaincode) queryProjectByReceiverID(stub shim.ChaincodeStubInterface, a
 
 func (C *Chaincode) queryProjectBySelector(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	// TODO อาจจะทำ query by selector
-	return shim.Success(nil)
+	query := args[0]
+	results, err := C.queryWithSelector(stub, query)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	// Byte to struct
+	var projects []Project
+	for _, pByte := range results {
+		p := Project{}
+		err = json.Unmarshal(pByte, &p)
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		projects = append(projects, p)
+	}
+
+	payload, err := json.Marshal(projects)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	return shim.Success(payload)
 }
 
 // ใช้ค้นหาโดยใช้ selector

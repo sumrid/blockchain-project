@@ -89,12 +89,21 @@ exports.userExists = async (req, res) => {
             else res.status(404).json({ message: false });
         }
     } catch (err) {
-        res.status(500).json(err);
+        res.status(404).json(err);
     }
 }
 
+/**
+ * **verifyToken**
+ */
 exports.verifyToken = async (req, res, next) => {
-    const token = req.headers.authorization;
-    // res.status(401).json({ token: token });
-    next();
+    try {
+        const { auth } = require('firebase-admin');
+        const token = req.headers.authorization;
+        const xx = await auth().verifyIdToken(token);
+        console.log(xx);
+        next();
+    } catch (error) {
+        res.status(401).json(error);
+    }
 }

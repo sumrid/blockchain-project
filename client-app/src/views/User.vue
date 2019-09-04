@@ -14,7 +14,7 @@
           <img
             align="left"
             class="fb-image-profile thumbnail"
-            src="https://thebark.com/sites/default/files/styles/full/public/wogan-lostdogs-200.jpg?itok=5nSIj6Os"
+            src="https://cdn2.vectorstock.com/i/1000x1000/25/31/user-icon-businessman-profile-man-avatar-vector-10552531.jpg"
             alt="Profile image example"
           />
           <div class="fb-profile-text">
@@ -51,9 +51,12 @@
                     <b-td>{{item.status}}</b-td>
                     <b-td>{{item.starttime}}</b-td>
                     <b-td>
-                      <router-link :to="{ name: 'confrimReceive', params: {id: item.id}}" v-if="item.status == 'pending'">
+                      <router-link
+                        :to="{ name: 'confrimReceive', params: {id: item.id}}"
+                        v-if="item.status == 'pending'"
+                      >
                         <b-button variant="warning">กดยอมรับ</b-button>
-                      </router-link>  
+                      </router-link>
                       <router-link :to="{ name: 'project', params: { id: item.id }}">page</router-link>
                     </b-td>
                   </b-tr>
@@ -89,6 +92,7 @@
               <p>ตรวจสอบความเคลื่อนไหว</p>
             </b-tab>
           </b-tabs>
+          
         </div>
 
         <!-- confirm modal -->

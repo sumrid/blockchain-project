@@ -28,14 +28,14 @@
             ></b-form-file>
           </div>
           <div class="form-group">
-            <label>จำนวนเงินที่ต้องการ</label>
+            <label>จำนวนเงินที่ต้องการ <strong>{{form.goal | currency}}</strong></label>
             <input
               class="form-control"
               placeholder="จำนวน"
               required
-              type="number"
               v-model="form.goal"
             />
+            <!-- <currency-input :value="form.goal"/> -->
           </div>
           <!-- <div class="form-group"> -->
           <b-form-group label="ผู้ที่ทำการรับเงินจากโครงการนี้">
@@ -97,9 +97,10 @@
 import Datepicker from "vuejs-datepicker";
 import { VueEditor } from "vue2-editor";
 import VueTagsInput from "@johmun/vue-tags-input";
+import {CurrencyInput} from 'vue-currency-input'
 import { th } from "vuejs-datepicker/dist/locale";
 import service from "../service";
-import moment from "moment";
+import moment, { version } from "moment";
 import { DATE_LAYOUT } from "../util";
 import { mapGetters, mapState } from "vuex";
 import auth from "../firebase";
@@ -109,7 +110,8 @@ export default {
   components: {
     Datepicker,
     VueTagsInput,
-    VueEditor
+    VueEditor,
+    CurrencyInput
   },
   data() {
     return {
@@ -122,6 +124,7 @@ export default {
         receiver: "",
         date: ""
       },
+      goalInput: 0,
       receiverInput: "",
       file: null,
       isLoading: false,
@@ -140,10 +143,10 @@ export default {
     ...mapState(["user"])
   },
   watch: {
-    receiverInput: function(value) {
+    receiverInput: function() {
       clearTimeout(this.timeoutNum);
       this.timeoutNum = setTimeout(this.receiverValid, 500);
-    }
+    },
   },
   methods: {
     uploadImage: async function(file, Editor, cursorLocation, resetUploader) {
