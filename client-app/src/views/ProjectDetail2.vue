@@ -9,8 +9,7 @@
       <div class="col-lg-8" style="background-color:#ececec;">
         <div class="row justify-content-center">
           <b-img
-            src="https://qph.fs.quoracdn.net/main-qimg-5cb8123242dfc2b4d146c6ae154a30a0"
-            alt="manycat"
+            :src="info.image"
             fluid
           />
         </div>
@@ -179,20 +178,20 @@ import service from "../service";
 export default {
   data() {
     return {
+      info: {},
       project: {},
       donations: {},
-      info: {},
       form: {
         user: "", // user uid
-        displayname: "", // user displayName
-        amount: ""
+        amount: "",
+        displayname: "" // user displayName
       },
-      currentUser: null,
-      loading: false,
-      loadingQR: false,
       svg: null,
-      qrmessage: "",
       error: "",
+      loading: false,
+      qrmessage: "",
+      loadingQR: false,
+      currentUser: null,
       fields: [
         {
           key: "txid",

@@ -20,21 +20,33 @@
           <div class="form-group">
             <label for="exampleFormControlFile1">รูปหลัก</label>
             <b-form-file
-              v-model="file"
+              v-model="mainImage"
               :state="Boolean(file)"
+              required
               placeholder="Choose a file or drop it here..."
               drop-placeholder="Drop file here..."
               accept="image/jpeg, image/png, image/gif"
             ></b-form-file>
+            <div class="row">
+              <span
+                v-if="isMainImageUpload"
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="false"
+              ></span>
+            </div>
+            <div class="row" v-if="form.image">
+              <div class="col">
+                <b-img :src="form.image" rounded fluid></b-img>
+              </div>
+            </div>
           </div>
           <div class="form-group">
-            <label>จำนวนเงินที่ต้องการ <strong>{{form.goal | currency}}</strong></label>
-            <input
-              class="form-control"
-              placeholder="จำนวน"
-              required
-              v-model="form.goal"
-            />
+            <label>
+              จำนวนเงินที่ต้องการ
+              <strong>{{form.goal | currency}}</strong>
+            </label>
+            <input class="form-control" placeholder="จำนวน" required v-model="form.goal" />
             <!-- <currency-input :value="form.goal"/> -->
           </div>
           <!-- <div class="form-group"> -->
@@ -56,6 +68,7 @@
             <p v-if="isUploading">
               Uploading...
               <span
+                v-if="isMainImageUpload"
                 class="spinner-border spinner-border-sm"
                 role="status"
                 aria-hidden="false"
@@ -97,7 +110,7 @@
 import Datepicker from "vuejs-datepicker";
 import { VueEditor } from "vue2-editor";
 import VueTagsInput from "@johmun/vue-tags-input";
-import {CurrencyInput} from 'vue-currency-input'
+import { CurrencyInput } from "vue-currency-input";
 import { th } from "vuejs-datepicker/dist/locale";
 import service from "../service";
 import moment, { version } from "moment";
@@ -105,6 +118,9 @@ import { DATE_LAYOUT } from "../util";
 import { mapGetters, mapState } from "vuex";
 import auth from "../firebase";
 import { storage } from "firebase";
+import uid from "uuid/v4";
+
+const imageName = "main_" + uid();
 
 export default {
   components: {
@@ -122,13 +138,15 @@ export default {
         owner: "",
         goal: null,
         receiver: "",
+        image: "",
         date: ""
       },
       goalInput: 0,
       receiverInput: "",
-      file: null,
+      mainImage: null,
       isLoading: false,
       isUploading: false,
+      isMainImageUpload: false,
       isRequired: true,
       isReceiver: false,
       tag: "",
@@ -147,8 +165,27 @@ export default {
       clearTimeout(this.timeoutNum);
       this.timeoutNum = setTimeout(this.receiverValid, 500);
     },
+    mainImage: function() {
+      // on image change
+      this.uploadMainImage();
+    }
   },
   methods: {
+    uploadMainImage: async function() {
+      // Upload main image
+      try {
+        this.isMainImageUpload = true;
+        const type = this.mainImage.name.split(".").pop();
+        const imgName = `${imageName}.${type}`;
+        const ref = storage().ref(`project/images/${imgName}`);
+        await ref.put(this.mainImage);
+        const url = await ref.getDownloadURL();
+        this.form.image = url;
+        this.isMainImageUpload = false;
+      } catch (err) {
+        this.isMainImageUpload = false;
+      }
+    },
     uploadImage: async function(file, Editor, cursorLocation, resetUploader) {
       try {
         this.isUploading = true;

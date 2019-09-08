@@ -42,7 +42,11 @@ export default new Router({
     {
       path: '/project/:id/confirm-receive',
       name: 'confrimReceive',
-      component: ConfirmProject
+      component: ConfirmProject,
+      beforeEnter: (to, from, next) => {
+        if (auth.currentUser) next();
+        else next(from.path);
+      }
     },
     {
       path: '/qr',
@@ -57,7 +61,11 @@ export default new Router({
     {
       path: '/createproject',
       name: 'createproject',
-      component: CreateProject
+      component: CreateProject,
+      beforeEnter: (to, from, next) => {
+        if (auth.currentUser) next();
+        else next(from.path);
+      }
     },
     {
       path: '/v2',

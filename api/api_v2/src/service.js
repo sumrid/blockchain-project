@@ -22,6 +22,7 @@ const FN_CLOSE_PROJECT = 'closeProject';
 const FN_UPDATE_PROJECT = 'updateProject'
 const FN_CREATE_PROJECT = 'createProject';
 const FN_QUERY_PROJECTS = 'queryAllProjects';
+const FN_DELETE_PROJECT = 'deleteProject'
 const FN_GET_DONATE_HISTORY = 'getDonationHistory';
 const FN_GET_DONATION_BY_USERID = 'queryDonationByUserID';
 const FN_GET_PROJECT_BY_USER = 'queryProjectByUserID';
@@ -149,6 +150,16 @@ exports.updateProject = async (userID, project) => {
                 project.id,
                 project.title
             )
+        return result;
+    } catch (err) {
+        throw err;
+    }
+}
+
+exports.deleteProject = async (userID, projectID) => {
+    try {
+        const contract = await getContractOrg2(userID);
+        const result = await contract.submitTransaction(FN_DELETE_PROJECT, projectID);
         return result;
     } catch (err) {
         throw err;

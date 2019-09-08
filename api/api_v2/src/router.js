@@ -5,6 +5,7 @@ const contorller = require('./controller');
 router.post('/project', contorller.createProject);
 router.get('/project', contorller.getAllProjects);
 router.put('/project', contorller.updateProject);
+router.delete('/project', contorller.deleteProject);
 router.post('/project/update/status', contorller.updateProjectStatus);
 router.post('/project/donate', contorller.donate);
 router.get('/query/:key', contorller.query);

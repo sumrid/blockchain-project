@@ -45,6 +45,7 @@ exports.updateProject = async (req, res) => {
             id: req.body.id,
             title: req.body.title,
             detail: req.body.detail
+            // TODO อาจจะให้แก้ใขได้มากกว่านี้
         }
         
         const block = service.updateProject(userID, project);
@@ -66,6 +67,18 @@ exports.updateProjectStatus = async (req, res) => {
         res.json(JSON.parse(String(result)));
     } catch (err) {
         res.status(500).json(err);
+    }
+}
+
+exports.deleteProject = async (req, res) => {
+    try {
+        const userID = req.body.user;
+        const projectID = req.body.project;
+
+        const result = await service.deleteProject(userID, projectID);
+        res.json(JSON.parse(String(result)));
+    } catch (err) {
+        res.status(404).json(err);
     }
 }
 
@@ -324,9 +337,7 @@ schedlue.scheduleJob('*/20 * * * * *', async () => {
     projects.forEach((p) => {
         if (p.status != 'closed') {
             const endtime = moment(p.endtime, moment.ISO_8601);
-            console.log(endtime.toISOString() + ' ' + endtime.fromNow());
             if (endtime.diff(moment()) <= 0) {
-                console.log(endtime.diff(moment()));
                 service.closeProject(p.id); // ทำการปิดโปรเจค
             }
         }

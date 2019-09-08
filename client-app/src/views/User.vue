@@ -92,7 +92,6 @@
               <p>ตรวจสอบความเคลื่อนไหว</p>
             </b-tab>
           </b-tabs>
-          
         </div>
 
         <!-- confirm modal -->
@@ -145,6 +144,13 @@
           </div>
         </div>-->
       </div>
+      <div class="row">
+        <router-link to="createproject" v-if="isCreator">
+          <button class="btn">
+            <icon :icon="iconPlus" />สร้างโครงการ
+          </button>
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -154,6 +160,7 @@ import { mapGetters } from "vuex";
 import service from "../service";
 import auth from "../firebase";
 import confirmProject from "./receiver/ConfirmProject";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 export default {
   components: {
@@ -161,7 +168,11 @@ export default {
   },
   data() {
     return {
+      profile: {},
       donations: [],
+      myReceive: [],
+      isCreator: false,
+      myprojects: [],
       donationFields: [
         {
           key: "amount",
@@ -172,9 +183,7 @@ export default {
           sortable: true
         }
       ],
-      myprojects: [],
-      myReceive: [],
-      profile: {}
+      iconPlus: faPlus
     };
   },
   mounted() {
@@ -183,6 +192,7 @@ export default {
         this.getDonations(user.uid);
         this.getMyProject(user.uid);
         this.getMyReceive(user.uid);
+        this.getProfile(user.uid);
       } else {
         if (this.$route.name == "me") this.$router.replace("/");
       }
@@ -197,6 +207,11 @@ export default {
     },
     async getMyReceive(id) {
       this.myReceive = await service.getMyReceive(id);
+    },
+    async getProfile(id) {
+      this.profile = await service.getUserInfo(id);
+      const role = this.profile.role;
+      this.isCreator = role.includes("creator");
     }
   },
   computed: {
