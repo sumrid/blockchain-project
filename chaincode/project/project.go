@@ -29,6 +29,7 @@ type Project struct {
 	EndTime     time.Time `json:"endtime"`     // เวลาที่โครงการสิ้นสุด
 	Receiver    string    `json:"receiver"`    // uid ของผู้รับเงิน TODO เพิ่มไอดีผู้รับเงิน
 	Goal        float64   `json:"goal"`        // จำนวนเงินที่ต้องการ TODO เพิ่มยอดเงินที่ต้องการด้วย
+	Condition   int       `json:"condition"`   // เงื่อนไขการตัดเงินของโครงการ
 	Type        string    `json:"type"`
 }
 
@@ -60,6 +61,12 @@ type Event struct {
 	Event     string `json:"event"`
 	Message   string `json:"message"`
 	Type      string `json:"type"`
+}
+
+// Form ขอเงินโอนเงิน
+type Xxx struct {
+	ID   string `json:"id"`
+	Type string `json:"type"`
 }
 
 // Chaincode ...
@@ -107,6 +114,8 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return C.deleteProject(stub, args)
 	} else if fn == "payBack" {
 		return C.payBack(stub, args)
+	} else if fn == "withdraw" {
+		return C.withdraw(stub, args)
 	}
 
 	logger.Error("invoke did not find func: " + fn)
@@ -641,7 +650,7 @@ func (C *Chaincode) deleteProject(stub shim.ChaincodeStubInterface, args []strin
 	return shim.Success([]byte("Delete success. key: " + key))
 }
 
-// คืนเงินให้คนบริจาาค
+// คืนเงินให้คนบริจาาค ในกรณีที่โครงการล้มเหลว
 func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) peer.Response {
 
 	// TODO  คือทีเดียวทุกคนเลย เพื่อจะได้ไม่มี tx เกิดขึ้นเยอะ
@@ -692,6 +701,44 @@ func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) pee
 	}
 
 	return shim.Success(nil)
+}
+
+func (C *Chaincode) withdraw(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	if len(args) < 3 {
+		return shim.Error("Expected 3 arguments.")
+	}
+
+	// user := args[0]
+	project := args[1]
+	amount, err := strconv.ParseFloat(args[2], 64)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	pAsByte, err := stub.GetState(project)
+	if err != nil {
+		return shim.Error(err.Error())
+	} else if pAsByte == nil {
+		return shim.Error("Project not found.")
+	}
+
+	p := Project{}
+	err = json.Unmarshal(pAsByte, &p)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	p.Balance -= amount
+	// user.balance += amount
+
+	pAsByte, err = json.Marshal(p)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	stub.PutState(project, pAsByte)
+
+	return shim.Success(pAsByte)
 }
 
 func main() {

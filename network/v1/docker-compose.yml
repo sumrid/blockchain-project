@@ -400,7 +400,7 @@ services:
         - ./config/:/opt/gopath/src/github.com/hyperledger/fabric/peer/config/
 
         - /var/run/:/host/var/run/
-        - ./../chaincode/:/opt/gopath/src/github.com/chaincode/                         # เก็บ chaincode
+        - ./../../chaincode/:/opt/gopath/src/github.com/chaincode/                         # เก็บ chaincode
         - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/    # เก็บ key ต่างๆ
         
     networks:

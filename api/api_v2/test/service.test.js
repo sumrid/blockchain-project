@@ -69,7 +69,7 @@ describe('service test', () => {
         expect(serJest.FN_GET_HISTORY).toEqual('getHistory');
         expect(serJest.FN_QUERY).toEqual('query');
         expect(serJest.FN_QUERY_PROJECTS).toEqual('queryAllProjects');
-        expect(serJest.CHANNEL).toEqual('mychannel-1');
+        expect(serJest.CHANNEL).toEqual('donation');
         expect(serJest.CONTRACT).toEqual('mychaincode');
     });
 });

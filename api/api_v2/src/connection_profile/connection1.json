@@ -13,22 +13,13 @@
         }
     },
     "channels": {
-        "mychannel-1": {
+        "donation": {
             "orderers": [
                 "orderer.example.com"
             ],
             "peers": {
                 "peer0.org1.example.com": {},
                 "peer1.org1.example.com": {},
-                "peer0.org2.example.com": {},
-                "peer1.org2.example.com": {}
-            }
-        },
-        "mychannel-2": {
-            "orderers": [
-                "orderer.example.com"
-            ],
-            "peers": {
                 "peer0.org2.example.com": {},
                 "peer1.org2.example.com": {},
                 "peer0.org3.example.com": {},

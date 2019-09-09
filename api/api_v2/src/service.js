@@ -21,14 +21,14 @@ const FN_GET_HISTORY = 'getHistory';
 const FN_CLOSE_PROJECT = 'closeProject';
 const FN_UPDATE_PROJECT = 'updateProject'
 const FN_CREATE_PROJECT = 'createProject';
+const FN_DELETE_PROJECT = 'deleteProject';
 const FN_QUERY_PROJECTS = 'queryAllProjects';
-const FN_DELETE_PROJECT = 'deleteProject'
-const FN_GET_DONATE_HISTORY = 'getDonationHistory';
-const FN_GET_DONATION_BY_USERID = 'queryDonationByUserID';
-const FN_GET_PROJECT_BY_USER = 'queryProjectByUserID';
-const FN_GET_PROJECT_BY_RECEIVER = 'queryProjectByReceiverID'
 const FN_UPDATE_PROJECT_STATUS = 'updateStatus';
-const CHANNEL = 'mychannel-1';  // ชื่อ channel
+const FN_GET_DONATE_HISTORY = 'getDonationHistory';
+const FN_GET_PROJECT_BY_USER = 'queryProjectByUserID';
+const FN_GET_DONATION_BY_USERID = 'queryDonationByUserID';
+const FN_GET_PROJECT_BY_RECEIVER = 'queryProjectByReceiverID'
+const CHANNEL = 'donation';  // ชื่อ channel
 const CONTRACT = 'mychaincode'; // ชื่อ chaincode
 
 // #####################
