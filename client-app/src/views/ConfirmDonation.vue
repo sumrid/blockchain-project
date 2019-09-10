@@ -25,9 +25,8 @@
 </template>
 
 <script>
-const axios = require("axios");
-const util = require("../util");
 import socket from "../service/socket";
+import service from '../service';
 
 export default {
   data() {
@@ -41,13 +40,9 @@ export default {
   methods: {
     onSubmit: async function() {
       this.loading = true;
-      const API_IP = util.API_IP;
       try {
         // ทำการบริจาค
-        await axios.default.post(
-          `http://${API_IP}:8000/api/project/donate`,
-          this.donation
-        );
+        await service.donate(this.donation);
         this.loading = false;
         this.isSuccess = true;
         socket.emit('donate');
