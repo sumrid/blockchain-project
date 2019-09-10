@@ -302,7 +302,6 @@ export default {
         this.currentUser = user;
         this.form.displayname = user.displayName;
         this.form.user = user.uid; // UID of user.
-        console.log("changed: " + JSON.stringify(user));
       } else {
         this.form.user = "";
       }

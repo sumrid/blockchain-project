@@ -151,19 +151,33 @@ async function getProjectInfo(uid) {
     }
 }
 
+async function getProjectsInfo() {
+    try {
+        const res = await firestore().collection('projects').get();
+        let project = [];
+        res.forEach((sp)=> {
+            project.push(sp.data());
+        });
+        return project;
+    } catch (error) {
+        throw error;
+    }
+}
+
 
 export default {
-    createProject,
-    updateProject,
+    donate,
+    getUserInfo,
     getProjects,
-    getProjectByID,
     getMyProject,
     getMyReceive,
-    donate,
-    getDonationHistory,
-    getUserInfo,
-    getDonationByUserID,
+    createProject,
+    updateProject,
+    getProjectByID,
     getProjectInfo,
     checkUserExists,
-    updateProjectStatus
+    getProjectsInfo,
+    getDonationHistory,
+    updateProjectStatus,
+    getDonationByUserID,
 }

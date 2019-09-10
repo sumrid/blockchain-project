@@ -26,7 +26,12 @@
       </tbody>
     </table>
     <div class="container">Time : {{time}}</div>
+    
+    <div>
+      <my-footer/>
+    </div>
   </div>
+
 </template>
 
 <script>
@@ -35,6 +40,7 @@
 const moment = require("moment");
 import service from "../service";
 import socket from '../service/socket';
+import myFooter from '../components/Footer';
 
 moment.locale("th");
 
@@ -42,6 +48,7 @@ export default {
   name: "home",
   components: {
     // HelloWorld
+    myFooter
   },
   data() {
     return {

@@ -6,14 +6,14 @@ services:
     container_name: api
     environment:
       - DB_URL=mongodb://db:27017
-      - HOST_IP=35.240.146.136
+      - HOST_IP=donate-web.tk
       - NODE_ENV=docker
       - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
     volumes:
       - ./api/api_v2:/app
       - ./api/wallet1:/wallet1
       - ./api/wallet2:/wallet2
-      - ../cert:/cert # Google gcp file on server
+      - ../cert:/cert # map Google gcp file on server to container
     working_dir: /app
     command: npm start
     ports:

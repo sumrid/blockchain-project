@@ -107,17 +107,17 @@
 </template>
 
 <script>
-import Datepicker from "vuejs-datepicker";
-import { VueEditor } from "vue2-editor";
-import VueTagsInput from "@johmun/vue-tags-input";
 import { CurrencyInput } from "vue-currency-input";
+import VueTagsInput from "@johmun/vue-tags-input";
 import { th } from "vuejs-datepicker/dist/locale";
-import service from "../service";
-import moment, { version } from "moment";
-import { DATE_LAYOUT } from "../util";
 import { mapGetters, mapState } from "vuex";
-import auth from "../firebase";
+import Datepicker from "vuejs-datepicker";
+import moment, { version } from "moment";
+import { VueEditor } from "vue2-editor";
+import { DATE_LAYOUT } from "../util";
 import { storage } from "firebase";
+import service from "../service";
+import auth from "../firebase";
 import uid from "uuid/v4";
 
 const imageName = "main_" + uid();
