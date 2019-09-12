@@ -82,6 +82,61 @@ services:
 #   networks:
 #     - default
 
+  ###########################
+  #      api แต่ละ org
+  ########################### 
+  # donator-api:
+  #   image: node:10.15.3-stretch-slim
+  #   container_name: donator-api
+  #   environment:
+  #     - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
+  #     - HOST_IP=192.168.1.2 # ip ของเครื่องที่เรารันอยู่ สำหรับทำ qr
+  #     - NODE_ENV=docker
+  #   volumes:
+  #     - ../cert:/cert # map Google gcp cert on server to container
+  #     - ./api/donator-api:/app
+  #     - ./api/wallet1:/wallet1
+  #   working_dir: /app
+  #   command: npm start
+  #   ports:
+  #     - 8000:8000
+  #   networks:
+  #     - default
+
+  # creator-api:
+  #   image: node:10.15.3-stretch-slim
+  #   container_name: creator-api
+  #   environment:
+  #     - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
+  #     - NODE_ENV=docker
+  #   volumes:
+  #     - ../cert:/cert # map Google gcp cert on server to container
+  #     - ./api/creator-api:/app
+  #     - ./api/wallet2:/wallet2
+  #   working_dir: /app
+  #   command: npm start
+  #   ports:
+  #     - 8001:8001
+  #   networks:
+  #     - default
+  
+  # receiver-api:
+  #   image: node:10.15.3-stretch-slim
+  #   container_name: receiver-api
+  #   environment:
+  #     - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
+  #     - NODE_ENV=docker
+  #   volumes:
+  #     - ../cert:/cert # map Google gcp cert on server to container
+  #     - ./api/receiver-api:/app
+  #     - ./api/wallet3:/wallet3
+  #   working_dir: /app
+  #   command: npm start
+  #   ports:
+  #     - 8002:8002
+  #   networks:
+  #     - default
+
 networks:
   default:
     external:

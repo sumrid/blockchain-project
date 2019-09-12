@@ -15,7 +15,7 @@ docker ps -a
 sleep 3
 
 # channel name
-CHANNEL_1=mychannel-1
+CHANNEL_1=donation
 CHANNEL_2=mychannel-2
 
 

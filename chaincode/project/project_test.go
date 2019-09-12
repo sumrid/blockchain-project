@@ -37,7 +37,7 @@ func TestCreateProject(T *testing.T) {
 	balance := "0"
 	owner := "user1"
 	start := "11-07-2019:12:00:00"
-	end := "11-09-2019:12:00:00"
+	end := "11-09-2020:12:00:00"
 	receiver := "user2"
 	goal := "500000"
 	args := [][]byte{
@@ -113,6 +113,7 @@ func TestDonate(T *testing.T) {
 	}
 
 	assert.Equal(T, p.Balance, 99.00)
+	assert.Equal(T, p.Accumulated, 99.00)
 }
 
 func TestGetDonationHistory(T *testing.T) {
