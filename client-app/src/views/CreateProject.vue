@@ -46,7 +46,7 @@
               จำนวนเงินที่ต้องการ
               <strong>{{form.goal | currency}}</strong>
             </label>
-            <input class="form-control" placeholder="จำนวน" required v-model="form.goal" />
+            <input class="form-control" placeholder="จำนวน" required v-model="form.goal" type="number" />
             <!-- <currency-input :value="form.goal"/> -->
           </div>
           <!-- <div class="form-group"> -->
@@ -57,6 +57,7 @@
               :state="Boolean(this.isReceiver)"
               placeholder="กรุณาใส่ id หรือ email ของผู้รับ"
               trim
+              required
               type="email"
             ></b-form-input>
             <b-form-invalid-feedback v-if="!isReceiver">ไม่มีผู้ใช้นี้</b-form-invalid-feedback>

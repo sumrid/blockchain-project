@@ -5,7 +5,6 @@ console.log('connect to firebase');
 const admin = require('firebase-admin');
 const db = admin.firestore();
 const ProjectCollection = db.collection('projects');
-const QRCollection = db.collection('qr');
 
 const moment = require('moment');
 const DATETIME_LAYOUT = 'DD-MM-YYYY:HH:mm:ss';
@@ -22,6 +21,32 @@ exports.registerUser = async (name, email, password) => {
             email: email,
             password: password
         });
+        return user;
+    } catch (error) {
+        throw error;
+    }
+}
+
+/**
+ * setUserRole สร้างข้อมูลผู้ใช้เก็บลง firestore
+ * @param {string} uid 
+ * @param {string[]} role 
+ */
+exports.setUser = async (uid, role) => {
+    const data = {
+        uid: uid,
+        role: role
+    }
+    try {
+        await db.collection('users').doc(uid).set(data);
+    } catch (err) {
+        throw err;
+    }
+}
+
+exports.getUserByEmail = async (email) => {
+    try {
+        const user = await admin.auth().getUserByEmail(email);
         return user;
     } catch (error) {
         throw error;
@@ -46,24 +71,6 @@ exports.getProjectByID = async (key) => {
     try {
         const result = await ProjectCollection.doc(key).get();
         return result.data();
-    } catch (err) {
-        throw err;
-    }
-}
-
-/**
- * สำหรับเก็บข้อมูล qrcode ที่สร้างขึ้นมา
- */
-exports.saveQR = async (donation) => {
-    try {
-        await QRCollection.doc(donation.id).set(donation);
-    } catch (err) {
-        throw err;
-    }
-}
-exports.deleteQR = async (id) => {
-    try {
-        await QRCollection.doc(id).delete();
     } catch (err) {
         throw err;
     }

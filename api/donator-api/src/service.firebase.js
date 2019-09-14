@@ -28,6 +28,23 @@ exports.registerUser = async (name, email, password) => {
     }
 }
 
+/**
+ * setUserRole สร้างข้อมูลผู้ใช้เก็บลง firestore
+ * @param {string} uid 
+ * @param {string[]} role 
+ */
+exports.setUser = async (uid, role) => {
+    const data = {
+        uid: uid,
+        role: role
+    }
+    try {
+        await db.collection('users').doc(uid).set(data);
+    } catch (err) {
+        throw err;
+    }
+}
+
 exports.saveProject = async (project) => {
     console.log('[save project to firebase]');
 

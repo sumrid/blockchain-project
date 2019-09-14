@@ -2,9 +2,8 @@ const service = require('./service');
 const firebase = require('./service.firebase');
 const moment = require('moment');
 const uid = require('uuid/v4');
-const buildUrl = require('build-url');
-const fs = require('fs');
-const path = require('path');
+const axios = require('axios').default;
+const { REVENUE_URL } = require('./constants');
 
 const DATETIME_LAYOUT = 'DD-MM-YYYY:HH:mm:ss';
 
@@ -15,7 +14,7 @@ exports.registerCreator = async (req, res) => {
         const password = req.body.password;
         const user = await firebase.registerUser(name, email, password);
         await service.registerCreator(user.uid);
-        res.json({user:user});
+        res.json({ user: user });
     } catch (error) {
         res.status(500).json(error);
     }
@@ -57,7 +56,7 @@ exports.updateProject = async (req, res) => {
             detail: req.body.detail
             // TODO อาจจะให้แก้ใขได้มากกว่านี้
         }
-        
+
         const block = service.updateProject(userID, project);
         const db = firebase.updateProject(project);
         const results = await Promise.all([block, db]);
@@ -113,9 +112,8 @@ exports.getAllProjectByUserID = async (req, res) => {
 }
 
 exports.query = async (req, res) => {
-    const key = req.params.key;
-
     try {
+        const key = req.params.key;
         const result = await service.query(key);
         res.json(JSON.parse(String(result)));
     } catch (err) {
@@ -152,6 +150,33 @@ exports.getTx = async (req, res) => {
         res.json(result);
     } catch (err) {
         res.status(500).json(err);
+    }
+}
+
+exports.sendInvoice = async (req, res) => {
+    const user = req.body.user;
+    const project = req.body.project;
+    const invoice = req.body.invoice;
+
+    try {
+        const response = await axios.get(`${REVENUE_URL}/api/invoice/${invoice}`);
+        const inv = response.data;
+        const results = await service.withdraw(user, project, inv.total);
+        res.json(results);
+    } catch (error) {
+        res.status(404).json(error);
+    }
+
+}
+
+exports.getEvent = async (req, res) => {
+    try {
+        const project = req.params.project;
+        const result = await service.getEvent(project);
+        const events = JSON.parse(String(result));
+        res.json(events);
+    } catch (error) {
+        res.status(404).json(error);
     }
 }
 

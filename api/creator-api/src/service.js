@@ -13,6 +13,8 @@ const ccp2 = JSON.parse(ccpJSON2);
 const USER = 'user1'; // ผู้ใช้เริ่มต้น
 const FN_QUERY = 'query';
 const FN_DONATE = 'donate';
+const FN_WITHDRAW = 'withdraw';
+const FN_QUERY_EVENT = 'queryEvent';
 const FN_GET_HISTORY = 'getHistory';
 const FN_CLOSE_PROJECT = 'closeProject';
 const FN_UPDATE_PROJECT = 'updateProject'
@@ -23,7 +25,7 @@ const FN_UPDATE_PROJECT_STATUS = 'updateStatus';
 const FN_GET_DONATE_HISTORY = 'getDonationHistory';
 const FN_GET_PROJECT_BY_USER = 'queryProjectByUserID';
 const FN_GET_DONATION_BY_USERID = 'queryDonationByUserID';
-const FN_GET_PROJECT_BY_RECEIVER = 'queryProjectByReceiverID'
+const FN_GET_PROJECT_BY_RECEIVER = 'queryProjectByReceiverID';
 const CHANNEL = 'donation';  // ชื่อ channel
 const CONTRACT = 'mychaincode'; // ชื่อ chaincode
 
@@ -303,6 +305,26 @@ exports.getDonationByUserID = async (userID) => {
     } catch (err) {
         console.log(err);
         throw err;
+    }
+}
+
+exports.getEvent = async (projectID) => {
+    try {
+        const contract = await getContractOrg2(USER);
+        const result = await contract.evaluateTransaction(FN_QUERY_EVENT, projectID);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+exports.withdraw = async (user, project, amount) => {
+    try {
+        const contract = await getContractOrg2(user);
+        const result = await contract.submitTransaction(FN_WITHDRAW, user, project, amount.toString());
+        return result; 
+    } catch (error) {
+        throw error;
     }
 }
 

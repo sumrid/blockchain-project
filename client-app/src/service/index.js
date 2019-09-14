@@ -1,9 +1,13 @@
 import axios from 'axios';
 import { API_IP } from '../util';
 import { firestore } from 'firebase';
+import { EROFS } from 'constants';
 
-const SERVICE_URL = `http://${API_IP}:8000`;
-const USER_SERVICE = `http://${API_IP}:8001`;
+// const SERVICE_URL = `http://${API_IP}:8000`;
+// const USER_SERVICE = `http://${API_IP}:8001`;
+const DONATOR_API = `http://${API_IP}:8000`;
+const CREATOR_API = `http://${API_IP}:8001`;
+const RECEIVER_API = `http://${API_IP}:8002`;
 
 /**
  * Create project
@@ -11,7 +15,7 @@ const USER_SERVICE = `http://${API_IP}:8001`;
  */
 async function createProject(project) {
     try {
-        const res = await axios.post(SERVICE_URL + '/api/project', project);
+        const res = await axios.post(CREATOR_API + '/api/project', project);
         return res.data;
     } catch (err) {
         throw err;
@@ -19,7 +23,7 @@ async function createProject(project) {
 }
 
 async function updateProject(project) {
-    const res = await axios.put(SERVICE_URL + '/api/project', project);
+    const res = await axios.put(DONATOR_API + '/api/project', project);
     return res.data;
 }
 
@@ -29,7 +33,7 @@ async function updateProjectStatus(user, project, status) {
         project: project,
         status: status
     }
-    const res = await axios.post(SERVICE_URL + '/api/project/update/status', body);
+    const res = await axios.post(RECEIVER_API + '/api/project/update/status', body);
     return res.data;
 }
 
@@ -38,7 +42,7 @@ async function updateProjectStatus(user, project, status) {
  */
 async function getProjects() {
     try {
-        const res = await axios.get(SERVICE_URL + '/api/project');
+        const res = await axios.get(DONATOR_API + '/api/project');
         return res.data;
     } catch (err) {
         throw err;
@@ -51,7 +55,7 @@ async function getProjects() {
  */
 async function getProjectByID(id) {
     try {
-        const res = await axios.get(SERVICE_URL + '/api/query/' + id);
+        const res = await axios.get(DONATOR_API + '/api/query/' + id);
         return res.data;
     } catch (err) {
         throw err;
@@ -60,7 +64,7 @@ async function getProjectByID(id) {
 
 async function getMyProject(uid) {
     try {
-        const res = await axios.get(SERVICE_URL + '/api/user/' + uid + '/project');
+        const res = await axios.get(CREATOR_API + '/api/user/' + uid + '/project');
         return res.data;
     } catch (err) {
         throw err;
@@ -69,7 +73,7 @@ async function getMyProject(uid) {
 
 async function getMyReceive(uid) {
     try {
-        const res = await axios.get(SERVICE_URL + '/api/user/' + uid + '/receive');
+        const res = await axios.get(RECEIVER_API + '/api/user/' + uid + '/receive');
         return res.data;
     } catch (err) {
         throw err;
@@ -84,7 +88,7 @@ async function getMyReceive(uid) {
  */
 async function donate(donation) {
     try {
-        const res = await axios.post(SERVICE_URL + '/api/project/donate', donation);
+        const res = await axios.post(DONATOR_API + '/api/project/donate', donation);
         return res.data;
     } catch (err) {
         throw err;
@@ -97,7 +101,7 @@ async function donate(donation) {
  */
 async function getDonationHistory(projectID) {
     try {
-        const res = await axios.get(SERVICE_URL + '/api/project/donations/' + projectID);
+        const res = await axios.get(DONATOR_API + '/api/project/donations/' + projectID);
         return res.data;
     } catch (err) {
         throw err;
@@ -105,7 +109,7 @@ async function getDonationHistory(projectID) {
 }
 
 async function checkUserExists(user) {
-    const res = await axios.get(USER_SERVICE + `/api/user/${user}/isexists`);
+    const res = await axios.get(RECEIVER_API + `/api/user/${user}`);
     return res.data;
 }
 
@@ -115,10 +119,19 @@ async function checkUserExists(user) {
  */
 async function getDonationByUserID(uid) {
     try {
-        const res = await axios.get(`${SERVICE_URL}/api/user/${uid}/donation`);
+        const res = await axios.get(`${DONATOR_API}/api/user/${uid}/donation`);
         return res.data;
     } catch (err) {
         throw err;
+    }
+}
+
+async function getEvents(uid) {
+    try {
+        const res = await axios.get(`${DONATOR_API}/api/project/${uid}/events`);
+        return res.data;
+    } catch (error) {
+        throw error;
     }
 }
 
@@ -167,6 +180,7 @@ async function getProjectsInfo() {
 
 export default {
     donate,
+    getEvents,
     getUserInfo,
     getProjects,
     getMyProject,

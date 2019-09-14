@@ -1,13 +1,13 @@
-const service = require('./service');
-const firebase = require('./service.firebase');
-const moment = require('moment');
 const uid = require('uuid/v4');
+const moment = require('moment');
+const service = require('./service');
 const buildUrl = require('build-url');
+const firebase = require('./service.firebase');
 
-const generatePayload = require('promptpay-qr')
-const qrcode = require('qrcode')
 const fs = require('fs');
 const path = require('path');
+const qrcode = require('qrcode')
+const generatePayload = require('promptpay-qr')
 
 const DATETIME_LAYOUT = 'DD-MM-YYYY:HH:mm:ss';
 
@@ -161,6 +161,18 @@ exports.getDonationHistory = async (req, res) => {
         res.status(500).json(err);
     }
 }
+
+exports.getEvents = async (req, res) => {
+    try {
+        const project = req.params.project;
+        const result = service.getEvent(project);
+        const events = JSON.parse(String(result));
+        res.join(events);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
 /**
  * @function
  * createQR สำหรับการสร้างพร้อมเพย์ qr code  

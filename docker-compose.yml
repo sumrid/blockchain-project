@@ -93,6 +93,7 @@ services:
     container_name: creator-api
     environment:
       - NODE_ENV=docker
+      - REVENUE_URL=http://revenue-api:8080
     volumes:
       - ./api/creator-api:/app
       - ./api/wallet2:/wallet2
@@ -115,6 +116,23 @@ services:
     command: npm start
     ports:
       - 8002:8002
+    networks:
+      - default
+
+  ###########################
+  # Mock revenue department
+  ###########################
+  revenue-api:
+    image: node:10.15.3-stretch-slim
+    container_name: revenue-api
+    environment:
+      - NODE_ENV=docker
+    volumes:
+      - ./api/revenue-api:/app
+    working_dir: /app
+    command: npm start
+    ports:
+      - 8080:8080
     networks:
       - default
 

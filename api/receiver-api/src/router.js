@@ -12,6 +12,7 @@ router.get('/project/donations/:key', contorller.getDonationHistory);
 router.post('/user/register', contorller.registerReceiver);
 router.get('/user/:id/project', contorller.getAllProjectByUserID);
 router.get('/user/:id/receive', contorller.getAllProjectByReceiver);
+router.get('/user/:id', contorller.getUser);
 
 router.get('/tx/:txid', contorller.getTx);
 router.get('/', (req, res) => {

@@ -142,6 +142,17 @@ async function getChannal(user) {
 // #####################
 // #  Query and Invoke
 // #####################
+exports.checkUserExists = async (uid) => {
+    try {
+        const walletPath = path.join(process.cwd(), '..', 'wallet3');
+        const wallet = new FileSystemWallet(walletPath);
+
+        const isUserExixts = await wallet.exists(uid);
+        return isUserExixts;
+    } catch (error) {
+        
+    }
+}
 
 /**
  * **query any by key**
@@ -160,7 +171,7 @@ exports.query = async (key) => {
 
 exports.updateProject = async (userID, project) => {
     try {
-        const contract = await getContractOrg2(userID); // TODO func update project
+        const contract = await getContractOrg(userID); // TODO func update project
         const result = await contract.
             submitTransaction(
                 FN_UPDATE_PROJECT,
@@ -175,7 +186,7 @@ exports.updateProject = async (userID, project) => {
 
 exports.deleteProject = async (userID, projectID) => {
     try {
-        const contract = await getContractOrg2(userID);
+        const contract = await getContractOrg(userID);
         const result = await contract.submitTransaction(FN_DELETE_PROJECT, projectID);
         return result;
     } catch (err) {
@@ -221,7 +232,7 @@ exports.getAllProjects = async () => {
  */
 exports.getAllProjectsByUserID = async (uid) => {
     try {
-        const contract = await getContractOrg2(USER);
+        const contract = await getContractOrg(USER);
         const result = await contract.evaluateTransaction(FN_GET_PROJECT_BY_USER, uid);
         return result;
     } catch (err) {
@@ -232,7 +243,7 @@ exports.getAllProjectsByUserID = async (uid) => {
 
 exports.getAllProjectsByReceiverID = async (uid) => {
     try {
-        const contract = await getContractOrg2(USER);
+        const contract = await getContractOrg(USER);
         const result = await contract.evaluateTransaction(FN_GET_PROJECT_BY_RECEIVER, uid);
         return result;
     } catch (err) {

@@ -1,6 +1,7 @@
-const service = require('./service');
-const firebase = require('./service.firebase');
 const moment = require('moment');
+const service = require('./service');
+const validator = require('validator');
+const firebase = require('./service.firebase');
 const DATETIME_LAYOUT = 'DD-MM-YYYY:HH:mm:ss';
 
 exports.registerReceiver = async (req, res) => {
@@ -10,9 +11,29 @@ exports.registerReceiver = async (req, res) => {
         const password = req.body.password;
         const user = await firebase.registerUser(name, email, password);
         await service.registerReceiver(user.uid);
+        await firebase.setUser(user.uid, ["receiver"]);
         res.json({user: user});
     } catch (error) {
         res.status(500).json(error);
+    }
+}
+
+exports.getUser = async (req, res) => {
+    try {
+        const input = req.params.id;
+        const isEmail = validator.isEmail(input);
+        if (isEmail) {
+            const user = await firebase.getUserByEmail(input);
+            const isExsits = await service.checkUserExists(user.uid);
+            if (isExsits) res.json(user.uid);
+            else res.status(404).json({message: "user not found."});
+        } else {
+            const isExsits = await service.checkUserExists(input);
+            if (isExsits) res.json(input);
+            else res.status(404).json({message: "user not found."});
+        }
+    } catch (error) {
+        res.status(404).json(error);
     }
 }
 
@@ -63,7 +84,7 @@ exports.getAllProjectByReceiver = async (req, res) => {
 exports.query = async (req, res) => {
     const key = req.params.key;
 
-    try {
+    try {validator
         const result = await service.query(key);
         res.json(JSON.parse(String(result)));
     } catch (err) {

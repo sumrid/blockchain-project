@@ -19,6 +19,7 @@ exports.registerDonator = async (req, res) => {
         const password = req.body.password;
         const user = await firebase.registerUser(name, email, password);
         await service.register(user.uid);
+        await firebase.setUser(user.uid, ["donator"]);
         res.json({ user: user });
     } catch (error) {
         res.status(500).json(error);
@@ -102,6 +103,17 @@ exports.getDonationHistory = async (req, res) => {
         res.json(JSON.parse(String(result)));
     } catch (err) {
         res.status(500).json(err);
+    }
+}
+
+exports.getEvent = async (req, res) => {
+    try {
+        const project = req.params.project;
+        const result = await service.getEvent(project);
+        const events = JSON.parse(String(result));
+        res.json(events);
+    } catch (error) {
+        res.status(404).json(error);
     }
 }
 

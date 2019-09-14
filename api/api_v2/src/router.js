@@ -2,15 +2,16 @@ const express = require('express');
 const router = express.Router();
 const contorller = require('./controller');
 
+router.get('/query/:key', contorller.query);
+router.put('/project', contorller.updateProject);
 router.post('/project', contorller.createProject);
 router.get('/project', contorller.getAllProjects);
-router.put('/project', contorller.updateProject);
-router.delete('/project', contorller.deleteProject);
-router.post('/project/update/status', contorller.updateProjectStatus);
 router.post('/project/donate', contorller.donate);
-router.get('/query/:key', contorller.query);
+router.delete('/project', contorller.deleteProject);
 router.get('/project/history/:key', contorller.getHistory);
+router.get('/project/:project/events', contorller.getEvents);
 router.get('/project/donations/:key', contorller.getDonationHistory);
+router.post('/project/update/status', contorller.updateProjectStatus);
 // TODO : verify token
 router.post('/project/donate/qr', contorller.createQR);             // v2 ออก QRcode promptpay 
 router.post('/project/donate/readqr', contorller.readQR);           // บริจาคและลบ QRcode

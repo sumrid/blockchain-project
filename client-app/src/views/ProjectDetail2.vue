@@ -83,6 +83,19 @@
     </div>
 
     <div class="row">
+      <div class="col text-center">
+        <h3>Events</h3>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col text-center">
+        <div class="row">
+          <b-table striped hover :items="events" :fields="eventsFields"></b-table>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
       <div class="col text-center" id="donate">
         <div v-if="project.status == 'open'">
           <h3>ร่วมบริจาค</h3>
@@ -179,6 +192,7 @@ export default {
   data() {
     return {
       info: {},
+      events: [],
       project: {},
       donations: {},
       form: {
@@ -192,6 +206,18 @@ export default {
       qrmessage: "",
       loadingQR: false,
       currentUser: null,
+      eventsFields: [
+        {
+          key: "event",
+        },
+        {
+          key: "message"
+        },
+        {
+          key: "timestamp",
+          sortable: true
+        }
+      ],
       fields: [
         {
           key: "txid",
@@ -241,6 +267,11 @@ export default {
       service.getDonationHistory(ID).then(donations => {
         this.donations = donations;
       });
+    },
+    getEvents: function(ID) {
+      service.getEvents(ID).then(events => {
+        this.events = events;
+      })
     },
     onSubmit: async function() {
       this.loading = true;
@@ -318,6 +349,7 @@ export default {
     const p_id = this.$route.params.id;
     this.getDetail(p_id);
     this.getDontions(p_id);
+    this.getEvents(p_id);
   }
 };
 </script>

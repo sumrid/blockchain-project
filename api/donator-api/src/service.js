@@ -14,6 +14,7 @@ const USER = 'user1'; // ผู้ใช้เริ่มต้น
 const FN_QUERY = 'query';
 const FN_DONATE = 'donate';
 const FN_GET_HISTORY = 'getHistory';
+const FN_QUERY_EVENT = 'queryEvent';
 const FN_CLOSE_PROJECT = 'closeProject';
 const FN_CREATE_PROJECT = 'createProject';
 const FN_QUERY_PROJECTS = 'queryAllProjects';
@@ -23,6 +24,9 @@ const FN_GET_DONATION_BY_USERID = 'queryDonationByUserID';
 const CHANNEL = 'donation';  // ชื่อ channel
 const CONTRACT = 'mychaincode'; // ชื่อ chaincode
 
+/**
+ * register ลงทะเบียนผู้ใช้งาน
+ */
 exports.register = async (uid) => {
     try {
         const ADMIN = 'admin';
@@ -223,6 +227,16 @@ exports.getDonationByUserID = async (userID) => {
     } catch (err) {
         console.log(err);
         throw err;
+    }
+}
+
+exports.getEvent = async (projectID) => {
+    try {
+        const contract = await getContractOrg1(USER);
+        const result = await contract.evaluateTransaction(FN_QUERY_EVENT, projectID);
+        return result;
+    } catch (error) {
+        throw error;
     }
 }
 

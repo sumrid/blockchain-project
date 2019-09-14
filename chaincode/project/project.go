@@ -55,18 +55,31 @@ type User struct {
 
 // Event เหตุการณ์ของโครงการ เช่น เปิดโครงการ, ยอมรับ, ปิด, ล้มเหลว เมื่อเวลาไหน
 type Event struct {
-	ID        string `json:"id"`
-	TxID      string `json:"txid"`
-	ProjectID string `json:"project"`
-	Event     string `json:"event"`
-	Message   string `json:"message"`
-	Type      string `json:"type"`
+	ID        string    `json:"id"`
+	TxID      string    `json:"txid"`
+	ProjectID string    `json:"project"`
+	Event     string    `json:"event"`
+	Message   string    `json:"message"`
+	Timestamp time.Time `json:"timestamp"`
+	Type      string    `json:"type"`
 }
 
-// Form ขอเงินโอนเงิน
-type Xxx struct {
-	ID   string `json:"id"`
-	Type string `json:"type"`
+// WithdrawRequest ขอเงินโอนเงิน
+type WithdrawRequest struct {
+	ID            string `json:"id"`
+	Type          string `json:"type"`
+	Project       string `json:"project"` // uid ของโครงการ
+	Status        string `json:"status"`
+	InvoiceNumber string `json:"invoice"`
+}
+
+// Invoice ข้อมูลของใบกำกับภาษี
+type Invoice struct {
+	Number       int       `json:"number"`
+	CustomerName string    `json:"cusname"`
+	VAT          float64   `json:"vat"`
+	Date         time.Time `json:"date"`
+	Type         string    `json:"type"`
 }
 
 // Chaincode ...
@@ -116,6 +129,8 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return C.payBack(stub, args)
 	} else if fn == "withdraw" {
 		return C.withdraw(stub, args)
+	} else if fn == "queryEvent" {
+		return C.queryEventByProjectID(stub, args)
 	}
 
 	logger.Error("invoke did not find func: " + fn)
@@ -126,6 +141,7 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 // มีการรับ agrs ดังนี้
 // 	- args[0] function name
 func (C *Chaincode) createProject(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	logger.Info("createProject: start.")
 	// Check arguments
 	if len(args) != 9 {
 		return shim.Error("Incorrect arguments, Want 9 input.")
@@ -166,14 +182,28 @@ func (C *Chaincode) createProject(stub shim.ChaincodeStubInterface, args []strin
 		return shim.Error(err.Error())
 	}
 
+	// Create event
+	evt := Event{}
+	evt.ID = "event_" + stub.GetTxID()
+	evt.TxID = stub.GetTxID()
+	evt.ProjectID = p.ID
+	evt.Event = "create project"
+	evt.Message = "create project"
+	evt.Type = "event"
+	evtByte, err := json.Marshal(evt)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
 	// Put state
 	err = stub.PutState(id, pJSON)
+	err = stub.PutState(evt.ID, evtByte)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 
 	// Return success
-	logger.Info("createProject : success")
+	logger.Info("createProject: success, project ID: " + p.ID)
 	return shim.Success(pJSON)
 }
 
@@ -589,7 +619,20 @@ func (C *Chaincode) closeProject(stub shim.ChaincodeStubInterface, args []string
 		return shim.Error(err.Error())
 	}
 
+	evt := Event{}
+	evt.ID = "event_" + stub.GetTxID()
+	evt.TxID = stub.GetTxID()
+	evt.ProjectID = p.ID
+	evt.Event = "update"
+	evt.Message = "The project is closed because the time is up."
+	evt.Type = "event"
+	evtAsByte, err := json.Marshal(evt)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
 	err = stub.PutState(key, result)
+	err = stub.PutState(evt.ID, evtAsByte)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -622,12 +665,24 @@ func (C *Chaincode) updateStatus(stub shim.ChaincodeStubInterface, args []string
 		return shim.Error("401 " + user)
 	}
 
-	// Update
+	// Update project
 	p.Status = status
+
+	evt := Event{}
+	evt.ID = "event_" + stub.GetTxID()
+	evt.TxID = stub.GetTxID()
+	evt.ProjectID = p.ID
+	evt.Event = "update"
+	evt.Message = fmt.Sprintf(`Change project status to "%s" by %s`, status, user)
+	evtAsByte, err := json.Marshal(evt)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
 
 	// Save project
 	result, err = json.Marshal(p)
 	err = stub.PutState(id, result)
+	err = stub.PutState(evt.ID, evtAsByte)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -704,11 +759,14 @@ func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) pee
 }
 
 func (C *Chaincode) withdraw(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	logger.Info("withdraw: start.")
+
 	if len(args) < 3 {
+		logger.Error("Expected 3 arguments.")
 		return shim.Error("Expected 3 arguments.")
 	}
 
-	// user := args[0]
+	user := args[0]
 	project := args[1]
 	amount, err := strconv.ParseFloat(args[2], 64)
 	if err != nil {
@@ -736,9 +794,61 @@ func (C *Chaincode) withdraw(stub shim.ChaincodeStubInterface, args []string) pe
 		return shim.Error(err.Error())
 	}
 
-	stub.PutState(project, pAsByte)
+	// Create event
+	evt := Event{}
+	evt.ID = "event_" + stub.GetTxID()
+	evt.Type = "event"
+	evt.TxID = stub.GetTxID()
+	evt.ProjectID = project
+	evt.Event = "withdraw"
+	evt.Message = fmt.Sprintf("Transfer money to %s %.2f", user, amount)
+	evtAsByte, err := json.Marshal(evt)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
 
-	return shim.Success(pAsByte)
+	// put state
+	stub.PutState(project, pAsByte)
+	stub.PutState(evt.ID, evtAsByte)
+	// stub.PutState(user, nil)
+
+	type payload struct {
+		Amount float64 `json:"amount"`
+	}
+	pay, err := json.Marshal(payload{amount})
+	logger.Info("withdraw: success. txID: " + stub.GetTxID())
+	return shim.Success(pay)
+}
+
+func (C *Chaincode) queryEventByProjectID(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	proj := args[0]
+	queryStr := fmt.Sprintf(`{"selector":{"type":{"$eq": "event"},"project":{"$eq":"%s"}}}`, proj)
+
+	results, err := C.queryWithSelector(stub, queryStr)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	var evts []Event
+	for _, evtByte := range results {
+		evt := Event{}
+		err = json.Unmarshal(evtByte, &evt)
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		evts = append(evts, evt)
+	}
+
+	payload, err := json.Marshal(evts)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	return shim.Success(payload)
+}
+
+func (C *Chaincode) withdrawRequest(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	return shim.Success(nil)
 }
 
 func main() {
