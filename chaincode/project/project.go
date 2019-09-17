@@ -55,13 +55,13 @@ type User struct {
 
 // Event เหตุการณ์ของโครงการ เช่น เปิดโครงการ, ยอมรับ, ปิด, ล้มเหลว เมื่อเวลาไหน
 type Event struct {
-	ID        string    `json:"id"`
-	TxID      string    `json:"txid"`
-	ProjectID string    `json:"project"`
-	Event     string    `json:"event"`
-	Message   string    `json:"message"`
-	Timestamp time.Time `json:"timestamp"`
-	Type      string    `json:"type"`
+	ID        string `json:"id"`
+	TxID      string `json:"txid"`
+	ProjectID string `json:"project"`
+	Event     string `json:"event"`
+	Message   string `json:"message"`
+	Timestamp int64  `json:"timestamp"`
+	Type      string `json:"type"`
 }
 
 // WithdrawRequest ขอเงินโอนเงิน
@@ -73,11 +73,22 @@ type WithdrawRequest struct {
 	InvoiceNumber string `json:"invoice"`
 }
 
+// Item สินค้าในใบกำกับภาษี
+type Item struct {
+	Name   string  `json:"name"`
+	Price  float64 `json:"price"`
+	Amount int     `json:"amount"`
+}
+
 // Invoice ข้อมูลของใบกำกับภาษี
 type Invoice struct {
+	ID           string    `json:"id"`
+	ProjectID    string    `json:"project"`
 	Number       int       `json:"number"`
 	CustomerName string    `json:"cusname"`
 	VAT          float64   `json:"vat"`
+	Items        []Item    `json:"items"`
+	Total        float64   `json:"total"`
 	Date         time.Time `json:"date"`
 	Type         string    `json:"type"`
 }
@@ -131,6 +142,10 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return C.withdraw(stub, args)
 	} else if fn == "queryEvent" {
 		return C.queryEventByProjectID(stub, args)
+	} else if fn == "addInvoice" {
+		return C.addInvioce(stub, args)
+	} else if fn == "queryInvoiceByProjectID" {
+		return C.queryInvoiceByProjectID(stub, args)
 	}
 
 	logger.Error("invoke did not find func: " + fn)
@@ -190,6 +205,8 @@ func (C *Chaincode) createProject(stub shim.ChaincodeStubInterface, args []strin
 	evt.Event = "create project"
 	evt.Message = "create project"
 	evt.Type = "event"
+	t, _ := stub.GetTxTimestamp()
+	evt.Timestamp = t.GetSeconds()
 	evtByte, err := json.Marshal(evt)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -626,6 +643,8 @@ func (C *Chaincode) closeProject(stub shim.ChaincodeStubInterface, args []string
 	evt.Event = "update"
 	evt.Message = "The project is closed because the time is up."
 	evt.Type = "event"
+	t, _ := stub.GetTxTimestamp()
+	evt.Timestamp = t.GetSeconds()
 	evtAsByte, err := json.Marshal(evt)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -674,6 +693,9 @@ func (C *Chaincode) updateStatus(stub shim.ChaincodeStubInterface, args []string
 	evt.ProjectID = p.ID
 	evt.Event = "update"
 	evt.Message = fmt.Sprintf(`Change project status to "%s" by %s`, status, user)
+	evt.Type = "event"
+	t, _ := stub.GetTxTimestamp()
+	evt.Timestamp = t.GetSeconds()
 	evtAsByte, err := json.Marshal(evt)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -786,6 +808,10 @@ func (C *Chaincode) withdraw(stub shim.ChaincodeStubInterface, args []string) pe
 		return shim.Error(err.Error())
 	}
 
+	if p.Balance < amount {
+		return shim.Error("Not enough money to withdraw.")
+	}
+
 	p.Balance -= amount
 	// user.balance += amount
 
@@ -801,7 +827,9 @@ func (C *Chaincode) withdraw(stub shim.ChaincodeStubInterface, args []string) pe
 	evt.TxID = stub.GetTxID()
 	evt.ProjectID = project
 	evt.Event = "withdraw"
-	evt.Message = fmt.Sprintf("Transfer money to %s %.2f", user, amount)
+	evt.Message = fmt.Sprintf("Transfer money to %s %.2f Baht", user, amount)
+	t, _ := stub.GetTxTimestamp()
+	evt.Timestamp = t.GetSeconds()
 	evtAsByte, err := json.Marshal(evt)
 	if err != nil {
 		return shim.Error(err.Error())

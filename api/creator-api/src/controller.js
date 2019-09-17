@@ -159,14 +159,25 @@ exports.sendInvoice = async (req, res) => {
     const invoice = req.body.invoice;
 
     try {
-        const response = await axios.get(`${REVENUE_URL}/api/invoice/${invoice}`);
-        const inv = response.data;
-        const results = await service.withdraw(user, project, inv.total);
-        res.json(results);
+        const invStr = JSON.stringify(invoice);
+        const result = await service.addInvoice(user, project, invStr);
+        const invOut = JSON.parse(String(result));
+        res.json(invOut);
     } catch (error) {
-        res.status(404).json(error);
+        res.status(500).json(error);
     }
 
+}
+
+exports.getInvoice = async (req, res) => {
+    try {
+        const project = req.params.project;
+        const result = await service.getProjectInvoice(project);
+        const invoices = JSON.parse(String(result));
+        res.json(invoices);
+    } catch (error) {
+        
+    }
 }
 
 exports.getEvent = async (req, res) => {

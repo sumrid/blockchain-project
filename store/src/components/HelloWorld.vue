@@ -1,142 +1,98 @@
 <template>
   <v-container>
-    <v-layout
-      text-center
-      wrap
-    >
-      <v-flex xs12>
-        <v-img
-          :src="require('../assets/logo.svg')"
-          class="my-3"
-          contain
-          height="200"
-        ></v-img>
-      </v-flex>
+    <div class="row">
+      <p class="display-1">สินค้า</p>
+    </div>
 
-      <v-flex mb-4>
-        <h1 class="display-2 font-weight-bold mb-3">
-          Welcome to Vuetify
-        </h1>
-        <p class="subheading font-weight-regular">
-          For help and collaboration with other Vuetify developers,
-          <br>please join our online
-          <a href="https://community.vuetifyjs.com" target="_blank">Discord Community</a>
-        </p>
-      </v-flex>
+    <v-row>
+      <v-card class="mx-auto card" max-width="400" v-for="p in products" :key="p.name">
+        <v-img class="white--text" height="200px" max-width="400px" max-height="300px" min-width="400px" :src="p.img">
+          <v-card-title class="align-end fill-height">{{p.name}}</v-card-title>
+        </v-img>
 
-      <v-flex
-        mb-5
-        xs12
-      >
-        <h2 class="headline font-weight-bold mb-3">What's next?</h2>
+        <v-card-text>
+          <span>ราคา {{p.price}} บาท</span>
+          <br />
+          <span class="text--primary">
+            <span>Whitehaven Beach</span>
+            <br />
+            <span>Whitsunday Island, Whitsunday Islands</span>
+          </span>
+        </v-card-text>
 
-        <v-layout justify-center>
-          <a
-            v-for="(next, i) in whatsNext"
-            :key="i"
-            :href="next.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ next.text }}
-          </a>
-        </v-layout>
-      </v-flex>
-
-      <v-flex
-        xs12
-        mb-5
-      >
-        <h2 class="headline font-weight-bold mb-3">Important Links</h2>
-
-        <v-layout justify-center>
-          <a
-            v-for="(link, i) in importantLinks"
-            :key="i"
-            :href="link.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ link.text }}
-          </a>
-        </v-layout>
-      </v-flex>
-
-      <v-flex
-        xs12
-        mb-5
-      >
-        <h2 class="headline font-weight-bold mb-3">Ecosystem</h2>
-
-        <v-layout justify-center>
-          <a
-            v-for="(eco, i) in ecosystem"
-            :key="i"
-            :href="eco.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ eco.text }}
-          </a>
-        </v-layout>
-      </v-flex>
-    </v-layout>
+        <v-card-actions>
+          <v-btn text color="orange">ซื้อ</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-row>
+    <v-row>
+      <p class="display-1">ตะกร้า</p>
+    </v-row>
   </v-container>
 </template>
 
 <script>
 export default {
-  data: () => ({
-    ecosystem: [
-      {
-        text: 'vuetify-loader',
-        href: 'https://github.com/vuetifyjs/vuetify-loader',
-      },
-      {
-        text: 'github',
-        href: 'https://github.com/vuetifyjs/vuetify',
-      },
-      {
-        text: 'awesome-vuetify',
-        href: 'https://github.com/vuetifyjs/awesome-vuetify',
-      },
-    ],
-    importantLinks: [
-      {
-        text: 'Documentation',
-        href: 'https://vuetifyjs.com',
-      },
-      {
-        text: 'Chat',
-        href: 'https://community.vuetifyjs.com',
-      },
-      {
-        text: 'Made with Vuetify',
-        href: 'https://madewithvuejs.com/vuetify',
-      },
-      {
-        text: 'Twitter',
-        href: 'https://twitter.com/vuetifyjs',
-      },
-      {
-        text: 'Articles',
-        href: 'https://medium.com/vuetify',
-      },
-    ],
-    whatsNext: [
-      {
-        text: 'Explore components',
-        href: 'https://vuetifyjs.com/components/api-explorer',
-      },
-      {
-        text: 'Select a layout',
-        href: 'https://vuetifyjs.com/layout/pre-defined',
-      },
-      {
-        text: 'Frequently Asked Questions',
-        href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions',
-      },
-    ],
-  }),
+  data() {
+    return {
+      products: [
+        {
+          name: "เสื้อผ้า",
+          price: 500,
+          img:
+            "https://media.shopat24.com/pdmain/213841_01_reebok_b83864_bm789.jpg"
+        },
+        {
+          name: "ข้าวสาร",
+          price: 500,
+          img:
+            "https://www.u-rice.com/wp-content/uploads/2019/04/%E0%B8%82%E0%B9%89%E0%B8%B2%E0%B8%A7%E0%B8%AA%E0%B8%B2%E0%B8%A3-696x464.jpg"
+        },
+        {
+          name: "ยาแก้ปวด",
+          price: 100,
+          img:
+            "https://www.honestdocs.co/system/blog_articles/main_hero_images/000/005/614/large/iStock-923848688_%281%29.jpg"
+        },
+        {
+          name: "สมุด",
+          price: 50,
+          img:
+            "https://aumento.officemate.co.th/media/catalog/product/O/F/OFM5005071.jpg?imwidth=320"
+        },
+        {
+          name: "ปากกา",
+          price: 30,
+          img:
+            "https://www.goodchoiz.com/content/images/thumbs/0033019_%E0%B9%88%E0%B8%B1-%E0%B8%B1%E0%B9%89-007-07-%E0%B8%B5%E0%B9%89%E0%B8%B3%E0%B8%B4_550.jpeg"
+        },
+        {
+          name: "อิฐก้อน",
+          price: 200,
+          img:
+            "https://www.ttmconstruction.com/uploaded/content/article/%E0%B8%AD%E0%B8%B4%E0%B8%90%E0%B8%A1%E0%B8%AD%E0%B8%8D.jpg"
+        },
+        {
+          name: "ปูน",
+          price: 400,
+          img:
+            "http://www.nanasteel.com/images/content/original-1538745462299.jpg"
+        },
+        {
+          name: "กระเบื้อง",
+          price: 450,
+          img:
+            "https://3dwarehouse.sketchup.com/warehouse/v1.0/publiccontent/1e73b8c7-f2c4-447f-bf76-119ac0876e88"
+        }
+      ],
+      carts: []
+    };
+  }
 };
 </script>
+
+<style>
+.card {
+  margin: 1rem;
+}
+</style>

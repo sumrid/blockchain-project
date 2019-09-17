@@ -14,6 +14,7 @@ const USER = 'user1'; // ผู้ใช้เริ่มต้น
 const FN_QUERY = 'query';
 const FN_DONATE = 'donate';
 const FN_WITHDRAW = 'withdraw';
+const FN_ADD_INVOICE = 'addInvoice';
 const FN_QUERY_EVENT = 'queryEvent';
 const FN_GET_HISTORY = 'getHistory';
 const FN_CLOSE_PROJECT = 'closeProject';
@@ -23,6 +24,7 @@ const FN_DELETE_PROJECT = 'deleteProject';
 const FN_QUERY_PROJECTS = 'queryAllProjects';
 const FN_UPDATE_PROJECT_STATUS = 'updateStatus';
 const FN_GET_DONATE_HISTORY = 'getDonationHistory';
+const FN_QUERY_INVOICE = 'queryInvoiceByProjectID';
 const FN_GET_PROJECT_BY_USER = 'queryProjectByUserID';
 const FN_GET_DONATION_BY_USERID = 'queryDonationByUserID';
 const FN_GET_PROJECT_BY_RECEIVER = 'queryProjectByReceiverID';
@@ -318,11 +320,39 @@ exports.getEvent = async (projectID) => {
     }
 }
 
-exports.withdraw = async (user, project, amount) => {
+exports.withdraw = async (user, project, amount, invoiceID) => {
     try {
         const contract = await getContractOrg2(user);
         const result = await contract.submitTransaction(FN_WITHDRAW, user, project, amount.toString());
-        return result; 
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+/**
+ * @param {string} user user id
+ * @param {string} project project id
+ * @param {string} invoice invoice object as json format
+ */
+exports.addInvoice = async (user, project, invoice) => {
+    try {
+        const contract = await getContractOrg2(user);
+        const result = await contract.submitTransaction(FN_ADD_INVOICE, project, invoice);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+/**
+ * @param {string} project project id
+ */
+exports.getProjectInvoice = async (project) => {
+    try {
+        const contract = await getContractOrg2(USER);
+        const result = await contract.evaluateTransaction(FN_QUERY_INVOICE, project);
+        return result;
     } catch (error) {
         throw error;
     }

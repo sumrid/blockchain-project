@@ -11,12 +11,13 @@ router.get('/project/history/:key', contorller.getHistory);
 router.get('/project/donations/:key', contorller.getDonationHistory);
 router.post('/project/update/status', contorller.updateProjectStatus);
 router.get('/project/:project/events', contorller.getEvent);
+router.get('/project/:project/invoice', contorller.getInvoice);
 
 // User
 router.post('/user/register', contorller.registerCreator);
 router.get('/user/:id/project', contorller.getAllProjectByUserID);
 
-router.post('/send/invoice', contorller.sendInvoice);
+router.post('/invoice', contorller.sendInvoice);
 
 router.get('/tx/:txid', contorller.getTx);
 router.get('/', (req, res) => {
