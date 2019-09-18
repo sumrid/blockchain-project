@@ -6,8 +6,8 @@ const firebase = require('./service.firebase');
 
 const fs = require('fs');
 const path = require('path');
-const qrcode = require('qrcode')
-const generatePayload = require('promptpay-qr')
+const qrcode = require('qrcode');
+const generatePayload = require('promptpay-qr');
 
 const DATETIME_LAYOUT = 'DD-MM-YYYY:HH:mm:ss';
 

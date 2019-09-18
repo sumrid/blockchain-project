@@ -1,4 +1,6 @@
-require('@google-cloud/trace-agent').start();
+if (process.env.NODE_ENV !== "test") {
+    require('@google-cloud/trace-agent').start();
+}
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -14,7 +16,7 @@ const port = 8000;
 // Use middlerware
 server.use(cors());
 server.use(bodyParser.json())
-server.use(bodyParser.urlencoded({ extended : true, useNewUrlParser: true }));
+server.use(bodyParser.urlencoded({ extended: true, useNewUrlParser: true }));
 server.use(morgan('combined'));
 
 // Add router

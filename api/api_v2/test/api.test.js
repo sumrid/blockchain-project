@@ -125,6 +125,16 @@ describe('test controller', () => {
         expect(res.body.message).toEqual('Some error.');
     });
 
+    test('', async () => {
+        const s = chai.request(server);
+        
+        setTimeout(async () => {
+            const res = await s.get('/api');
+            console.log(res.text);
+
+        }, 5000);
+    });
+
     afterEach(() => {
         jest.resetAllMocks()
     });

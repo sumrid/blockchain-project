@@ -1,12 +1,21 @@
 <template>
   <v-container>
-    <div class="row">
-      <p class="display-1">สินค้า</p>
-    </div>
+    <v-row class="row">
+      <v-col id="x">
+        <p class="display-1 text-center">สินค้า</p>
+      </v-col>
+    </v-row>
 
     <v-row>
       <v-card class="mx-auto card" max-width="400" v-for="p in products" :key="p.name">
-        <v-img class="white--text" height="200px" max-width="400px" max-height="300px" min-width="400px" :src="p.img">
+        <v-img
+          class="white--text"
+          height="200px"
+          max-width="400px"
+          max-height="300px"
+          min-width="400px"
+          :src="p.img"
+        >
           <v-card-title class="align-end fill-height">{{p.name}}</v-card-title>
         </v-img>
 
@@ -21,17 +30,45 @@
         </v-card-text>
 
         <v-card-actions>
-          <v-btn text color="orange">ซื้อ</v-btn>
+          <v-btn text color="orange" @click="addToCart(p)">
+            <v-icon>{{icons.buy}}</v-icon>ซื้อ
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-row>
-    <v-row>
-      <p class="display-1">ตะกร้า</p>
-    </v-row>
+    <v-container class="blue lighten-4 cart-box" elevation="2">
+      <v-row>
+        <v-col>
+          <p class="display-1 text-center">ใบสั่งซื้อ</p>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <code>{{invoice}}</code>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <p>Total : {{total}} บาท</p>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col class="text-center">
+          <v-btn :disabled="!Boolean(total)" @click="sendInvoice">
+            <v-progress-circular indeterminate color="primary" v-if="isLoading"></v-progress-circular>
+            <v-icon>{{icons.cart}}</v-icon>ซื้อเลยยย
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-container>
 </template>
 
 <script>
+import moment from "moment";
+const axios = require("axios").default;
+const url = window.location.hostname;
+
 export default {
   data() {
     return {
@@ -85,8 +122,56 @@ export default {
             "https://3dwarehouse.sketchup.com/warehouse/v1.0/publiccontent/1e73b8c7-f2c4-447f-bf76-119ac0876e88"
         }
       ],
-      carts: []
+      invoice: {
+        id: moment().unix().toString(),
+        number: moment().unix(),
+        total: this.total,
+        cusname: "customer name",
+        items: [],
+        date: moment().toDate()
+      },
+      icons: {
+        cart: "mdi-cart",
+        buy: "mdi-cart-arrow-down"
+      },
+      isLoading: false
     };
+  },
+  computed: {
+    total: function() {
+      let total = 0;
+      this.invoice.items.forEach(item => {
+        total += item.price;
+      });
+      return total;
+    }
+  },
+  methods: {
+    addToCart: function(item) {
+      this.invoice.items.push(item);
+    },
+    sendInvoice: async function() {
+      this.isLoading = true;
+      const URL = `http://${url}:8080/api/invoice`;
+      axios
+        .post(URL, this.invoice)
+        .then(res => {
+          console.log(res.data);
+          this.isLoading = false;
+          this.setUpInvoice();
+        })
+        .catch(() => {
+          this.isLoading = false;
+        });
+    },
+    setUpInvoice: function() {
+      this.invoice = {
+        id: moment().unix().toString(),
+        number: moment().unix(),
+        items: [],
+        date: moment().toDate()
+      };
+    }
   }
 };
 </script>
@@ -94,5 +179,8 @@ export default {
 <style>
 .card {
   margin: 1rem;
+}
+.cart-box {
+  border-radius: 1rem;
 }
 </style>
