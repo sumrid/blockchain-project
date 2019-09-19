@@ -61,71 +61,29 @@
         </v-col>
       </v-row>
     </v-container>
+    <v-snackbar v-model="snackbar" :bottom="true" color="success">
+      รหัสใบสั่งซื้อคือ {{ popUpText }}
+      <v-btn dark text @click="snackbar = false">Close</v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 
 <script>
 import moment from "moment";
+import data from "../data";
 const axios = require("axios").default;
 const url = window.location.hostname;
 
 export default {
   data() {
     return {
-      products: [
-        {
-          name: "เสื้อผ้า",
-          price: 500,
-          img:
-            "https://media.shopat24.com/pdmain/213841_01_reebok_b83864_bm789.jpg"
-        },
-        {
-          name: "ข้าวสาร",
-          price: 500,
-          img:
-            "https://www.u-rice.com/wp-content/uploads/2019/04/%E0%B8%82%E0%B9%89%E0%B8%B2%E0%B8%A7%E0%B8%AA%E0%B8%B2%E0%B8%A3-696x464.jpg"
-        },
-        {
-          name: "ยาแก้ปวด",
-          price: 100,
-          img:
-            "https://www.honestdocs.co/system/blog_articles/main_hero_images/000/005/614/large/iStock-923848688_%281%29.jpg"
-        },
-        {
-          name: "สมุด",
-          price: 50,
-          img:
-            "https://aumento.officemate.co.th/media/catalog/product/O/F/OFM5005071.jpg?imwidth=320"
-        },
-        {
-          name: "ปากกา",
-          price: 30,
-          img:
-            "https://www.goodchoiz.com/content/images/thumbs/0033019_%E0%B9%88%E0%B8%B1-%E0%B8%B1%E0%B9%89-007-07-%E0%B8%B5%E0%B9%89%E0%B8%B3%E0%B8%B4_550.jpeg"
-        },
-        {
-          name: "อิฐก้อน",
-          price: 200,
-          img:
-            "https://www.ttmconstruction.com/uploaded/content/article/%E0%B8%AD%E0%B8%B4%E0%B8%90%E0%B8%A1%E0%B8%AD%E0%B8%8D.jpg"
-        },
-        {
-          name: "ปูน",
-          price: 400,
-          img:
-            "http://www.nanasteel.com/images/content/original-1538745462299.jpg"
-        },
-        {
-          name: "กระเบื้อง",
-          price: 450,
-          img:
-            "https://3dwarehouse.sketchup.com/warehouse/v1.0/publiccontent/1e73b8c7-f2c4-447f-bf76-119ac0876e88"
-        }
-      ],
+      products: data.products.slice(),
       invoice: {
-        id: moment().unix().toString(),
+        id: moment()
+          .unix()
+          .toString(),
         number: moment().unix(),
-        total: this.total,
+        total: 0,
         cusname: "customer name",
         items: [],
         date: moment().toDate()
@@ -134,29 +92,44 @@ export default {
         cart: "mdi-cart",
         buy: "mdi-cart-arrow-down"
       },
-      isLoading: false
+      isLoading: false,
+      snackbar: false,
+      popUpText: ""
     };
   },
   computed: {
     total: function() {
       let total = 0;
       this.invoice.items.forEach(item => {
-        total += item.price;
+        total += item.price * item.amount;
       });
+      // this.invoice.total = total;
       return total;
     }
   },
   methods: {
     addToCart: function(item) {
-      this.invoice.items.push(item);
+      let i = this.invoice.items.find(each => each.name === item.name);
+      if (i) {
+        i.amount++;
+      } else {
+        i = {
+          name: item.name,
+          price: item.price,
+          amount: 1
+        };
+        this.invoice.items.push(i);
+      }
     },
     sendInvoice: async function() {
       this.isLoading = true;
       const URL = `http://${url}:8080/api/invoice`;
+      this.invoice.total = this.total;
       axios
         .post(URL, this.invoice)
         .then(res => {
           console.log(res.data);
+          this.popUp(this.invoice.id);
           this.isLoading = false;
           this.setUpInvoice();
         })
@@ -166,11 +139,19 @@ export default {
     },
     setUpInvoice: function() {
       this.invoice = {
-        id: moment().unix().toString(),
+        id: moment()
+          .unix()
+          .toString(),
         number: moment().unix(),
         items: [],
+        total: 0,
+        cusname: "customer name",
         date: moment().toDate()
       };
+    },
+    popUp: function(id) {
+      this.popUpText = id;
+      this.snackbar = true;
     }
   }
 };

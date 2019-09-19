@@ -153,6 +153,9 @@ exports.getTx = async (req, res) => {
     }
 }
 
+/**
+ * sendInvoice
+ */
 exports.sendInvoice = async (req, res) => {
     const user = req.body.user;
     const project = req.body.project;
@@ -168,7 +171,9 @@ exports.sendInvoice = async (req, res) => {
     }
 
 }
-
+/**
+ * getInvoice
+ */
 exports.getInvoice = async (req, res) => {
     try {
         const project = req.params.project;
@@ -176,7 +181,7 @@ exports.getInvoice = async (req, res) => {
         const invoices = JSON.parse(String(result));
         res.json(invoices);
     } catch (error) {
-        
+        res.status(500).json(error);
     }
 }
 

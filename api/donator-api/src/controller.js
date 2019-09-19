@@ -118,6 +118,20 @@ exports.getEvent = async (req, res) => {
 }
 
 /**
+ * getInvoice
+ */
+exports.getInvoice = async (req, res) => {
+    try {
+        const project = req.params.project;
+        const result = await service.getProjectInvoice(project);
+        const invoices = JSON.parse(String(result));
+        res.json(invoices);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
+/**
  * @function
  * createQR สำหรับการสร้างพร้อมเพย์ qr code  
  */

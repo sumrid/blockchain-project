@@ -8,6 +8,7 @@ router.post('/project/donate', contorller.donate);
 router.get('/project/history/:key', contorller.getHistory);
 router.get('/project/:project/events', contorller.getEvent);
 router.get('/project/donations/:key', contorller.getDonationHistory);
+router.get('/project/:project/invoice', contorller.getInvoice);
 
 router.post('/project/donate/qr', contorller.createQR);             // v2 ออก QRcode promptpay 
 router.post('/project/donate/readqr', contorller.readQR);           // บริจาคและลบ QRcode

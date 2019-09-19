@@ -18,6 +18,7 @@ const FN_QUERY_EVENT = 'queryEvent';
 const FN_CLOSE_PROJECT = 'closeProject';
 const FN_CREATE_PROJECT = 'createProject';
 const FN_QUERY_PROJECTS = 'queryAllProjects';
+const FN_QUERY_INVOICE = 'queryInvoiceByProjectID';
 const FN_GET_DONATE_HISTORY = 'getDonationHistory';
 const FN_GET_PROJECT_BY_USER = 'queryProjectByUserID';
 const FN_GET_DONATION_BY_USERID = 'queryDonationByUserID';
@@ -234,6 +235,19 @@ exports.getEvent = async (projectID) => {
     try {
         const contract = await getContractOrg1(USER);
         const result = await contract.evaluateTransaction(FN_QUERY_EVENT, projectID);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+/**
+ * @param {string} project project id
+ */
+exports.getProjectInvoice = async (project) => {
+    try {
+        const contract = await getContractOrg1(USER);
+        const result = await contract.evaluateTransaction(FN_QUERY_INVOICE, project);
         return result;
     } catch (error) {
         throw error;

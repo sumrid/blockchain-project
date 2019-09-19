@@ -2,24 +2,13 @@
   <div class="container">
     <div class="row">
       <div class="col title">
-        <h1>{{project.title}}</h1>
+        <h1 class="text-center">{{project.title}}</h1>
       </div>
     </div>
     <div class="row">
-      <div class="col-lg-8" style="background-color:#ececec;">
+      <div class="col-lg-8">
         <div class="row justify-content-center">
-          <b-img
-            :src="info.image"
-            fluid
-          />
-        </div>
-        <br />
-        <br />
-        <br />
-        <div class="row">
-          <div class="col">
-            <div v-html="info.detail" style="font-family:RSU;"></div>
-          </div>
+          <b-img :src="info.image" fluid rounded />
         </div>
       </div>
       <!-- Donate card -->
@@ -69,6 +58,156 @@
         </div>
       </div>
     </div>
+
+    <!-- Tab -->
+    <div class="row">
+      <div class="col">
+        <b-tabs content-class="mt-3">
+          <b-tab title="รายละเอียดโครงการ" active>
+            <div v-html="info.detail"></div>
+          </b-tab>
+          <b-tab title="ค่าใช้จ่ายโครงการ">
+            <b-table-simple class="table table-striped table-condensed">
+              <thead>
+                <tr>
+                  <th>ลำดับค่าใช้จ่าย</th>
+                  <th>ชื่อรายการ</th>
+                  <th>จำนวน</th>
+                  <th>มูลค่าต่อหน่วย</th>
+                  <th>รวมมูลค่า</th>
+                  <th>สถานะการใช้</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>ค่าธรรมเนียมเว็บไซต์</td>
+                  <td>1</td>
+                  <td>1000</td>
+                  <td>1000</td>
+                  <td>
+                    <span class="label label-success">Active</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>ค่าอาหารแมว</td>
+                  <td>10</td>
+                  <td>890</td>
+                  <td>8900</td>
+                  <td>
+                    <span class="label label-warning">Pending</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>ค่าวัคซีนแมว</td>
+                  <td>100</td>
+                  <td>700</td>
+                  <td>70000</td>
+                  <td>
+                    <span class="label label-warning">Pending</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>นมขนาด 2 ลิตร</td>
+                  <td>10</td>
+                  <td>75</td>
+                  <td>750</td>
+                  <td>
+                    <span class="label label-warning">Pending</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>กรงแมวขนาด 200*100 cm</td>
+                  <td>10</td>
+                  <td>2900</td>
+                  <td>29000</td>
+                  <td>
+                    <span class="label label-warning">Pending</span>
+                  </td>
+                </tr>
+              </tbody>
+            </b-table-simple>
+          </b-tab>
+          <b-tab title="ความเคลื่อนไหวโครงการ">
+            <div class="activity-feed">
+              <div class="feed-item" v-for="(e, index) in events" :key="index">
+                <div class="col-md-8 col-sm-12 col-xs-12 morningdetail">
+                  <div class="col-md-8 col-sm-2 col-xs-8">
+                    <h5>
+                      <span style="color:#E2B104;" class="text-uppercase">{{e.event}}</span>
+                    </h5>
+                  </div>
+
+                  <div class="col-md-4 col-sm-10 col-xs-4">
+                    <h5 style="color: #E2B104;">
+                      เมื่อเวลา:
+                      <span style="color: #B7B7B7">{{unixToDate(e.timestamp)}}</span>
+                    </h5>
+                  </div>
+
+                  <div class="col-md-12 col-xs-12">
+                    <h5 style="color: white; font-weight: normal;">
+                      <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
+                      <span style="color: #B7B7B7">Mohali, Punjab</span>
+                    </h5>
+                  </div>
+
+                  <div class="col-md-12 col-sm-12 col-xs-12">
+                    <p
+                      style="color:#B7B7B7 "
+                    >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </b-tab>
+          <b-tab title="ติดต่อโครงการ">
+            <h3 class="text-center text-uppercase">contact us</h3>
+            <p
+              class="text-center"
+            >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris interdum purus at sem ornare sodales. Morbi leo nulla, pharetra vel felis nec, ullamcorper condimentum quam.</p>
+            <div class="row">
+              <div class="col">
+                <div class="cardprofile">
+                  <img
+                    class="card-img-top"
+                    src="https://cdnb.artstation.com/p/assets/images/images/010/966/743/large/von-vincent-sison-doraemon-nobita.jpg?1527169782"
+                    alt="Card image"
+                    style="width:50%"
+                  />
+                  <div class="card-body">
+                    <h4 class="card-title">Doraemon,nobita</h4>
+                    <p class="card-text">Project owner</p>
+                    <a href class="btn btn-primary">See Profile</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="cardprofile" style="width:400px">
+                  <img
+                    class="card-img-top"
+                    src="https://i.pinimg.com/736x/31/43/9c/31439c8699350d2bd894f02ae880817a.jpg"
+                    alt="Card image"
+                    style="width:50%"
+                  />
+                  <div class="card-body">
+                    <h4 class="card-title">Conan</h4>
+                    <p class="card-text">Project reciever</p>
+                    <a href class="btn btn-primary stretched-link">See Profile</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </b-tab>
+        </b-tabs>
+      </div>
+    </div>
+
+    <!-- donation history -->
     <div class="row">
       <div class="col text-center">
         <h3>ประวัติการบริจาค</h3>
@@ -82,7 +221,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <!-- <div class="row">
       <div class="col text-center">
         <h3>Events</h3>
       </div>
@@ -93,8 +232,9 @@
           <b-table striped hover :items="events" :fields="eventsFields"></b-table>
         </div>
       </div>
-    </div>
+    </div>-->
 
+    <!-- donate input -->
     <div class="row">
       <div class="col text-center" id="donate">
         <div v-if="project.status == 'open'">
@@ -154,27 +294,6 @@
         </div>
       </div>
     </div>
-
-    <div class="row">
-      <div class="col-4">
-        <div class="cardprofile">
-          <img
-            class="card-img-top"
-            src="https://image.flaticon.com/icons/png/512/97/97895.png"
-            alt="Card image"
-            style="width:50%"
-          />
-          <div class="card-body">
-            <h4 class="card-title">Doraemon,nobita</h4>
-            <p class="card-text">Project owner</p>
-            <a
-              href="https://th.wikipedia.org/wiki/%E0%B9%82%E0%B8%94%E0%B8%A3%E0%B8%B2%E0%B9%80%E0%B8%AD%E0%B8%A1%E0%B8%AD%E0%B8%99"
-              class="btn btn-primary stretched-link"
-            >See Profile</a>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -187,6 +306,7 @@ const util = require("../util");
 const API_IP = util.API_IP;
 import socket from "../service/socket";
 import service from "../service";
+import moment from "moment";
 
 export default {
   data() {
@@ -208,7 +328,7 @@ export default {
       currentUser: null,
       eventsFields: [
         {
-          key: "event",
+          key: "event"
         },
         {
           key: "message"
@@ -250,6 +370,9 @@ export default {
     }
   },
   methods: {
+    unixToDate(unix) {
+      return moment.unix(unix).format('LL');
+    },
     getDetail: function(ID) {
       // from block
       service.getProjectByID(ID).then(project => {
@@ -271,7 +394,7 @@ export default {
     getEvents: function(ID) {
       service.getEvents(ID).then(events => {
         this.events = events;
-      })
+      });
     },
     onSubmit: async function() {
       this.loading = true;
@@ -356,9 +479,9 @@ export default {
 
 
 <style scoped>
-@import url("https://www.w3schools.com/w3css/4/w3.css");
+/* @import url("https://www.w3schools.com/w3css/4/w3.css"); */
 /* @import url('https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css'); */
-@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css");
+/* @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"); */
 
 .qr {
   align-content: center;
@@ -503,5 +626,40 @@ a + a {
 }
 .ig:hover {
   color: #d6249f;
+}
+
+/* Event */
+.morningdetail {
+  background-color: #3a3c45;
+  border-radius: 12px;
+  position: absolute;
+  margin-left: -3rem;
+  margin-top: 4rem;
+  padding-top: 1rem;
+}
+.activity-feed {
+  padding: 1rem;
+  /* margin-top: 120px; */
+}
+
+.activity-feed .feed-item {
+  position: relative;
+  padding-bottom: 220px;
+  padding-left: 30px;
+  margin-bottom: 5rem;
+  border-left: 2px solid #e2b104;
+}
+
+.activity-feed .feed-item:after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: -10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 13px;
+  background: #fff;
+  border: 1px solid #e2b104;
 }
 </style>
