@@ -12,6 +12,7 @@ router.get('/project/donations/:key', contorller.getDonationHistory);
 router.post('/project/update/status', contorller.updateProjectStatus);
 router.get('/project/:project/events', contorller.getEvent);
 router.get('/project/:project/invoice', contorller.getInvoice);
+router.post('/project/:project/invoice', contorller.sendInvoice);
 
 // User
 router.post('/user/register', contorller.registerCreator);

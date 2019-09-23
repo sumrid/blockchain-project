@@ -129,6 +129,21 @@
                     <span class="label label-warning">Pending</span>
                   </td>
                 </tr>
+                <tr v-for="(inv, index) in invoices" :key="index">
+                  <td>{{inv.id}}</td>
+                  <td>sdf</td>
+                  <td>56h</td>
+                  <td></td>
+                  <td>{{inv.total}}</td>
+                  <td>
+                    <b-button v-b-toggle="inv.id" variant>รายละเอียด</b-button>
+                  </td>
+                  <div>
+                    <b-collapse :id="inv.id">
+                      <b-card>{{inv}}</b-card>
+                    </b-collapse>
+                  </div>
+                </tr>
               </tbody>
             </b-table-simple>
           </b-tab>
@@ -159,7 +174,7 @@
                   <div class="col-md-12 col-sm-12 col-xs-12">
                     <p
                       style="color:#B7B7B7 "
-                    >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    >{{e.message}}</p>
                   </div>
                 </div>
               </div>
@@ -180,24 +195,24 @@
                     style="width:50%"
                   />
                   <div class="card-body">
-                    <h4 class="card-title">Doraemon,nobita</h4>
+                    <h4 class="card-title">{{owner.name}}</h4>
                     <p class="card-text">Project owner</p>
                     <a href class="btn btn-primary">See Profile</a>
                   </div>
                 </div>
               </div>
               <div class="col">
-                <div class="cardprofile" style="width:400px">
+                <div class="cardprofile">
                   <img
                     class="card-img-top"
-                    src="https://i.pinimg.com/736x/31/43/9c/31439c8699350d2bd894f02ae880817a.jpg"
+                    src="https://cdn2.vectorstock.com/i/1000x1000/25/31/user-icon-businessman-profile-man-avatar-vector-10552531.jpg"
                     alt="Card image"
                     style="width:50%"
                   />
                   <div class="card-body">
-                    <h4 class="card-title">Conan</h4>
+                    <h4 class="card-title">{{receiver.name}}</h4>
                     <p class="card-text">Project reciever</p>
-                    <a href class="btn btn-primary stretched-link">See Profile</a>
+                    <a href class="btn btn-primary">See Profile</a>
                   </div>
                 </div>
               </div>
@@ -312,8 +327,11 @@ export default {
   data() {
     return {
       info: {},
+      owner: {},
       events: [],
       project: {},
+      receiver: {},
+      invoices: [],
       donations: {},
       form: {
         user: "", // user uid
@@ -369,9 +387,18 @@ export default {
       return (this.project.balance / this.project.goal) * 100;
     }
   },
+  watch: {
+    project: function() {
+      this.getUserProfile(this.project.owner, this.project.receiver);
+    }
+  },
   methods: {
+    getUserProfile: async function(owner, receiver) {
+      this.owner = await service.getUserInfo(owner);
+      this.receiver = await service.getUserInfo(receiver);
+    },
     unixToDate(unix) {
-      return moment.unix(unix).format('LL');
+      return moment.unix(unix).format("LL");
     },
     getDetail: function(ID) {
       // from block
@@ -394,6 +421,11 @@ export default {
     getEvents: function(ID) {
       service.getEvents(ID).then(events => {
         this.events = events;
+      });
+    },
+    getInvoice: function(ID) {
+      service.getInvoice(ID).then(inv => {
+        this.invoices = inv;
       });
     },
     onSubmit: async function() {
@@ -473,6 +505,7 @@ export default {
     this.getDetail(p_id);
     this.getDontions(p_id);
     this.getEvents(p_id);
+    this.getInvoice(p_id);
   }
 };
 </script>

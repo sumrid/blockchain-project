@@ -7,6 +7,9 @@ const { REVENUE_URL } = require('./constants');
 
 const DATETIME_LAYOUT = 'DD-MM-YYYY:HH:mm:ss';
 
+/**
+ * **registerCreator ลงทะเบียนผู้ใช้**
+ */
 exports.registerCreator = async (req, res) => {
     try {
         const name = req.body.name;
@@ -154,32 +157,45 @@ exports.getTx = async (req, res) => {
 }
 
 /**
- * sendInvoice
+ * sendInvoice send invoice and then withdraw
  */
 exports.sendInvoice = async (req, res) => {
     const user = req.body.user;
     const project = req.body.project;
     const invoice = req.body.invoice;
+    let result ='';
 
-    try {
+    try { // Save invoice to blockchain
         const invStr = JSON.stringify(invoice);
-        const result = await service.addInvoice(user, project, invStr);
-        const invOut = JSON.parse(String(result));
-        res.json(invOut);
+        result = await service.addInvoice(user, project, invStr);
     } catch (error) {
+        console.log(`save invoice error ${error}`);
         res.status(500).json(error);
     }
+    
+    let invOut = JSON.parse(String(result));
 
+    try { // If not error then withdraw
+        result = await service.withdraw(user, project, invOut.total, invOut.id);
+        let resWithdraw = JSON.parse(String(result));
+        res.json(resWithdraw);
+    } catch (error) {
+        console.log(`withdraw error ${error}`);
+        // service.deleteInvoice(user, invoice.id);
+        res.status(500).json(error);
+    }
 }
+
 /**
- * getInvoice
+ * **getInvoice** get invoice by project id
  */
 exports.getInvoice = async (req, res) => {
     try {
         const project = req.params.project;
         const result = await service.getProjectInvoice(project);
         const invoices = JSON.parse(String(result));
-        res.json(invoices);
+        if (invoices) res.json(invoices);
+        else res.status(404).json([]);
     } catch (error) {
         res.status(500).json(error);
     }
@@ -225,7 +241,7 @@ const schedlue = require('node-schedule');
 
 // Interval
 // [test]
-schedlue.scheduleJob('*/20 * * * * *', async () => {
+schedlue.scheduleJob('*/30 * * * * *', async () => {
     const results = await service.getAllProjects();
     const projects = JSON.parse(String(results));
     projects.forEach((p) => {

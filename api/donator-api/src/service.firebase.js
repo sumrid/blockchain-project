@@ -33,9 +33,10 @@ exports.registerUser = async (name, email, password) => {
  * @param {string} uid 
  * @param {string[]} role 
  */
-exports.setUser = async (uid, role) => {
+exports.setUser = async (uid, name, role) => {
     const data = {
         uid: uid,
+        name: name,
         role: role
     }
     try {

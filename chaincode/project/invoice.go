@@ -19,8 +19,17 @@ func (C *Chaincode) addInvioce(stub shim.ChaincodeStubInterface, args []string) 
 		return shim.Error(err.Error())
 	}
 
+	// check if exists
+	ck, err := stub.GetState(invObj.ID)
+	if err != nil {
+		return shim.Error(err.Error())
+	} else if ck != nil {
+		return shim.Error("Invoice invoice already exixts.")
+	}
+
 	invObj.ProjectID = prjct
 	invObj.Type = "invoice"
+	invObj.TxID = stub.GetTxID()
 
 	invAsByte, err := json.Marshal(invObj)
 	if err != nil {
@@ -56,4 +65,15 @@ func (C *Chaincode) queryInvoiceByProjectID(stub shim.ChaincodeStubInterface, ar
 	}
 
 	return shim.Success(payload)
+}
+
+func (C *Chaincode) deleteInvoice(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	invID := args[0]
+
+	err := stub.DelState(invID)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	return shim.Success(nil)
 }

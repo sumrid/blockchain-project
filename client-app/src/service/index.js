@@ -1,16 +1,21 @@
 import axios from 'axios';
-import { API_IP } from '../util';
+import { API_IP , PROTOCOL} from '../util';
 import { firestore } from 'firebase';
-import { EROFS } from 'constants';
+
 
 // const SERVICE_URL = `http://${API_IP}:8000`;
 // const USER_SERVICE = `http://${API_IP}:8001`;
-const DONATOR_API = `http://${API_IP}:8000`;
-const CREATOR_API = `http://${API_IP}:8001`;
-const RECEIVER_API = `http://${API_IP}:8002`;
+const DONATOR_API = `${PROTOCOL}//${API_IP}:8000`;
+const CREATOR_API = `${PROTOCOL}//${API_IP}:8001`;
+const RECEIVER_API = `${PROTOCOL}//${API_IP}:8002`;
 
+const REVENUE_API = `${PROTOCOL}//${API_IP}:8080`;
+
+// ###################
+//       Project
+// ###################
 /**
- * Create project
+ * **Create project**
  * @param {*} project 
  */
 async function createProject(project) {
@@ -36,6 +41,7 @@ async function updateProjectStatus(user, project, status) {
     const res = await axios.post(RECEIVER_API + '/api/project/update/status', body);
     return res.data;
 }
+
 
 /**
  * ดึงรายการโครงการทั้งหมดที่มีจาก chaincode
@@ -81,7 +87,6 @@ async function getMyReceive(uid) {
 }
 
 /**
- * @function
  * donate ทำการบริจาคไปยังโครงการที่ต้องการ
  * 
  * @param {*} donation
@@ -135,6 +140,48 @@ async function getEvents(uid) {
     }
 }
 
+async function getInvoice(uid) {
+    try {
+        const res = await axios.get(`${DONATOR_API}/api/project/${uid}/invoice`);
+        return res.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+/**
+ * sendInvoice
+ * @param {string} user 
+ * @param {string} project 
+ * @param {*} invoice 
+ */
+async function sendInvoice(user, project, invoice) {
+    try {
+        const req = {
+            user: user,
+            project: project,
+            invoice: invoice
+        }
+        const res = await axios.post(`${CREATOR_API}/api/invoice`, req);
+        return res.data;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+// #############################
+//     Revenue Departments
+// #############################
+async function getInvoiceByID(id) {
+    try {
+        const res = await axios.get(`${REVENUE_API}/api/invoice/${id}`);
+        return res.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
 // #############################
 //      firebase firestore
 // #############################
@@ -181,14 +228,17 @@ async function getProjectsInfo() {
 export default {
     donate,
     getEvents,
+    getInvoice,
     getUserInfo,
     getProjects,
+    sendInvoice,
     getMyProject,
     getMyReceive,
     createProject,
     updateProject,
     getProjectByID,
     getProjectInfo,
+    getInvoiceByID,
     checkUserExists,
     getProjectsInfo,
     getDonationHistory,

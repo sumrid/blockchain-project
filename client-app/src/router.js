@@ -2,8 +2,9 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import Me from '@/views/User.vue';
-import Home from './views/Home.vue';
+import SendInvoice from './views/SendInvoice';
 import HomeV2 from './views/Home2.vue'
+import Contact from './views/Contact.vue';
 import EditProject from './views/EditProject.vue';
 import QRCodeReader from './views/QRCodeReader.vue';
 import CreateProject from './views/CreateProject.vue';
@@ -38,6 +39,11 @@ export default new Router({
       path: '/project/:id/edit',
       name: 'editProject',
       component: EditProject
+    },
+    {
+      path: '/project/:id/sendinvoice',
+      name: 'sendInvoice',
+      component: SendInvoice
     },
     {
       path: '/project/:id/confirm-receive',
@@ -80,6 +86,11 @@ export default new Router({
         if (auth.currentUser) next();
         else next(from.path);
       }
+    },
+    {
+      path: '/contact',
+      name: 'contact',
+      component: Contact
     }
   ]
 })

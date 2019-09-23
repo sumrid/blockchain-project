@@ -26,7 +26,7 @@
           <a class="nav-link" href="#">ความเคลื่อนไหว</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">ติดต่อเรา</a>
+          <router-link to="/contact" class="nav-link">ติดต่อเรา</router-link>
         </li>
 
         <b-nav-form>
@@ -120,7 +120,9 @@ export default {
   },
   mounted() {
     auth.onAuthStateChanged(user => {
-      this.setUser(user);
+      console.log('auth state chanded.');
+      if (user) this.setUser(user);
+      else this.setUser('');
     });
   },
   methods: {

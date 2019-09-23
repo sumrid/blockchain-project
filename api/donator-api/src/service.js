@@ -140,7 +140,6 @@ async function getChannal(user) {
 // #####################
 // #  Query and Invoke
 // #####################
-
 /**
  * **query any by key**
  * @param {string} key

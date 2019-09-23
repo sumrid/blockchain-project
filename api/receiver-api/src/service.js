@@ -374,7 +374,6 @@ exports.test = async () => {
 // Exports for testing
 if (process.env.NODE_ENV === 'test') {
     exports.getContractOrg = getContractOrg;
-    exports.getContractOrg2 = getContractOrg2;
     exports.FN_CLOSE_PROJECT = FN_CLOSE_PROJECT;
     exports.FN_CREATE_PROJECT = FN_CREATE_PROJECT;
     exports.FN_DONATE = FN_DONATE;

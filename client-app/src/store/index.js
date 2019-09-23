@@ -13,6 +13,9 @@ const actions = {
     }
 }
 
+/**
+ * mutations ทำหน้าที่เปลี่ยนแปลงข้อมูล
+ */
 const mutations = {
     SET_USER (state, user) {
         state.user = user;

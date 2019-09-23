@@ -17,6 +17,7 @@ const FN_WITHDRAW = 'withdraw';
 const FN_ADD_INVOICE = 'addInvoice';
 const FN_QUERY_EVENT = 'queryEvent';
 const FN_GET_HISTORY = 'getHistory';
+const FN_DEL_INVOICE = 'deleteInvoice';
 const FN_CLOSE_PROJECT = 'closeProject';
 const FN_UPDATE_PROJECT = 'updateProject'
 const FN_CREATE_PROJECT = 'createProject';
@@ -31,9 +32,9 @@ const FN_GET_PROJECT_BY_RECEIVER = 'queryProjectByReceiverID';
 const CHANNEL = 'donation';  // ชื่อ channel
 const CONTRACT = 'mychaincode'; // ชื่อ chaincode
 
-// #####################
-// #    Service  v2    #
-// #####################
+// ########################
+// #   creator service    #
+// ########################
 /**
  * @param {string} uid
  */
@@ -144,7 +145,6 @@ async function getChannal(user) {
 // #####################
 // #  Query and Invoke
 // #####################
-
 /**
  * **query any by key**
  * @param {string} key
@@ -320,10 +320,17 @@ exports.getEvent = async (projectID) => {
     }
 }
 
+/**
+ * withdraw ทำการถอนเงินเข้าเจ้าของโครงการ
+ * @param {string} user
+ * @param {string} project
+ * @param {number} amount
+ * @param {string} invoiceID
+ */
 exports.withdraw = async (user, project, amount, invoiceID) => {
     try {
         const contract = await getContractOrg2(user);
-        const result = await contract.submitTransaction(FN_WITHDRAW, user, project, amount.toString());
+        const result = await contract.submitTransaction(FN_WITHDRAW, user, project, amount.toString(), invoiceID);
         return result;
     } catch (error) {
         throw error;
@@ -331,16 +338,18 @@ exports.withdraw = async (user, project, amount, invoiceID) => {
 }
 
 /**
+ * **addInvoice** เพิ่มข้อมูลใบกำกับภาษีลงใน blockchain
  * @param {string} user user id
  * @param {string} project project id
- * @param {string} invoice invoice object as json format
+ * @param {string} invoice invoice object as json format `"{"id":"001", "total": 400....}"`
  */
 exports.addInvoice = async (user, project, invoice) => {
     try {
-        const contract = await getContractOrg2(user);
-        const result = await contract.submitTransaction(FN_ADD_INVOICE, project, invoice);
+        let contract = await getContractOrg2(user);
+        let result = await contract.submitTransaction(FN_ADD_INVOICE, project, invoice);
         return result;
     } catch (error) {
+        console.error(error);
         throw error;
     }
 }
@@ -350,8 +359,18 @@ exports.addInvoice = async (user, project, invoice) => {
  */
 exports.getProjectInvoice = async (project) => {
     try {
-        const contract = await getContractOrg2(USER);
-        const result = await contract.evaluateTransaction(FN_QUERY_INVOICE, project);
+        let contract = await getContractOrg2(USER);
+        let result = await contract.evaluateTransaction(FN_QUERY_INVOICE, project);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+exports.deleteInvoice = async (user, invID) => {
+    try {
+        let contract = await getContractOrg2(user);
+        let result = await contract.submitTransaction(FN_DEL_INVOICE, invID);
         return result;
     } catch (error) {
         throw error;

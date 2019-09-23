@@ -82,15 +82,16 @@ type Item struct {
 
 // Invoice ข้อมูลของใบกำกับภาษี
 type Invoice struct {
-	ID           string    `json:"id"`
-	ProjectID    string    `json:"project"`
-	Number       int       `json:"number"`
+	ID           string    `json:"id"`      // invoice uid
+	ProjectID    string    `json:"project"` // รหัสโครงการ
+	Number       int       `json:"number"`  // เลขที่ใบกำกับภาษี
 	CustomerName string    `json:"cusname"`
 	VAT          float64   `json:"vat"`
 	Items        []Item    `json:"items"`
 	Total        float64   `json:"total"`
 	Date         time.Time `json:"date"`
 	Type         string    `json:"type"`
+	TxID         string    `json:"txid"`
 }
 
 // Chaincode ...
@@ -146,6 +147,8 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return C.addInvioce(stub, args)
 	} else if fn == "queryInvoiceByProjectID" {
 		return C.queryInvoiceByProjectID(stub, args)
+	} else if fn == "deleteInvoice" {
+		return C.deleteInvoice(stub, args)
 	}
 
 	logger.Error("invoke did not find func: " + fn)
@@ -783,14 +786,15 @@ func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) pee
 func (C *Chaincode) withdraw(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	logger.Info("withdraw: start.")
 
-	if len(args) < 3 {
-		logger.Error("Expected 3 arguments.")
-		return shim.Error("Expected 3 arguments.")
+	if len(args) < 4 {
+		logger.Error("Expected 4 arguments.")
+		return shim.Error("Expected 4 arguments.")
 	}
 
-	user := args[0]
-	project := args[1]
-	amount, err := strconv.ParseFloat(args[2], 64)
+	user := args[0]                                // user id
+	project := args[1]                             // project id
+	amount, err := strconv.ParseFloat(args[2], 64) // amount to withdraw
+	inv := args[3]
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -827,7 +831,7 @@ func (C *Chaincode) withdraw(stub shim.ChaincodeStubInterface, args []string) pe
 	evt.TxID = stub.GetTxID()
 	evt.ProjectID = project
 	evt.Event = "withdraw"
-	evt.Message = fmt.Sprintf("Transfer money to %s %.2f Baht", user, amount)
+	evt.Message = fmt.Sprintf("Transfer money to %s %.2f Baht (tex invoice: %s)", user, amount, inv)
 	t, _ := stub.GetTxTimestamp()
 	evt.Timestamp = t.GetSeconds()
 	evtAsByte, err := json.Marshal(evt)

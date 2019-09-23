@@ -42,7 +42,6 @@ exports.updateProjectStatus = async (req, res) => {
         const userID = req.body.user;
         const projectID = req.body.project;
         const status = req.body.status;
-
         const result = await service.updateProjectStatus(userID, projectID, status);
         res.json(JSON.parse(String(result)));
     } catch (err) {

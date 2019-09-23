@@ -10,6 +10,9 @@ const QRCollection = db.collection('qr');
 const moment = require('moment');
 const DATETIME_LAYOUT = 'DD-MM-YYYY:HH:mm:ss';
 
+// ################
+//       User
+// ################
 /**
  * @param {string} name
  * @param {string} email
@@ -28,6 +31,13 @@ exports.registerUser = async (name, email, password) => {
     }
 }
 
+// ################
+//     Project
+// ################
+/**
+ * saveProject
+ * @param {*} project
+ */
 exports.saveProject = async (project) => {
     console.log('[save project to firebase]');
 
