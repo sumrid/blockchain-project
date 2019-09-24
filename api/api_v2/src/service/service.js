@@ -3,18 +3,14 @@ const fs = require('fs');
 const path = require('path');
 
 // ทำการอ่านไฟล์ connection.json
-const ccpFile = process.env.CCP1 || 'connection1.json';
-const ccpPath = path.resolve(__dirname, 'connection_profile', ccpFile);
+const ccpFile = process.env.CCP || 'connection.json';
+const ccpPath = path.resolve(__dirname, '..', 'connection_profile', ccpFile);
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
 const ccp = JSON.parse(ccpJSON);
-const ccpFile2 = process.env.CCP1 || 'connection2.json';
-const ccpPath2 = path.resolve(__dirname, 'connection_profile', ccpFile2);
-const ccpJSON2 = fs.readFileSync(ccpPath2, 'utf8');
-const ccp2 = JSON.parse(ccpJSON2);
 
-const USER = 'user1'; // ผู้ใช้เริ่มต้น
 
 // Function name in chaincode
+const USER = 'user1';
 const FN_QUERY = 'query';
 const FN_DONATE = 'donate';
 const FN_GET_HISTORY = 'getHistory';
@@ -255,6 +251,7 @@ exports.closeProject = async (key) => {
         throw err;
     }
 }
+
 /**
  * @param {string} userID uid ของผู้ที่มีส่วนเกี่ยวข้องกับโครงการ
  * @param {string} projectID

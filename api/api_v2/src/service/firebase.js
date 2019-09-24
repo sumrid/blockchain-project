@@ -1,5 +1,5 @@
 // Init firebase
-require('../src/config/firebase');
+require('../config/firebase');
 console.log('connect to firebase');
 
 const admin = require('firebase-admin');

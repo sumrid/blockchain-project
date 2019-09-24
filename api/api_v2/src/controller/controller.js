@@ -1,8 +1,8 @@
 const uid = require('uuid/v4');
 const moment = require('moment');
-const service = require('./service');
+const service = require('../service/service');
 const buildUrl = require('build-url');
-const firebase = require('./service.firebase');
+const firebase = require('../service/firebase');
 
 const fs = require('fs');
 const path = require('path');
@@ -141,10 +141,9 @@ exports.query = async (req, res) => {
 }
 
 exports.getHistory = async (req, res) => {
-    const key = req.params.key;
-
     try {
-        const result = await service.getHistory(key);
+        const id = req.params.project;
+        const result = await service.getHistory(id);
         res.json(JSON.parse(String(result)));
     } catch (err) {
         res.status(500).json(err);
@@ -152,10 +151,9 @@ exports.getHistory = async (req, res) => {
 }
 
 exports.getDonationHistory = async (req, res) => {
-    const key = req.params.key;
-
     try {
-        const result = await service.getDonationHistory(key);
+        const id = req.params.project;
+        const result = await service.getDonationHistory(id);
         res.json(JSON.parse(String(result)));
     } catch (err) {
         res.status(500).json(err);
