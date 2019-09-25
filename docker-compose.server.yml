@@ -1,41 +1,41 @@
 version: "3"
 
 services:
-  api:
-    image: node:10.15.3-stretch-slim
-    container_name: api
-    environment:
-      - DB_URL=mongodb://db:27017
-      - HOST_IP=donate-web.tk
-      - NODE_ENV=docker
-      - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
-    volumes:
-      - ./api/api_v2:/app
-      - ./api/wallet1:/wallet1
-      - ./api/wallet2:/wallet2
-      - ../cert:/cert # map Google gcp file on server to container
-    working_dir: /app
-    command: npm start
-    ports:
-      - 8000:8000
-    networks:
-      - default
+  # api:
+  #   image: node:10.15.3-stretch-slim
+  #   container_name: api
+  #   environment:
+  #     - DB_URL=mongodb://db:27017
+  #     - HOST_IP=donate-web.tk
+  #     - NODE_ENV=docker
+  #     - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
+  #   volumes:
+  #     - ./api/api_v2:/app
+  #     - ./api/wallet1:/wallet1
+  #     - ./api/wallet2:/wallet2
+  #     - ../cert:/cert # map Google gcp file on server to container
+  #   working_dir: /app
+  #   command: npm start
+  #   ports:
+  #     - 8000:8000
+  #   networks:
+  #     - default
 
-  user-api:
-    image: node:10.15.3-stretch-slim
-    container_name: user-api
-    environment:
-      - NODE_ENV=docker
-    volumes:
-      - ./api/user-api:/user-api
-      - ./api/wallet1:/wallet1
-      - ./api/wallet2:/wallet2
-    working_dir: /user-api
-    command: npm start
-    ports:
-      - 8001:8001
-    networks:
-      - default
+  # user-api:
+  #   image: node:10.15.3-stretch-slim
+  #   container_name: user-api
+  #   environment:
+  #     - NODE_ENV=docker
+  #   volumes:
+  #     - ./api/user-api:/user-api
+  #     - ./api/wallet1:/wallet1
+  #     - ./api/wallet2:/wallet2
+  #   working_dir: /user-api
+  #   command: npm start
+  #   ports:
+  #     - 8001:8001
+  #   networks:
+  #     - default
 
   # client-web:
   #   image: node:10.15.3-stretch-slim
@@ -72,70 +72,90 @@ services:
       - 80:80
       - 443:443
 
-# db:
-#   image: mongo:4.0.11-xenial
-#   container_name: mongo
-#   volumes:
-#     - ./data/db:/data/db
-#   ports:
-#     - 27017:27017
-#   networks:
-#     - default
+  # db:
+  #   image: mongo:4.0.11-xenial
+  #   container_name: mongo
+  #   volumes:
+  #     - ./data/db:/data/db
+  #   ports:
+  #     - 27017:27017
+  #   networks:
+  #     - default
 
   ###########################
   #      api แต่ละ org
-  ########################### 
-  # donator-api:
-  #   image: node:10.15.3-stretch-slim
-  #   container_name: donator-api
-  #   environment:
-  #     - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
-  #     - HOST_IP=192.168.1.2 # ip ของเครื่องที่เรารันอยู่ สำหรับทำ qr
-  #     - NODE_ENV=docker
-  #   volumes:
-  #     - ../cert:/cert # map Google gcp cert on server to container
-  #     - ./api/donator-api:/app
-  #     - ./api/wallet1:/wallet1
-  #   working_dir: /app
-  #   command: npm start
-  #   ports:
-  #     - 8000:8000
-  #   networks:
-  #     - default
+  ###########################
+  donator-api:
+    image: node:10.15.3-stretch-slim
+    container_name: donator-api
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
+      - HOST_IP=donate-web.tk # ip ของเครื่องที่เรารันอยู่ สำหรับทำ qr
+      - NODE_ENV=docker
+    volumes:
+      - ../cert:/cert # map Google gcp cert on server to container
+      - ./api/donator-api:/app
+      - ./api/wallet1:/wallet1
+    working_dir: /app
+    command: npm start
+    ports:
+      - 8000:8000
+    networks:
+      - default
 
-  # creator-api:
-  #   image: node:10.15.3-stretch-slim
-  #   container_name: creator-api
-  #   environment:
-  #     - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
-  #     - NODE_ENV=docker
-  #   volumes:
-  #     - ../cert:/cert # map Google gcp cert on server to container
-  #     - ./api/creator-api:/app
-  #     - ./api/wallet2:/wallet2
-  #   working_dir: /app
-  #   command: npm start
-  #   ports:
-  #     - 8001:8001
-  #   networks:
-  #     - default
+  creator-api:
+    image: node:10.15.3-stretch-slim
+    container_name: creator-api
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
+      - NODE_ENV=docker
+    volumes:
+      - ../cert:/cert # map Google gcp cert on server to container
+      - ./api/creator-api:/app
+      - ./api/wallet2:/wallet2
+    working_dir: /app
+    command: npm start
+    ports:
+      - 8001:8001
+    networks:
+      - default
   
-  # receiver-api:
-  #   image: node:10.15.3-stretch-slim
-  #   container_name: receiver-api
-  #   environment:
-  #     - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
-  #     - NODE_ENV=docker
-  #   volumes:
-  #     - ../cert:/cert # map Google gcp cert on server to container
-  #     - ./api/receiver-api:/app
-  #     - ./api/wallet3:/wallet3
-  #   working_dir: /app
-  #   command: npm start
-  #   ports:
-  #     - 8002:8002
-  #   networks:
-  #     - default
+  receiver-api:
+    image: node:10.15.3-stretch-slim
+    container_name: receiver-api
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
+      - NODE_ENV=docker
+    volumes:
+      - ../cert:/cert # map Google gcp cert on server to container
+      - ./api/receiver-api:/app
+      - ./api/wallet3:/wallet3
+    working_dir: /app
+    command: npm start
+    ports:
+      - 8002:8002
+    networks:
+      - default
+
+  ###########################
+  # Mock revenue department
+  ###########################
+  revenue-api:
+    image: node:10.15.3-stretch-slim
+    container_name: revenue-api
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
+      - NODE_ENV=docker
+    volumes:
+      - ../cert:/cert # map Google gcp cert on server to container
+      - ./api/revenue-api:/app
+      - ./api/wallet3:/wallet3
+    working_dir: /app
+    command: npm start
+    ports:
+      - 8080:8080
+    networks:
+      - default
 
 networks:
   default:

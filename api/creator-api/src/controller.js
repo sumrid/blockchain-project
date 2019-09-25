@@ -163,25 +163,33 @@ exports.sendInvoice = async (req, res) => {
     const user = req.body.user;
     const project = req.body.project;
     const invoice = req.body.invoice;
-    let result = '';
 
-    try { // Save invoice to blockchain
-        const invStr = JSON.stringify(invoice);
-        result = await service.addInvoice(user, project, invStr);
+    // try { // Save invoice to blockchain
+    //     const invStr = JSON.stringify(invoice);
+    //     result = await service.addInvoice(user, project, invStr);
+    // } catch (error) {
+    //     console.log(`save invoice error ${error}`);
+    //     res.status(500).json(error);
+    // }
+
+    // let invOut = JSON.parse(String(result));
+
+    // try { // If not error then withdraw
+    //     result = await service.withdraw(user, project, invOut.total, invOut.id);
+    //     let resWithdraw = JSON.parse(String(result));
+    //     res.json(resWithdraw);
+    // } catch (error) {
+    //     console.log(`withdraw error ${error}`);
+    //     // service.deleteInvoice(user, invoice.id);
+    //     res.status(500).json(error);
+    // }
+
+    try {
+        let invoiceStr = JSON.stringify(invoice)
+        let buffer = await service.addInvoice(user, project, invoiceStr);
+        let result = JSON.parse(String(buffer));
+        res.json(result);
     } catch (error) {
-        console.log(`save invoice error ${error}`);
-        res.status(500).json(error);
-    }
-
-    let invOut = JSON.parse(String(result));
-
-    try { // If not error then withdraw
-        result = await service.withdraw(user, project, invOut.total, invOut.id);
-        let resWithdraw = JSON.parse(String(result));
-        res.json(resWithdraw);
-    } catch (error) {
-        console.log(`withdraw error ${error}`);
-        // service.deleteInvoice(user, invoice.id);
         res.status(500).json(error);
     }
 }

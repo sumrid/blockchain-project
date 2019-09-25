@@ -44,6 +44,7 @@ func (C *Chaincode) addInvioce(stub shim.ChaincodeStubInterface, args []string) 
 
 // ทำการเพิ่มใบกำกับภาษี และ ถอนเงินจากโครงการใบให้คนเพิ่มใบกำกับภาษี
 func (C *Chaincode) addInvioceAndTransfer(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	logger.Info("addInvioceAndTransfer: start")
 	usrID := args[0]
 	prjID := args[1]
 	invJSON := args[2]
@@ -56,6 +57,14 @@ func (C *Chaincode) addInvioceAndTransfer(stub shim.ChaincodeStubInterface, args
 	inv.ProjectID = prjID
 	inv.Type = "invoice"
 	inv.TxID = stub.GetTxID()
+
+	// check if exists
+	ck, err := stub.GetState(inv.ID)
+	if err != nil {
+		return shim.Error(err.Error())
+	} else if ck != nil {
+		return shim.Error("Invoice invoice already exixts.")
+	}
 
 	prj := Project{}
 	prjAsByte, err := stub.GetState(prjID)
@@ -116,7 +125,7 @@ func (C *Chaincode) addInvioceAndTransfer(stub shim.ChaincodeStubInterface, args
 	stub.PutState(usr.ID, usrAsByte)
 	stub.PutState(evt.ID, evtAsByte)
 
-	return shim.Success(nil)
+	return shim.Success(invAsByte)
 }
 
 func (C *Chaincode) queryInvoiceByProjectID(stub shim.ChaincodeStubInterface, args []string) peer.Response {

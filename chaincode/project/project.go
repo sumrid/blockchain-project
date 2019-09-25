@@ -789,11 +789,6 @@ func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) pee
 			usr.Balance += toPayBack
 		}
 
-		usrAsByte, err = json.Marshal(usr)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-
 		trns := Donation{}
 		trns.TxID = stub.GetTxID()
 		trns.UserID = usr.ID
@@ -801,8 +796,15 @@ func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) pee
 		trns.Amount = toPayBack
 		trns.Type = "transfer"
 
+		usrAsByte, err = json.Marshal(usr)
+		trnsAsByte, err := json.Marshal(trns)
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+
 		// save user
 		stub.PutState(usr.ID, usrAsByte)
+		stub.PutState("transfer_"+donation.TxID, trnsAsByte)
 	}
 
 	evt := Event{}
