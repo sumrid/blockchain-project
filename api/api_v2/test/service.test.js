@@ -1,75 +1,121 @@
-const rewire = require("rewire");
+// Mock
+const { FileSystemWallet, Gateway } = require('fabric-network');
+jest.mock('fabric-network');
+const { project } = require('./mock.data');
 
-// To test
-const service = rewire('../src/service');
-const serJest = require('../src/service')
-// jest.mock('../src/service');
+// Test
+const service = require('../src/service');
 
-describe('service test', () => {
+describe('test with mock fabric-network (fabric pass)', () => {
 
-    afterEach(() => {
-        // jest.clearAllMocks();
-        jest.resetAllMocks();
-        // jest.restoreAllMocks();
-    })
+    const contract = {};
 
-    test('query should success.', async () => {
-        // mock contract
-        let contract = {};
-        contract.evaluateTransaction = jest.fn().mockImplementation(() => {
-            return Promise.resolve(Buffer.from('some results'));
-        });
-        service.__set__({ // ทำการ mock private function
-            getContractOrg1: function () {
-                return Promise.resolve(contract);
-            }
-        });
+    beforeAll(() => {
+        // mock fabric-network
+        const wallet = {};
+        wallet.exists = jest.fn().mockReturnValue(true);
+        FileSystemWallet.mockImplementation(() => wallet);
 
-        const reuslt = await service.query('001');
-        expect(String(reuslt)).toEqual('some results');
+        const network = {};
+        network.getContract = jest.fn().mockResolvedValue(contract);
+        const gateway = {};
+        gateway.connect = jest.fn().mockResolvedValue('');
+        gateway.getNetwork = jest.fn().mockResolvedValue(network);
+        Gateway.mockImplementation(() => gateway);
     });
 
-    test('query should fails.', async () => {
+    // afterEach(()=>{
+    //     jest.resetAllMocks();
+    // })
+
+    test('should query success.', async () => {
         // mock
-        let contract = {};
-        contract.evaluateTransaction = jest.fn().mockImplementation(() => {
-            return Promise.reject(new Error('some error'));
-        })
-        service.__set__({ // ทำการ mock private function
-            getContractOrg1: function () {
-                return Promise.resolve(contract);
-            }
-        });
+        contract.evaluateTransaction = jest.fn().mockResolvedValue(Buffer.from('some-result'));
 
-        await expect(service.query('001'))
-            .rejects
-            .toThrow('some error');
+        const result = await service.query('some-key');
+
+        expect(String(result)).toEqual('some-result');
+        expect(contract.evaluateTransaction).toHaveBeenCalledWith('query', 'some-key');
     });
 
-    test('getContractOrg1 fails (user identity does not exist).', async () => {
-        const user = 'some-user';
-        await expect(serJest.getContractOrg1(user))
-            .rejects
-            .toThrow(`An identity for the user "${user}" does not exist in the wallet`);
+    test('should query fails.', async () => {
+        // mock
+        contract.evaluateTransaction = jest.fn().mockRejectedValue(new Error('some error'));
+
+        try {
+            await service.query('key');
+        } catch (err) {
+            expect(err).toEqual(new Error('some error'));
+        }
     });
 
-    test('getContractOrg2 fails (user identity does not exist).', async () => {
-        const user = 'some-user';
-        await expect(serJest.getContractOrg2(user))
-            .rejects
-            .toThrow(`An identity for the user "${user}" does not exist in the wallet`);
+    test('should create project success.', async () => {
+        // mock
+        const mockProject = project;
+        contract.submitTransaction = jest.fn().mockResolvedValue(Buffer.from(JSON.stringify(mockProject)));
+
+        const result = await service.createProject('userID', mockProject);
+
+        expect(contract.submitTransaction)
+            .toHaveBeenCalledWith(
+                'createProject',
+                'p_01',
+                'ช่วยเหลือโรงเรียนห่างไกล',
+                'open',
+                '0',
+                'user1',
+                '2019-08-09T13:54:44Z',
+                '2019-08-15T13:54:44Z',
+                'user2',
+                '50000',
+            );
+        expect(JSON.parse(String(result))).toEqual(mockProject);
     });
 
-    test('test constant is valid', () => {
-        expect(serJest.FN_CLOSE_PROJECT).toEqual('closeProject');
-        expect(serJest.FN_CREATE_PROJECT).toEqual('createProject');
-        expect(serJest.FN_DONATE).toEqual('donate');
-        expect(serJest.FN_GET_DONATE_HISTORY).toEqual('getDonationHistory');
-        expect(serJest.FN_GET_DONATION_BY_USERID).toEqual('queryDonationByUserID');
-        expect(serJest.FN_GET_HISTORY).toEqual('getHistory');
-        expect(serJest.FN_QUERY).toEqual('query');
-        expect(serJest.FN_QUERY_PROJECTS).toEqual('queryAllProjects');
-        expect(serJest.CHANNEL).toEqual('donation');
-        expect(serJest.CONTRACT).toEqual('mychaincode');
+    test('should create project throw error', async () => {
+        contract.submitTransaction = jest.fn().mockRejectedValue(new Error('some error'));
+        const mockProject = project;
+        try {
+            await service.createProject('userID', mockProject);
+        } catch (err) {
+            expect(err).toEqual(new Error('some error'));
+        }
+    });
+
+    test('should donate success.', async () => {
+        const donate = {
+            user: 'userID',
+            project: 'projectID',
+            amount: '500',
+            time: '2019-08-15T13:54:44Z',
+            displayname: 'salala'
+        }
+        contract.submitTransaction = jest.fn().mockResolvedValue();
+
+        await service.donate('userID', donate);
+        expect(contract.submitTransaction).toHaveBeenCalledWith(
+            'donate',
+            donate.user,
+            donate.project,
+            donate.amount.toString(),
+            donate.time,
+            donate.displayname
+        );
+    });
+
+    test('should donate throw error', async () => {
+        const donate = {
+            user: 'userID',
+            project: 'projectID',
+            amount: '500',
+            time: '2019-08-15T13:54:44Z',
+            displayname: 'salala'
+        }
+        contract.submitTransaction = jest.fn().mockRejectedValue(new Error('some error'));
+        try {
+            await service.donate('userID', donate);
+        } catch (err) {
+            expect(err).toEqual(new Error('some error'));
+        }
     });
 });
