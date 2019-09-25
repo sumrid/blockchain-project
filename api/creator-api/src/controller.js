@@ -163,7 +163,7 @@ exports.sendInvoice = async (req, res) => {
     const user = req.body.user;
     const project = req.body.project;
     const invoice = req.body.invoice;
-    let result ='';
+    let result = '';
 
     try { // Save invoice to blockchain
         const invStr = JSON.stringify(invoice);
@@ -172,7 +172,7 @@ exports.sendInvoice = async (req, res) => {
         console.log(`save invoice error ${error}`);
         res.status(500).json(error);
     }
-    
+
     let invOut = JSON.parse(String(result));
 
     try { // If not error then withdraw
@@ -247,8 +247,13 @@ schedlue.scheduleJob('*/30 * * * * *', async () => {
     projects.forEach((p) => {
         if (p.status != 'closed') {
             const endtime = moment(p.endtime, moment.ISO_8601);
-            if (endtime.diff(moment()) <= 0) {
-                service.closeProject(p.id); // ทำการปิดโปรเจค
+            if (endtime.diff(moment()) <= 0) { // ตรวจสอบเวลา ว่าหมดหรือยัง
+
+                if (p.accumulated < p.goal) { // ถ้ายอดสะสมไม่ถึงเป้าหมาย
+                    service.payBack(p.id);
+                } else {
+                    service.closeProject(p.id); // ทำการปิดโปรเจค
+                }
             }
         }
     });

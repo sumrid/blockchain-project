@@ -13,6 +13,7 @@ const ccp2 = JSON.parse(ccpJSON2);
 const USER = 'user1'; // ผู้ใช้เริ่มต้น
 const FN_QUERY = 'query';
 const FN_DONATE = 'donate';
+const FN_PAYBACK = 'payBack';
 const FN_WITHDRAW = 'withdraw';
 const FN_ADD_INVOICE = 'addInvoice';
 const FN_QUERY_EVENT = 'queryEvent';
@@ -371,6 +372,16 @@ exports.deleteInvoice = async (user, invID) => {
     try {
         let contract = await getContractOrg2(user);
         let result = await contract.submitTransaction(FN_DEL_INVOICE, invID);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+exports.payBack = async (project) => {
+    try {
+        let contract = await getContractOrg2(USER);
+        let result = await contract.submitTransaction(FN_PAYBACK, project);
         return result;
     } catch (error) {
         throw error;

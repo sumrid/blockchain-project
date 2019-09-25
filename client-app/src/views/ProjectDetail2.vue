@@ -236,19 +236,6 @@
       </div>
     </div>
 
-    <!-- <div class="row">
-      <div class="col text-center">
-        <h3>Events</h3>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col text-center">
-        <div class="row">
-          <b-table striped hover :items="events" :fields="eventsFields"></b-table>
-        </div>
-      </div>
-    </div>-->
-
     <!-- donate input -->
     <div class="row">
       <div class="col text-center" id="donate">

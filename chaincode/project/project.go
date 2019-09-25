@@ -46,10 +46,11 @@ type Donation struct {
 
 // User ข้อมูลของผู้ใช้
 type User struct {
-	ID   string `json:"id"`   // uid ของฝู้ใช้
-	Name string `json:"name"` // ชื่อผู้ใช้
-	Role string `json:"role"`
-	Type string `json:"type"`
+	ID      string  `json:"id"`      // uid ของฝู้ใช้
+	Name    string  `json:"name"`    // ชื่อผู้ใช้
+	Balance float64 `json:"balance"` // จำนวนเงินที่ได้จากการคืนหรือ จำนวนเงินที่รอพร้อมถอนออก
+	Role    string  `json:"role"`
+	Type    string  `json:"type"`
 	// TODO สร้างการเก็บข้อมูลของผู้ใช้ว่าจะให้มีอะไรบ้าง  ..คนสร้างโครงการ ..ผู้รับเงิน
 }
 
@@ -149,6 +150,8 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return C.queryInvoiceByProjectID(stub, args)
 	} else if fn == "deleteInvoice" {
 		return C.deleteInvoice(stub, args)
+	} else if fn == "addInvioceAndTransfer" {
+		return C.addInvioceAndTransfer(stub, args)
 	}
 
 	logger.Error("invoke did not find func: " + fn)
@@ -301,8 +304,8 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 	}
 
 	// Check if the project is closed.
-	if p.Status == Closed {
-		return shim.Error("Project closed.")
+	if p.Status != Open {
+		return shim.Error("Project is not open.")
 	}
 
 	// Check if time out.
@@ -633,7 +636,6 @@ func (C *Chaincode) closeProject(stub shim.ChaincodeStubInterface, args []string
 		p.Status = Closed
 	}
 
-	// Save project
 	result, err = json.Marshal(p)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -653,6 +655,7 @@ func (C *Chaincode) closeProject(stub shim.ChaincodeStubInterface, args []string
 		return shim.Error(err.Error())
 	}
 
+	// Save project
 	err = stub.PutState(key, result)
 	err = stub.PutState(evt.ID, evtAsByte)
 	if err != nil {
@@ -768,6 +771,8 @@ func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) pee
 	for _, donation := range donations {
 		toPayBack := (donation.Amount * percent) / 100
 		p.Balance -= toPayBack // เอาเงินออก
+
+		// ให้เงิน user
 	}
 
 	// เปลี่ยนสถานะ
@@ -783,6 +788,7 @@ func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) pee
 	return shim.Success(nil)
 }
 
+// withdraw ถอนเงินจากโครงการไปให้ คนที่เป็นเจ้าของหรือคนที่รับเงิน
 func (C *Chaincode) withdraw(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	logger.Info("withdraw: start.")
 

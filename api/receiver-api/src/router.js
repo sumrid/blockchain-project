@@ -3,7 +3,7 @@ const router = express.Router();
 const contorller = require('./controller');
 
 router.get('/project', contorller.getAllProjects);
-router.post('/project/update/status', contorller.updateProjectStatus);
+router.post('/project/status', contorller.updateProjectStatus);
 router.get('/query/:key', contorller.query);
 router.get('/project/history/:key', contorller.getHistory);
 router.get('/project/donations/:key', contorller.getDonationHistory);
