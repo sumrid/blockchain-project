@@ -98,7 +98,7 @@ func (C *Chaincode) addInvioceAndTransfer(stub shim.ChaincodeStubInterface, args
 	evt.TxID = stub.GetTxID()
 	evt.ProjectID = prjID
 	evt.Event = "withdraw"
-	evt.Message = fmt.Sprintf("Transfer money to %s %.2f Baht (tex invoice: %s)", usr, inv.Total, inv.ID)
+	evt.Message = fmt.Sprintf("Transfer money to %s %.2f Baht (tex invoice: %s)", usr.ID, inv.Total, inv.ID)
 	t, _ := stub.GetTxTimestamp()
 	evt.Timestamp = t.GetSeconds()
 

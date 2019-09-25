@@ -735,6 +735,7 @@ func (C *Chaincode) deleteProject(stub shim.ChaincodeStubInterface, args []strin
 
 // คืนเงินให้คนบริจาาค ในกรณีที่โครงการล้มเหลว
 func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) peer.Response {
+	logger.Info("payBack: start.")
 
 	// TODO  คือทีเดียวทุกคนเลย เพื่อจะได้ไม่มี tx เกิดขึ้นเยอะ
 	projectID := agrs[0]
@@ -745,9 +746,14 @@ func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) pee
 	if err != nil {
 		return shim.Error(err.Error())
 	} else if pByte == nil {
+		logger.Error("payBack: Project not found.")
 		return shim.Error("Project not found.")
 	}
 	err = json.Unmarshal(pByte, &p) // To struct
+	if err != nil {
+		logger.Error("payBack:", err.Error())
+		return shim.Error(err.Error())
+	}
 
 	if p.Status == Fail {
 		return shim.Success(pByte)
@@ -757,7 +763,7 @@ func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) pee
 	var donations []Donation
 	res, err := stub.GetState("history_" + projectID)
 	if res == nil {
-		return shim.Success(nil)
+		return shim.Success(pByte)
 	}
 
 	err = json.Unmarshal(res, &donations)
@@ -772,7 +778,45 @@ func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) pee
 		toPayBack := (donation.Amount * percent) / 100
 		p.Balance -= toPayBack // เอาเงินออก
 
-		// ให้เงิน user
+		// คืนเงิน user
+		usr := User{}
+		usrAsByte, _ := stub.GetState(donation.UserID)
+		if usrAsByte == nil {
+			usr.ID = donation.UserID
+			usr.Balance += toPayBack
+		} else {
+			err = json.Unmarshal(usrAsByte, &usr)
+			usr.Balance += toPayBack
+		}
+
+		usrAsByte, err = json.Marshal(usr)
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+
+		trns := Donation{}
+		trns.TxID = stub.GetTxID()
+		trns.UserID = usr.ID
+		trns.ProjectID = projectID
+		trns.Amount = toPayBack
+		trns.Type = "transfer"
+
+		// save user
+		stub.PutState(usr.ID, usrAsByte)
+	}
+
+	evt := Event{}
+	evt.ID = "event_" + stub.GetTxID()
+	evt.TxID = stub.GetTxID()
+	evt.ProjectID = p.ID
+	evt.Event = "payback"
+	evt.Message = "คืนเงินให้ผู้บริจาคเนื่องจากยอดเงินไม่ครบกำหนด"
+	t, _ := stub.GetTxTimestamp()
+	evt.Timestamp = t.GetSeconds()
+	evt.Type = "event"
+	evtAsByte, err := json.Marshal(evt)
+	if err != nil {
+		return shim.Error(err.Error())
 	}
 
 	// เปลี่ยนสถานะ
@@ -781,11 +825,12 @@ func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) pee
 	// Save state
 	pByte, err = json.Marshal(p)
 	err = stub.PutState(projectID, pByte)
+	err = stub.PutState(evt.ID, evtAsByte)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 
-	return shim.Success(nil)
+	return shim.Success(pByte)
 }
 
 // withdraw ถอนเงินจากโครงการไปให้ คนที่เป็นเจ้าของหรือคนที่รับเงิน
