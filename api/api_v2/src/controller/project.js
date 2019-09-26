@@ -4,6 +4,14 @@ const moment = require('moment');
 const service = require('../service/service');
 const firebase = require('../service/firebase');
 
+let query = {
+    selector: {
+        type: {
+            $eq: "project"
+        }
+    }
+}
+
 async function createProject(req, res) {
     try {
         const user = req.body.owner;
