@@ -1,9 +1,7 @@
+const uid = require('uuid/v4');
+const moment = require('moment');
 const service = require('./service');
 const firebase = require('./service.firebase');
-const moment = require('moment');
-const uid = require('uuid/v4');
-const axios = require('axios').default;
-const { REVENUE_URL } = require('./constants');
 
 const DATETIME_LAYOUT = 'DD-MM-YYYY:HH:mm:ss';
 
@@ -163,25 +161,12 @@ exports.sendInvoice = async (req, res) => {
     const user = req.body.user;
     const project = req.body.project;
     const invoice = req.body.invoice;
-    let result ='';
-
-    try { // Save invoice to blockchain
-        const invStr = JSON.stringify(invoice);
-        result = await service.addInvoice(user, project, invStr);
+    try {
+        let invoiceStr = JSON.stringify(invoice)
+        let buffer = await service.addInvoice(user, project, invoiceStr);
+        let result = JSON.parse(String(buffer));
+        res.json(result);
     } catch (error) {
-        console.log(`save invoice error ${error}`);
-        res.status(500).json(error);
-    }
-    
-    let invOut = JSON.parse(String(result));
-
-    try { // If not error then withdraw
-        result = await service.withdraw(user, project, invOut.total, invOut.id);
-        let resWithdraw = JSON.parse(String(result));
-        res.json(resWithdraw);
-    } catch (error) {
-        console.log(`withdraw error ${error}`);
-        // service.deleteInvoice(user, invoice.id);
         res.status(500).json(error);
     }
 }
@@ -242,13 +227,19 @@ const schedlue = require('node-schedule');
 // Interval
 // [test]
 schedlue.scheduleJob('*/30 * * * * *', async () => {
+    console.info(`[check] check if project is timeout.`);
     const results = await service.getAllProjects();
     const projects = JSON.parse(String(results));
     projects.forEach((p) => {
-        if (p.status != 'closed') {
+        if (p.status == 'open') {
             const endtime = moment(p.endtime, moment.ISO_8601);
-            if (endtime.diff(moment()) <= 0) {
-                service.closeProject(p.id); // ทำการปิดโปรเจค
+            if (endtime.diff(moment()) <= 0) { // ตรวจสอบเวลา ว่าหมดหรือยัง
+                console.info(`[check] project ${p.id} is timeout.`);
+                if (p.accumulated < p.goal) { // ถ้ายอดสะสมไม่ถึงเป้าหมาย
+                    service.payBack(p.id);
+                } else {
+                    service.closeProject(p.id); // ทำการปิดโปรเจค
+                }
             }
         }
     });

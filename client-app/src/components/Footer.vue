@@ -144,7 +144,7 @@
   </div>
 </template>
 
-<style>
+<style scoped>
 footer .main-footer {
   padding: 20px 0;
   background: #252525;

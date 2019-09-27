@@ -122,3 +122,46 @@ exports.getTx = async (req, res) => {
         res.status(500).json(err);
     }
 }
+
+/**
+ * sendInvoice send invoice and then withdraw
+ */
+exports.sendInvoice = async (req, res) => {
+    const user = req.body.user;
+    const project = req.body.project;
+    const invoice = req.body.invoice;
+    try {
+        let invoiceStr = JSON.stringify(invoice)
+        let buffer = await service.addInvoice(user, project, invoiceStr);
+        let result = JSON.parse(String(buffer));
+        res.json(result);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
+/**
+ * **getInvoice** get invoice by project id
+ */
+exports.getInvoice = async (req, res) => {
+    try {
+        const project = req.params.project;
+        const result = await service.getProjectInvoice(project);
+        const invoices = JSON.parse(String(result));
+        if (invoices) res.json(invoices);
+        else res.status(404).json([]);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
+exports.getEvent = async (req, res) => {
+    try {
+        const project = req.params.project;
+        const result = await service.getEvent(project);
+        const events = JSON.parse(String(result));
+        res.json(events);
+    } catch (error) {
+        res.status(404).json(error);
+    }
+}

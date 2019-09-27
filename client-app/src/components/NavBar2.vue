@@ -1,20 +1,11 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#/">DoWeb</a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-toggle="collapse"
-      data-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
+  <b-navbar class="navbar-dark bg-dark" toggleable="lg" type="dark">
+    <b-navbar-brand href="#/">DoWeb</b-navbar-brand>
+    
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
+    <b-collapse id="nav-collapse" is-nav>
+      <b-navbar-nav>
         <!-- item group -->
         <b-nav-item-dropdown text="โครงการ" right>
           <b-dropdown-item href="#">เร่งด่วน</b-dropdown-item>
@@ -33,9 +24,9 @@
           <b-form-input class="mr-sm-2" placeholder="Search"></b-form-input>
           <b-button variant="outline-success" class="my-2 my-sm-0" type="submit">Search</b-button>
         </b-nav-form>
-      </ul>
+      </b-navbar-nav>
 
-      <ul class="nav navbar-nav navbar-right" v-if="!getUser">
+      <b-navbar-nav class="ml-auto" v-if="!getUser">
         <!-- item group user -->
         <li class="nav-item">
           <a class="nav-link" href="#">
@@ -43,22 +34,22 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="" @click.prevent="showModal">
+          <a class="nav-link" href @click.prevent="showModal">
             <icon icon="sign-in-alt" />Login
           </a>
         </li>
-      </ul>
+      </b-navbar-nav>
 
-      <ul class="nav navbar-nav navbar-right" v-if="getUser">
+      <b-navbar-nav class="ml-auto" v-else>
         <li class="nav-item">
           <router-link to="/me" class="nav-link">{{getUser.displayName}}</router-link>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="" @click.prevent="logout">
+          <a class="nav-link" href @click.prevent="logout">
             <icon :icon="icon.signout" />Logout
           </a>
         </li>
-      </ul>
+      </b-navbar-nav>
 
       <!-- Form login -->
       <b-modal id="modal-login" hide-footer>
@@ -89,8 +80,8 @@
           </form>
         </div>
       </b-modal>
-    </div>
-  </nav>
+    </b-collapse>
+  </b-navbar>
 </template>
 
 <script>
@@ -114,15 +105,13 @@ export default {
     };
   },
   computed: {
-    ...mapGetters([
-      'getUser'
-    ])
+    ...mapGetters(["getUser"])
   },
   mounted() {
     auth.onAuthStateChanged(user => {
-      console.log('auth state chanded.');
+      console.log("auth state chanded.");
       if (user) this.setUser(user);
-      else this.setUser('');
+      else this.setUser("");
     });
   },
   methods: {
@@ -145,7 +134,7 @@ export default {
       console.log("click logout");
       try {
         await auth.signOut();
-        this.setUser('');
+        this.setUser("");
       } catch (err) {
         this.error = err;
         console.log(err);
@@ -157,9 +146,7 @@ export default {
     showModal: function() {
       this.$bvModal.show("modal-login");
     },
-    ...mapActions([
-      'setUser'
-    ])
+    ...mapActions(["setUser"])
   }
 };
 </script>

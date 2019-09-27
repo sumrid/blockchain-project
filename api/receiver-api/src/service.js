@@ -13,7 +13,12 @@ const ccp = JSON.parse(ccpJSON);
 const USER = 'user1'; // ผู้ใช้เริ่มต้น
 const FN_QUERY = 'query';
 const FN_DONATE = 'donate';
+const FN_PAYBACK = 'payBack';
+const FN_WITHDRAW = 'withdraw';
+const FN_ADD_INVOICE = 'addInvioceAndTransfer';
+const FN_QUERY_EVENT = 'queryEvent';
 const FN_GET_HISTORY = 'getHistory';
+const FN_DEL_INVOICE = 'deleteInvoice';
 const FN_CLOSE_PROJECT = 'closeProject';
 const FN_UPDATE_PROJECT = 'updateProject'
 const FN_CREATE_PROJECT = 'createProject';
@@ -21,9 +26,11 @@ const FN_DELETE_PROJECT = 'deleteProject';
 const FN_QUERY_PROJECTS = 'queryAllProjects';
 const FN_UPDATE_PROJECT_STATUS = 'updateStatus';
 const FN_GET_DONATE_HISTORY = 'getDonationHistory';
+const FN_QUERY_INVOICE = 'queryInvoiceByProjectID';
+const FN_QUERY_WITHSELECTOR = 'queryAllWithSelector';
 const FN_GET_PROJECT_BY_USER = 'queryProjectByUserID';
 const FN_GET_DONATION_BY_USERID = 'queryDonationByUserID';
-const FN_GET_PROJECT_BY_RECEIVER = 'queryProjectByReceiverID'
+const FN_GET_PROJECT_BY_RECEIVER = 'queryProjectByReceiverID';
 const CHANNEL = 'donation';  // ชื่อ channel
 const CONTRACT = 'mychaincode'; // ชื่อ chaincode
 
@@ -150,7 +157,7 @@ exports.checkUserExists = async (uid) => {
         const isUserExixts = await wallet.exists(uid);
         return isUserExixts;
     } catch (error) {
-        
+
     }
 }
 
@@ -276,6 +283,66 @@ exports.getDonationByUserID = async (userID) => {
     } catch (err) {
         console.log(err);
         throw err;
+    }
+}
+
+/**
+ * **addInvoice** เพิ่มข้อมูลใบกำกับภาษีลงใน blockchain
+ * @param {string} user user id
+ * @param {string} project project id
+ * @param {string} invoice invoice object as json format `"{"id":"001", "total": 400....}"`
+ */
+exports.addInvoice = async (user, project, invoice) => {
+    try {
+        let contract = await getContractOrg(user);
+        let result = await contract.submitTransaction(FN_ADD_INVOICE, user, project, invoice);
+        return result;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+/**
+ * @param {string} project project id
+ */
+exports.getProjectInvoice = async (project) => {
+    try {
+        let contract = await getContractOrg(USER);
+        let result = await contract.evaluateTransaction(FN_QUERY_INVOICE, project);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+exports.deleteInvoice = async (user, invID) => {
+    try {
+        let contract = await getContractOrg(user);
+        let result = await contract.submitTransaction(FN_DEL_INVOICE, invID);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+exports.payBack = async (project) => {
+    try {
+        let contract = await getContractOrg(USER);
+        let result = await contract.submitTransaction(FN_PAYBACK, project);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+exports.getEvent = async (projectID) => {
+    try {
+        const contract = await getContractOrg(USER);
+        const result = await contract.evaluateTransaction(FN_QUERY_EVENT, projectID);
+        return result;
+    } catch (error) {
+        throw error;
     }
 }
 

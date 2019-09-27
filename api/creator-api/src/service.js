@@ -13,8 +13,9 @@ const ccp2 = JSON.parse(ccpJSON2);
 const USER = 'user1'; // ผู้ใช้เริ่มต้น
 const FN_QUERY = 'query';
 const FN_DONATE = 'donate';
+const FN_PAYBACK = 'payBack';
 const FN_WITHDRAW = 'withdraw';
-const FN_ADD_INVOICE = 'addInvoice';
+const FN_ADD_INVOICE = 'addInvioceAndTransfer';
 const FN_QUERY_EVENT = 'queryEvent';
 const FN_GET_HISTORY = 'getHistory';
 const FN_DEL_INVOICE = 'deleteInvoice';
@@ -26,6 +27,7 @@ const FN_QUERY_PROJECTS = 'queryAllProjects';
 const FN_UPDATE_PROJECT_STATUS = 'updateStatus';
 const FN_GET_DONATE_HISTORY = 'getDonationHistory';
 const FN_QUERY_INVOICE = 'queryInvoiceByProjectID';
+const FN_QUERY_WITHSELECTOR = 'queryAllWithSelector';
 const FN_GET_PROJECT_BY_USER = 'queryProjectByUserID';
 const FN_GET_DONATION_BY_USERID = 'queryDonationByUserID';
 const FN_GET_PROJECT_BY_RECEIVER = 'queryProjectByReceiverID';
@@ -346,7 +348,7 @@ exports.withdraw = async (user, project, amount, invoiceID) => {
 exports.addInvoice = async (user, project, invoice) => {
     try {
         let contract = await getContractOrg2(user);
-        let result = await contract.submitTransaction(FN_ADD_INVOICE, project, invoice);
+        let result = await contract.submitTransaction(FN_ADD_INVOICE, user, project, invoice);
         return result;
     } catch (error) {
         console.error(error);
@@ -371,6 +373,29 @@ exports.deleteInvoice = async (user, invID) => {
     try {
         let contract = await getContractOrg2(user);
         let result = await contract.submitTransaction(FN_DEL_INVOICE, invID);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+exports.payBack = async (project) => {
+    try {
+        let contract = await getContractOrg2(USER);
+        let result = await contract.submitTransaction(FN_PAYBACK, project);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+/**
+ * @param {string} queryString
+ */
+exports.queryWithSelector = async (queryString) => {
+    try {
+        const contract = await getContractOrg2(USER);
+        const result = await contract.evaluateTransaction(FN_QUERY_WITHSELECTOR, queryString);
         return result;
     } catch (error) {
         throw error;

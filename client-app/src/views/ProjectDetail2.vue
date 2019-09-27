@@ -89,52 +89,12 @@
                     <span class="label label-success">Active</span>
                   </td>
                 </tr>
-                <tr>
-                  <td>2</td>
-                  <td>ค่าอาหารแมว</td>
-                  <td>10</td>
-                  <td>890</td>
-                  <td>8900</td>
-                  <td>
-                    <span class="label label-warning">Pending</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>ค่าวัคซีนแมว</td>
-                  <td>100</td>
-                  <td>700</td>
-                  <td>70000</td>
-                  <td>
-                    <span class="label label-warning">Pending</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>4</td>
-                  <td>นมขนาด 2 ลิตร</td>
-                  <td>10</td>
-                  <td>75</td>
-                  <td>750</td>
-                  <td>
-                    <span class="label label-warning">Pending</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>5</td>
-                  <td>กรงแมวขนาด 200*100 cm</td>
-                  <td>10</td>
-                  <td>2900</td>
-                  <td>29000</td>
-                  <td>
-                    <span class="label label-warning">Pending</span>
-                  </td>
-                </tr>
                 <tr v-for="(inv, index) in invoices" :key="index">
                   <td>{{inv.id}}</td>
-                  <td>sdf</td>
-                  <td>56h</td>
-                  <td></td>
-                  <td>{{inv.total}}</td>
+                  <td>xxx</td>
+                  <td>xxx</td>
+                  <td>xxx</td>
+                  <td>{{inv.total | currency}}</td>
                   <td>
                     <b-button v-b-toggle="inv.id" variant>รายละเอียด</b-button>
                   </td>
@@ -236,19 +196,6 @@
       </div>
     </div>
 
-    <!-- <div class="row">
-      <div class="col text-center">
-        <h3>Events</h3>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col text-center">
-        <div class="row">
-          <b-table striped hover :items="events" :fields="eventsFields"></b-table>
-        </div>
-      </div>
-    </div>-->
-
     <!-- donate input -->
     <div class="row">
       <div class="col text-center" id="donate">
@@ -309,12 +256,15 @@
         </div>
       </div>
     </div>
+
+    <my-footer/>
   </div>
 </template>
 
 <script>
 // const generatePayload = require("promptpay-qr");
 // const qrcode = require("qrcode");
+import myFooter from '../components/Footer';
 import auth from "../firebase";
 const axios = require("axios");
 const util = require("../util");
@@ -324,6 +274,9 @@ import service from "../service";
 import moment from "moment";
 
 export default {
+  components: {
+    myFooter
+  },
   data() {
     return {
       info: {},
@@ -512,10 +465,6 @@ export default {
 
 
 <style scoped>
-/* @import url("https://www.w3schools.com/w3css/4/w3.css"); */
-/* @import url('https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css'); */
-/* @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"); */
-
 .qr {
   align-content: center;
   align-self: center;
@@ -563,22 +512,6 @@ a + a {
 .successvalue {
   /* ยอดที่ต้องการ int */
   font-size: 34px;
-}
-
-.column {
-  /* พื้นหลังเนื้อหา Left column */
-  float: left;
-  /* width: 25%; */
-  padding: 0 10px;
-}
-
-/* Responsive columns */
-@media screen and (max-width: 600px) {
-  .column {
-    width: 100%;
-    display: block;
-    margin-bottom: 20px;
-  }
 }
 
 /* Style the counter cards */
@@ -646,10 +579,6 @@ a + a {
   right: 0;
 }
 
-.detail {
-  /* รายละเอียดโครงการ */
-  font-size: 16px;
-}
 /* social icon */
 .fb:hover {
   color: #3b5998;

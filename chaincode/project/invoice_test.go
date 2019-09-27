@@ -35,15 +35,28 @@ func TestAddInvoice(T *testing.T) {
 	assert.Equal(T, inv.VAT, 0.0)
 }
 
-// func TestQueryInvoicd(T *testing.T) {
-// 	loggerTestInvoice.Info(`Start testing function "queryInvoice"`)
+func TestAddInvoiceAndTransferProjectNotFound(T *testing.T) {
+	loggerTestInvoice.Info(`Start testing function "addInvoiceAndTransfer"`)
 
-// 	args := [][]byte{
-// 		[]byte("queryInvoiceByProjectID"),
-// 		[]byte("p_01"),
-// 	}
+	inv := Invoice{
+		ID:           "002",
+		Number:       2,
+		CustomerName: "someone",
+		VAT:          0,
+		Total:        199,
+	}
+	invAsByte, _ := json.Marshal(inv)
+	args := [][]byte{
+		[]byte("addInvioceAndTransfer"),
+		[]byte("user1"),
+		[]byte("p_01"),
+		invAsByte,
+	}
 
-// 	res := stub.MockInvoke("INV002", args)
+	res := stub.MockInvoke("INV002", args)
 
-// 	assert.Assert(T, res.GetStatus() == shim.OK)
-// }
+	json.Unmarshal(res.GetPayload(), &inv)
+
+	assert.Assert(T, res.GetStatus() == shim.ERROR)
+	assert.Equal(T, res.GetMessage(), "Project not found.")
+}
