@@ -1,28 +1,18 @@
 <template>
   <div id="app">
-    <!-- Basic nav -->
-    <!-- <div id="nav">
-      <router-link to="/">Home</router-link>|
-      <router-link to="/about">About</router-link>
-    </div>-->
-
-    <!-- My nav -->
-    <!-- <NavBar id="nav"/> -->
-
     <NavBar2 id="nav" />
+    
     <transition name="fade">
       <router-view />
     </transition>
   </div>
 </template>
-firebaseConfig
+
 <script>
-import NavBar from "@/components/NavBar.vue";
 import NavBar2 from "@/components/NavBar2.vue";
 
 export default {
   components: {
-    NavBar,
     NavBar2
   }
 };

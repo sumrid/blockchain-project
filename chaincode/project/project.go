@@ -152,6 +152,8 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return C.deleteInvoice(stub, args)
 	} else if fn == "addInvioceAndTransfer" {
 		return C.addInvioceAndTransfer(stub, args)
+	} else if fn == "queryAllWithSelector" {
+		return C.queryAllWithSelector(stub, args)
 	}
 
 	logger.Error("invoke did not find func: " + fn)
@@ -426,35 +428,6 @@ func (C *Chaincode) getHistory(stub shim.ChaincodeStubInterface, args []string) 
 	return shim.Success(bytes)
 }
 
-// query all by key
-func (C *Chaincode) query(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	var key string // Entities
-	var err error
-
-	// Check arguments
-	if len(args) != 1 {
-		return shim.Error("Incorrect number of arguments. Expecting name of the person to query")
-	}
-
-	key = args[0]
-
-	// Get the state from the ledger
-	Avalbytes, err := stub.GetState(key)
-	if err != nil {
-		jsonResp := "{\"Error\":\"Failed to get state for " + key + "\"}"
-		return shim.Error(jsonResp)
-	}
-
-	if Avalbytes == nil {
-		jsonResp := "{\"Error!!\":\"Nil amount for " + key + "\"}"
-		return shim.Error(jsonResp)
-	}
-
-	jsonResp := "{\"Name\":\"" + key + "\",\"Amount\":\"" + string(Avalbytes) + "\"}"
-	fmt.Printf("Query Response:%s\n", jsonResp)
-	return shim.Success(Avalbytes)
-}
-
 func (C *Chaincode) queryAllProjects(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	// Query all projects
 	query := `{"selector":{"id":{"$regex":"p_"}}}`
@@ -586,28 +559,6 @@ func (C *Chaincode) queryProjectBySelector(stub shim.ChaincodeStubInterface, arg
 	}
 
 	return shim.Success(payload)
-}
-
-// ใช้ค้นหาโดยใช้ selector
-func (C *Chaincode) queryWithSelector(stub shim.ChaincodeStubInterface, query string) ([][]byte, error) {
-
-	interator, err := stub.GetQueryResult(query)
-	defer interator.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	var results [][]byte
-	for interator.HasNext() {
-		result, err := interator.Next()
-		if err != nil {
-			return nil, err
-		}
-		// เพิ่มผลลัพธ์ลงไปใน list
-		results = append(results, result.Value)
-	}
-
-	return results, nil
 }
 
 func (C *Chaincode) closeProject(stub shim.ChaincodeStubInterface, args []string) peer.Response {
@@ -749,6 +700,7 @@ func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) pee
 		logger.Error("payBack: Project not found.")
 		return shim.Error("Project not found.")
 	}
+
 	err = json.Unmarshal(pByte, &p) // To struct
 	if err != nil {
 		logger.Error("payBack:", err.Error())
@@ -762,13 +714,15 @@ func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) pee
 	// Get donations ของการโครงการนั้นๆ
 	var donations []Donation
 	res, err := stub.GetState("history_" + projectID)
-	if res == nil {
-		return shim.Success(pByte)
-	}
-
-	err = json.Unmarshal(res, &donations)
 	if err != nil {
 		return shim.Error(err.Error())
+	}
+
+	if res != nil {
+		err = json.Unmarshal(res, &donations)
+		if err != nil {
+			return shim.Error(err.Error())
+		}
 	}
 
 	// ทำการคืนเงิน
@@ -783,6 +737,7 @@ func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) pee
 		usrAsByte, _ := stub.GetState(donation.UserID)
 		if usrAsByte == nil {
 			usr.ID = donation.UserID
+			usr.Type = "user"
 			usr.Balance += toPayBack
 		} else {
 			err = json.Unmarshal(usrAsByte, &usr)
@@ -795,6 +750,8 @@ func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) pee
 		trns.ProjectID = projectID
 		trns.Amount = toPayBack
 		trns.Type = "transfer"
+		t, _ := stub.GetTxTimestamp()
+		trns.Time = time.Unix(t.GetSeconds(), 0)
 
 		usrAsByte, err = json.Marshal(usr)
 		trnsAsByte, err := json.Marshal(trns)
@@ -930,10 +887,6 @@ func (C *Chaincode) queryEventByProjectID(stub shim.ChaincodeStubInterface, args
 	}
 
 	return shim.Success(payload)
-}
-
-func (C *Chaincode) withdrawRequest(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	return shim.Success(nil)
 }
 
 func main() {

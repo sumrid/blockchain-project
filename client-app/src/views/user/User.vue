@@ -157,9 +157,9 @@
 
 <script>
 import { mapGetters } from "vuex";
-import service from "../service";
-import auth from "../firebase";
-import confirmProject from "./receiver/ConfirmProject";
+import service from "../../service";
+import auth from "../../firebase";
+import confirmProject from "../receiver/ConfirmProject";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 export default {

@@ -1,10 +1,11 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-import Me from '@/views/User.vue';
+import Me from '@/views/user/User.vue';
 import SendInvoice from './views/SendInvoice';
 import HomeV2 from './views/Home2.vue'
 import Contact from './views/Contact.vue';
+import EditProfile from './views/user/EditProfile.vue';
 import EditProject from './views/EditProject.vue';
 import QRCodeReader from './views/QRCodeReader.vue';
 import CreateProject from './views/CreateProject.vue';
@@ -86,6 +87,11 @@ export default new Router({
         if (auth.currentUser) next();
         else next(from.path);
       }
+    },
+    {
+      path: '/me/edit',
+      name: 'editprofile',
+      component: EditProfile
     },
     {
       path: '/contact',

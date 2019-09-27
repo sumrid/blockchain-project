@@ -28,7 +28,7 @@
     <!-- สร้างคอลัมน์ ซ้าย กลาง ขวา -->
     <div class="container">
       <div class="row">
-        <div class="col-sm-4" v-for="p in projects" :key="p.id">
+        <div class="col-sm-6 col-lg-4" v-for="p in projects" :key="p.id">
           <div class="card">
             <b-img-lazy rounded :src="imageUrl(p.id)" width="500" height="200"></b-img-lazy>
             <h3>{{p.title}}</h3>
@@ -97,8 +97,6 @@ export default {
 </script>
 
 <style scoped>
-/* @import 'https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css';
-@import 'https://www.w3schools.com/w3css/4/w3.css'; */
 
 * {
   box-sizing: border-box;
@@ -169,19 +167,7 @@ img {
 .mySlides {
   display: none;
 }
-/* ปุ่ม search */
-input[type="text"] {
-  width: 200%;
-  box-sizing: border-box;
-  border: 2px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-  background-color: white;
-  background-image: url("");
-  background-position: 10px 10px;
-  background-repeat: no-repeat;
-  padding: 12px 20px 12px 20px;
-}
+
 .column {
   float: left;
   width: 25%;
@@ -215,84 +201,6 @@ input[type="text"] {
   padding: 16px;
   text-align: center;
   background-color: #f1f1f1;
-}
-
-footer .main-footer {
-  padding: 20px 0;
-  background: #252525;
-}
-footer ul {
-  padding-left: 0;
-  list-style: none;
-}
-
-/* Copy Right Footer */
-.footer-copyright {
-  background: #222;
-  padding: 0px 0;
-}
-.footer-copyright .logo {
-  display: inherit;
-}
-.footer-copyright nav {
-  float: right;
-  margin-top: 5px;
-}
-.footer-copyright nav ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.footer-copyright nav ul li {
-  border-left: 1px solid #505050;
-  display: inline-block;
-  line-height: 12px;
-  margin: 0;
-  padding: 0 8px;
-}
-.footer-copyright nav ul li a {
-  color: #969696;
-}
-.footer-copyright nav ul li:first-child {
-  border: medium none;
-  padding-left: 0;
-}
-.footer-copyright p {
-  color: #969696;
-  margin: 2px 0 0;
-}
-
-/* Footer Top */
-.footer-top {
-  background: #252525;
-  padding-bottom: 0px;
-  margin-bottom: 30px;
-  border-bottom: 3px solid #222;
-}
-
-/* Footer transparent */
-footer.transparent .footer-top,
-footer.transparent .main-footer {
-  background: transparent;
-}
-footer.transparent .footer-copyright {
-  background: none repeat scroll 0 0 rgba(0, 0, 0, 0.3);
-}
-
-/* Footer light */
-footer.light .footer-top {
-  background: #f9f9f9;
-}
-footer.light .main-footer {
-  background: #f9f9f9;
-}
-footer.light .footer-copyright {
-  background: none repeat scroll 0 0 rgba(255, 255, 255, 0.3);
-}
-
-/* Footer 4 */
-.footer- .logo {
-  display: inline-block;
 }
 
 /*==================== 

@@ -42,13 +42,19 @@ async function main() {
         // Get the contract from the network.
         const contract = network.getContract('mychaincode');
 
-        // Submit the specified transaction.
-        // createCar transaction - requires 5 argument, ex: ('createCar', 'CAR12', 'Honda', 'Accord', 'Black', 'Tom')
-        // changeCarOwner transaction - requires 2 args , ex: ('changeCarOwner', 'CAR10', 'Dave')
-        const result = await contract.submitTransaction("payBack", "p_02");
-        console.log(String(result))
-        console.log('Transaction has been submitted ' + String(result));
 
+        const selector = {
+            selector: {
+                type: {
+                    $eq: "invoice"
+                }
+            }
+        }
+
+        // const result = await contract.submitTransaction("payBack", "p_02");
+        const result = await contract.evaluateTransaction("queryAllWithSelector", JSON.stringify(selector));
+        // console.log('Transaction has been submitted ' + String(result));
+        console.log(JSON.parse(String(result)));
         // Disconnect from the gateway.
         await gateway.disconnect();
 

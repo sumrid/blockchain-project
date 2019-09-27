@@ -27,6 +27,7 @@ const FN_QUERY_PROJECTS = 'queryAllProjects';
 const FN_UPDATE_PROJECT_STATUS = 'updateStatus';
 const FN_GET_DONATE_HISTORY = 'getDonationHistory';
 const FN_QUERY_INVOICE = 'queryInvoiceByProjectID';
+const FN_QUERY_WITHSELECTOR = 'queryAllWithSelector';
 const FN_GET_PROJECT_BY_USER = 'queryProjectByUserID';
 const FN_GET_DONATION_BY_USERID = 'queryDonationByUserID';
 const FN_GET_PROJECT_BY_RECEIVER = 'queryProjectByReceiverID';
@@ -382,6 +383,19 @@ exports.payBack = async (project) => {
     try {
         let contract = await getContractOrg2(USER);
         let result = await contract.submitTransaction(FN_PAYBACK, project);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+/**
+ * @param {string} queryString
+ */
+exports.queryWithSelector = async (queryString) => {
+    try {
+        const contract = await getContractOrg2(USER);
+        const result = await contract.evaluateTransaction(FN_QUERY_WITHSELECTOR, queryString);
         return result;
     } catch (error) {
         throw error;
