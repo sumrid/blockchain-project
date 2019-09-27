@@ -94,7 +94,7 @@ func TestDonate(T *testing.T) {
 		[]byte("user"),
 		[]byte("p_01"),
 		[]byte("99"),
-		[]byte("11-07-2019:12:00:00"),
+		[]byte("2019-07-11T12:00:00Z"),
 		[]byte("s.k"),
 	}
 	res := stub.MockInvoke("003", args)
@@ -112,6 +112,7 @@ func TestDonate(T *testing.T) {
 		loggerTest.Error(err.Error())
 	}
 
+	assert.Assert(T, res.GetPayload() != nil)
 	assert.Equal(T, p.Balance, 99.00)
 	assert.Equal(T, p.Accumulated, 99.00)
 }

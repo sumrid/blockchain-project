@@ -274,7 +274,7 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 	donation.UserID = args[0]
 	donation.ProjectID = args[1]
 	donation.Amount, err = strconv.ParseFloat(args[2], 64)
-	donation.Time, err = time.Parse(DatetimeLayout, args[3])
+	donation.Time, err = time.Parse(time.RFC3339, args[3])
 	donation.DisplayName = args[4]
 	donation.Type = "donation" // กำหนดชนิดของข้อมูล
 	if err != nil {
@@ -364,7 +364,7 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 	}
 
 	// Return
-	return shim.Success(nil)
+	return shim.Success(dByte)
 }
 
 // getDonationHistory by project ID
