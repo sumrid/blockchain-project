@@ -7,7 +7,7 @@ const morgan = require('morgan');
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const ORG = process.env.ORG || 'org1';
+const ORG = process.env.ORG;
 require('custom-env').env(ORG);
 
 const port = process.env.PORT || 8000;

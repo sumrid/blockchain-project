@@ -8,23 +8,20 @@ const ccpPath = path.resolve(__dirname, '..', 'connection_profile', ccpFile);
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
 const ccp = JSON.parse(ccpJSON);
 
+// Set org
+ccp.client.organization = process.env.ORG || 'Org1';
+const WALLET = process.env.WALLET || 'wallet1';
+
 
 // Function name in chaincode
 const USER = 'user1';
 const FN_QUERY = 'query';
 const FN_DONATE = 'donate';
-const FN_GET_HISTORY = 'getHistory';
-const FN_QUERY_EVENT = 'queryEvent';
 const FN_CLOSE_PROJECT = 'closeProject';
 const FN_UPDATE_PROJECT = 'updateProject'
 const FN_CREATE_PROJECT = 'createProject';
 const FN_DELETE_PROJECT = 'deleteProject';
-const FN_QUERY_PROJECTS = 'queryAllProjects';
 const FN_UPDATE_PROJECT_STATUS = 'updateStatus';
-const FN_GET_DONATE_HISTORY = 'getDonationHistory';
-const FN_GET_PROJECT_BY_USER = 'queryProjectByUserID';
-const FN_GET_DONATION_BY_USERID = 'queryDonationByUserID';
-const FN_GET_PROJECT_BY_RECEIVER = 'queryProjectByReceiverID'
 const CHANNEL = 'donation';  // ชื่อ channel
 const CONTRACT = 'mychaincode'; // ชื่อ chaincode
 
@@ -35,9 +32,9 @@ const CONTRACT = 'mychaincode'; // ชื่อ chaincode
  * getContract สำหรับฝั่งผู้บริจาค
  * @param {string} user user uid ที่ลงทะเบียนใน CA เรียบร้อยแล้ว
  */
-async function getContractOrg1(user) {
+async function getContractOrg(user) {
     try {
-        const walletPath = path.join(process.cwd(), '..', 'wallet1');
+        const walletPath = path.join(process.cwd(), '..', WALLET);
         const wallet = new FileSystemWallet(walletPath);
 
         // ตรวจสอบ user ว่ามีอยู่ใน wallet ไหม
@@ -54,28 +51,9 @@ async function getContractOrg1(user) {
     }
 }
 
-async function getContractOrg2(user) {
-    try {
-        const walletPath = path.join(process.cwd(), '..', 'wallet2');
-        const wallet = new FileSystemWallet(walletPath);
-
-        // ตรวจสอบ user ว่ามีอยู่ใน wallet ไหม
-        const userExists = await wallet.exists(user);
-        if (!userExists) {
-            throw new Error(`An identity for the user "${user}" does not exist in the wallet`);
-        }
-        const gateway = new Gateway();
-        await gateway.connect(ccp2, { wallet, identity: user, discovery: { enabled: false } });
-        const network = await gateway.getNetwork(CHANNEL); // get channel
-        return network.getContract(CONTRACT); // get smart contract (chaincode)
-    } catch (err) {
-        throw err;
-    }
-}
-
 async function getChannal(user) {
     try {
-        const walletPath = path.join(process.cwd(), '..', 'wallet1');
+        const walletPath = path.join(process.cwd(), '..', WALLET);
         const wallet = new FileSystemWallet(walletPath);
 
         // ตรวจสอบ user ว่ามีอยู่ใน wallet ไหม
@@ -92,17 +70,17 @@ async function getChannal(user) {
     }
 }
 
-// #####################
-// #  Query and Invoke
-// #####################
+// ##########################################
+// #            Query and Invoke
+// ##########################################
 
 /**
  * **query any by key**
  * @param {string} key
  */
-exports.query = async (key) => {
+async function query(key) {
     try {
-        const contract = await getContractOrg1(USER); // ใช้ผู้ใช้เริ่มต้นก็ได้
+        const contract = await getContractOrg(USER); // ใช้ผู้ใช้เริ่มต้นก็ได้
         const result = await contract.evaluateTransaction(FN_QUERY, key);
         return result;
     } catch (err) {
@@ -110,14 +88,43 @@ exports.query = async (key) => {
         throw err;
     }
 }
+
+/**
+ * Query โดยใช้ selector
+ * @param { string } queryString ex. {"selector":{"id":{"$regex":"p_"}}}
+ */
+async function queryWithSelector(queryString) {
+    try {
+        const contract = await getContractOrg(USER);
+        const result = await contract.evaluateTransaction('queryAllWithSelector', queryString);
+        return result;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+async function queryTx(txID) {
+    try {
+        const ch = await getChannal(USER);
+        const results = await ch.queryBlockByTxID(txID);
+        return results;
+    } catch (err) {
+        throw err;
+    }
+}
+
+// #####################
+// #       โครงการ
+// #####################
 /**
  * สร้างโครงการเพื่อรับบริจาคเงิน
  * @param {string} useriD
  * @param {object} project
  */
-exports.createProject = async (userID, project) => {
+async function createProject(userID, project) {
     try {
-        const contract = await getContractOrg2(userID); // user ต้องสมัครสมาชิคแล้วเท่านั้น
+        const contract = await getContractOrg(userID); // user ต้องสมัครสมาชิคแล้วเท่านั้น
         const result = await contract.
             submitTransaction(
                 FN_CREATE_PROJECT,
@@ -138,9 +145,9 @@ exports.createProject = async (userID, project) => {
     }
 }
 
-exports.updateProject = async (userID, project) => {
+async function updateProject(userID, project) {
     try {
-        const contract = await getContractOrg2(userID); // TODO func update project
+        const contract = await getContractOrg(userID); // TODO func update project
         const result = await contract.
             submitTransaction(
                 FN_UPDATE_PROJECT,
@@ -153,9 +160,25 @@ exports.updateProject = async (userID, project) => {
     }
 }
 
-exports.deleteProject = async (userID, projectID) => {
+/**
+ * @param {string} userID uid ของผู้ที่มีส่วนเกี่ยวข้องกับโครงการ
+ * @param {string} projectID
+ * @param {string} status `Ex. 'open', 'pending', 'close', 'fail'`
+ */
+async function updateProjectStatus(userID, projectID, status) {
     try {
-        const contract = await getContractOrg2(userID);
+        const contract = await getContractOrg(userID);
+        const result = await contract.submitTransaction(FN_UPDATE_PROJECT_STATUS, userID, projectID, status);
+        return result;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+async function deleteProject(userID, projectID) {
+    try {
+        const contract = await getContractOrg(userID);
         const result = await contract.submitTransaction(FN_DELETE_PROJECT, projectID);
         return result;
     } catch (err) {
@@ -163,9 +186,26 @@ exports.deleteProject = async (userID, projectID) => {
     }
 }
 
-exports.donate = async (userID, donation) => {
+/**
+ * @param {string} key project id
+ */
+async function closeProject(key) {
     try {
-        const contract = await getContractOrg1(userID || USER); // ถ้ายังไม่สมัครจะใช้ id ตั้งต้นหรือ ใช้ anonymous ของ firebase
+        const contract = await getContractOrg(USER); // ผู้ใช้ตั้งต้น
+        const result = await contract.submitTransaction(FN_CLOSE_PROJECT, key);
+        return result;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+// #####################
+// #      Donate
+// #####################
+async function donate(userID, donation) {
+    try {
+        const contract = await getContractOrg(userID || USER); // ถ้ายังไม่สมัครจะใช้ id ตั้งต้นหรือ ใช้ anonymous ของ firebase
         await contract.submitTransaction(
             FN_DONATE,
             donation.user, // uid of user
@@ -180,119 +220,10 @@ exports.donate = async (userID, donation) => {
     }
 }
 
-exports.getHistory = async (key) => {
-    try {
-        const contract = await getContractOrg1(USER); // ใช้ userตั้งต้น
-        const result = await contract.evaluateTransaction(FN_GET_HISTORY, key);
-        return result;
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-}
-
-exports.getDonationHistory = async (key) => {
-    try {
-        const contract = await getContractOrg1(USER); // ผู้ใช้ตั้งต้น
-        const result = await contract.evaluateTransaction(FN_GET_DONATE_HISTORY, key);
-        return result;
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-}
-
-exports.getAllProjects = async () => {
-    try {
-        const contract = await getContractOrg1(USER); // ผู้ใช้ตั้งต้น
-        const result = await contract.evaluateTransaction(FN_QUERY_PROJECTS);
-        return result;
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-}
-
-/**
- * @param {string} uid UID of project owner.
- */
-exports.getAllProjectsByUserID = async (uid) => {
-    try {
-        const contract = await getContractOrg2(USER);
-        const result = await contract.evaluateTransaction(FN_GET_PROJECT_BY_USER, uid);
-        return result;
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-}
-
-exports.getAllProjectsByReceiverID = async (uid) => {
-    try {
-        const contract = await getContractOrg2(USER);
-        const result = await contract.evaluateTransaction(FN_GET_PROJECT_BY_RECEIVER, uid);
-        return result;
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-}
-
-/**
- * @param {string} key project id
- */
-exports.closeProject = async (key) => {
-    try {
-        const contract = await getContractOrg2(USER); // ผู้ใช้ตั้งต้น
-        const result = await contract.submitTransaction(FN_CLOSE_PROJECT, key);
-        return result;
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-}
-
-/**
- * @param {string} userID uid ของผู้ที่มีส่วนเกี่ยวข้องกับโครงการ
- * @param {string} projectID
- * @param {string} status `Ex. 'open', 'pending', 'close', 'fail'`
- */
-exports.updateProjectStatus = async (userID, projectID, status) => {
-    try {
-        const contract = await getContractOrg1(userID); // TODO org3 or org2
-        const result = await contract.submitTransaction(FN_UPDATE_PROJECT_STATUS, userID, projectID, status);
-        return result;
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-}
-
-exports.getDonationByUserID = async (userID) => {
-    try {
-        const contract = await getContractOrg1(USER);
-        const result = await contract.evaluateTransaction(FN_GET_DONATION_BY_USERID, userID);
-        return result;
-    } catch (err) {
-        console.log(err);
-        throw err;
-    }
-}
-
-exports.getEvent = async (projectID) => {
-    try {
-        const contract = await getContractOrg1(USER);
-        const result = await contract.evaluateTransaction(FN_QUERY_EVENT, projectID);
-        return result;
-    } catch (error) {
-        throw error;
-    }
-}
-
 // ################
 //     Test zone
 // ################
-exports.test = async () => {
+async function test() {
     try {
         // Get channel, client
         const gateway = await getGateway(USER);
@@ -381,43 +312,15 @@ exports.test = async () => {
     }
 }
 
-/**
- * Query โดยใช้ selector
- * @param { string } queryString ex. {"selector":{"id":{"$regex":"p_"}}}
- */
-exports.query2 = async (queryString) => {
-    try {
-        const contract = await getContractOrg1(USER);
-        const result = await contract.evaluateTransaction('query2', queryString);
-        return result;
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-}
-
-exports.queryTx = async (txID) => {
-    try {
-        const ch = await getChannal(USER);
-        const results = await ch.queryBlockByTxID(txID);
-        return results;
-    } catch (err) {
-        throw err;
-    }
-}
-
-// Exports for testing
-if (process.env.NODE_ENV === 'test') {
-    exports.getContractOrg1 = getContractOrg1;
-    exports.getContractOrg2 = getContractOrg2;
-    exports.FN_CLOSE_PROJECT = FN_CLOSE_PROJECT;
-    exports.FN_CREATE_PROJECT = FN_CREATE_PROJECT;
-    exports.FN_DONATE = FN_DONATE;
-    exports.FN_GET_DONATE_HISTORY = FN_GET_DONATE_HISTORY;
-    exports.FN_GET_DONATION_BY_USERID = FN_GET_DONATION_BY_USERID;
-    exports.FN_GET_HISTORY = FN_GET_HISTORY;
-    exports.FN_QUERY = FN_QUERY;
-    exports.FN_QUERY_PROJECTS = FN_QUERY_PROJECTS;
-    exports.CHANNEL = CHANNEL;
-    exports.CONTRACT = CONTRACT;
+module.exports = {
+    test,
+    query,
+    queryTx,
+    queryWithSelector,
+    closeProject,
+    createProject,
+    updateProject,
+    deleteProject,
+    updateProjectStatus,
+    donate,
 }
