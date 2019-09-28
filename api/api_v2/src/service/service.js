@@ -17,6 +17,7 @@ const WALLET = process.env.WALLET || 'wallet1';
 const USER = 'user1';
 const FN_QUERY = 'query';
 const FN_DONATE = 'donate';
+const FN_ADD_INVOICE = 'addInvoice';
 const FN_CLOSE_PROJECT = 'closeProject';
 const FN_UPDATE_PROJECT = 'updateProject'
 const FN_CREATE_PROJECT = 'createProject';
@@ -25,9 +26,9 @@ const FN_UPDATE_PROJECT_STATUS = 'updateStatus';
 const CHANNEL = 'donation';  // ชื่อ channel
 const CONTRACT = 'mychaincode'; // ชื่อ chaincode
 
-// #####################
-// #    Service  v2    #
-// #####################
+// *********************
+// *    Service  v2    *
+// *********************
 /**
  * getContract สำหรับฝั่งผู้บริจาค
  * @param {string} user user uid ที่ลงทะเบียนใน CA เรียบร้อยแล้ว
@@ -62,7 +63,7 @@ async function getChannal(user) {
             throw new Error(`An identity for the user "${user}" does not exist in the wallet`);
         }
         const gateway = new Gateway();
-        await gateway.connect(ccp2, { wallet, identity: user, discovery: { enabled: false } });
+        await gateway.connect(ccp, { wallet, identity: user, discovery: { enabled: false } });
         const network = await gateway.getNetwork(CHANNEL); // get channel
         return network.getChannel();
     } catch (err) {
@@ -200,20 +201,38 @@ async function closeProject(key) {
     }
 }
 
+/**
+ * **addInvoice** เพิ่มข้อมูลใบกำกับภาษีลงใน blockchain
+ * @param {string} user user id
+ * @param {string} project project id
+ * @param {string} invoice invoice object as json format `"{"id":"001", "total": 400....}"`
+ */
+async function addInvoice(user, project, invoice) {
+    try {
+        let contract = await getContractOrg(user);
+        let result = await contract.submitTransaction(FN_ADD_INVOICE, user, project, invoice);
+        return result;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
 // #####################
 // #      Donate
 // #####################
 async function donate(userID, donation) {
     try {
         const contract = await getContractOrg(userID || USER); // ถ้ายังไม่สมัครจะใช้ id ตั้งต้นหรือ ใช้ anonymous ของ firebase
-        await contract.submitTransaction(
+        const result = await contract.submitTransaction(
             FN_DONATE,
             donation.user, // uid of user
             donation.project,
             donation.amount.toString(),
             donation.time,
             donation.displayname
-        )
+        );
+        return result;
     } catch (err) {
         console.error(err);
         throw err;
@@ -316,6 +335,7 @@ module.exports = {
     test,
     query,
     queryTx,
+    addInvoice,
     queryWithSelector,
     closeProject,
     createProject,

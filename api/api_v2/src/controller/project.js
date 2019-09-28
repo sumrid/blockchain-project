@@ -1,13 +1,15 @@
 const uid = require('uuid/v4');
 const moment = require('moment');
-
+const schedlue = require('node-schedule');
 const service = require('../service/service');
 const firebase = require('../service/firebase');
 
-let query = {
-    selector: {
-        type: {
-            $eq: "project"
+function queryObj() {
+    return {
+        selector: {
+            type: {
+                $eq: ""
+            }
         }
     }
 }
@@ -77,10 +79,12 @@ async function deleteProject(req, res) {
 
 async function getAllProjects(req, res) {
     try {
+        const query = queryObj();
+        query.selector.type.$eq = "project";
         const queryString = JSON.stringify(query);
         const result = await service.queryWithSelector(queryString);
         const projests = JSON.parse(String(result));
-        
+
         if (projests) res.json(projests);
         else res.status(404).json([]);
     } catch (error) {
@@ -93,7 +97,7 @@ async function getProjectByID(req, res) {
         const projectID = req.params.project;
         const result = await service.query(projectID);
         const project = JSON.parse(String(result));
-        
+
         if (project) res.json(project);
         else res.status(404).json([]);
     } catch (error) {
@@ -104,10 +108,11 @@ async function getProjectByID(req, res) {
 async function getProjectEvents(req, res) {
     try {
         const projectID = req.params.project;
+        const query = queryObj();
         query.selector.type.$eq = "event";
-        query.selector.project = {$eq: projectID};
+        query.selector.project = { $eq: projectID };
         const queryString = JSON.stringify(query);
-        
+
         const result = await service.queryWithSelector(queryString);
         const events = JSON.parse(String(result));
 
@@ -121,8 +126,9 @@ async function getProjectEvents(req, res) {
 async function getProjectDonations(req, res) {
     try {
         const projectID = req.params.project;
+        const query = queryObj();
         query.selector.type.$eq = "donation";
-        query.selector.project = {$eq: projectID};
+        query.selector.project = { $eq: projectID };
         const queryString = JSON.stringify(query);
 
         const result = await service.queryWithSelector(queryString);
@@ -138,8 +144,9 @@ async function getProjectDonations(req, res) {
 async function getProjectInvoices(req, res) {
     try {
         const projectID = req.params.project;
+        const query = queryObj();
         query.selector.type.$eq = "invoice";
-        query.selector.project = {$eq: projectID};
+        query.selector.project = { $eq: projectID };
         const queryString = JSON.stringify(query);
 
         const result = await service.queryWithSelector(queryString);
@@ -150,6 +157,30 @@ async function getProjectInvoices(req, res) {
     } catch (error) {
         res.status(500).json(error);
     }
+}
+
+/**
+ * Check time has expired.
+ */
+async function checkProjectIfTimeout() {
+    try {
+        console.info('[check] check if project is timeout.');
+        const query = queryObj();
+        query.selector.status = { $eq: 'open' };
+        const result = await service.queryWithSelector(JSON.stringify(query));
+        const projects = JSON.parse(String(result));
+        projects.forEach(project => {
+            console.log(project);
+        });
+    } catch (error) {
+
+    }
+}
+
+if (process.env.ORG == "Org2") {
+    schedlue.scheduleJob('*/30 * * * * *', async () => {
+        await checkProjectIfTimeout();
+    });
 }
 
 module.exports = {

@@ -3,6 +3,7 @@ const router = express.Router();
 const contorller = require('./controller/controller');
 
 const userController = require('./controller/user');
+const invoiceController = require('./controller/invoice');
 const projectController = require('./controller/project');
 const donationController = require('./controller/donation');
 
@@ -21,16 +22,17 @@ router.get('/project/:project/donations', projectController.getProjectDonations)
 
 // TODO : verify token
 router.post('/project/donate', donationController.donate);
-router.post('/project/donate/qr', donationController.readQR);             // v2 ออก QRcode promptpay 
+router.post('/project/donate/qr', donationController.createQR);             // v2 ออก QRcode promptpay 
 router.post('/project/donate/readqr', contorller.readQR);           // บริจาคและลบ QRcode
 router.post('/project/donate/qr/v2', contorller.createQrDonation);  // genQR + firebase
-router.post('/project/donate/qr/v3', contorller.createQRv3);        // v3 ออกQR เป็นแบบ Url
+router.post('/project/donate/qr/v3', donationController.createQRv3);        // v3 ออกQR เป็นแบบ Url
 
-router.post('/invoice',);
+router.post('/invoice', invoiceController.sendInvoice);
+router.get('/invoice/:id', invoiceController.getInvoice);
 
 // User
-router.get('/user');
 router.post('/user', userController.regisUser);
+router.get('/user/:id', userController.getUser);
 router.get('/user/:id/project', userController.getProjects);
 router.get('/user/:id/donation', userController.getDonations);
 router.get('/user/:id/receive', userController.getReceiveProject);

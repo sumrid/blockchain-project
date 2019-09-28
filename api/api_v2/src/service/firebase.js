@@ -53,6 +53,24 @@ exports.getProjectByID = async (key) => {
 }
 
 /**
+ * @param {string} name
+ * @param {string} email
+ * @param {string} password
+ */
+exports.registerUser = async (name, email, password) => {
+    try {
+        const user = await admin.auth().createUser({
+            displayName: name,
+            email: email,
+            password: password
+        });
+        return user;
+    } catch (error) {
+        throw error;
+    }
+}
+
+/**
  * สำหรับเก็บข้อมูล qrcode ที่สร้างขึ้นมา
  */
 exports.saveQR = async (donation) => {
