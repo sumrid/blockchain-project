@@ -158,14 +158,15 @@ exports.query = async (key) => {
 exports.donate = async (userID, donation) => {
     try {
         const contract = await getContractOrg1(userID || USER); // ถ้ายังไม่สมัครจะใช้ id ตั้งต้นหรือ ใช้ anonymous ของ firebase
-        await contract.submitTransaction(
+        const result = await contract.submitTransaction(
             FN_DONATE,
             donation.user, // uid of user
             donation.project,
             donation.amount.toString(),
             donation.time,
             donation.displayname
-        )
+        );
+        return result;
     } catch (err) {
         console.error(err);
         throw err;

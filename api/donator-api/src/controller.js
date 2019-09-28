@@ -32,11 +32,12 @@ exports.registerDonator = async (req, res) => {
 exports.donate = async (req, res) => {
     const user = req.body.user;
     const donation = req.body;
-    donation.time = moment().format(DATETIME_LAYOUT);
+    donation.time = moment().toDate().toISOString();
 
     try {
-        await service.donate(user, donation);
-        res.json("Success.");
+        const result = await service.donate(user, donation);
+        const payload = JSON.parse(String(result));
+        res.json(payload);
     } catch (err) {
         res.status(500).json(err);
     }
