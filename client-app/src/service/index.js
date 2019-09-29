@@ -106,7 +106,7 @@ async function donate(donation) {
  */
 async function getDonationHistory(projectID) {
     try {
-        const res = await axios.get(DONATOR_API + '/api/project/donations/' + projectID);
+        const res = await axios.get(`${DONATOR_API}/api/project/${projectID}/donations`);
         return res.data;
     } catch (err) {
         throw err;

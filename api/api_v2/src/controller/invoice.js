@@ -1,10 +1,10 @@
 const service = require('../service/service');
 
 async function sendInvoice(req, res) {
-    const user = req.body.user;
-    const project = req.body.project;
-    const invoice = req.body.invoice;
     try {
+        const user = req.body.user;
+        const project = req.body.project;
+        const invoice = req.body.invoice;
         let invoiceStr = JSON.stringify(invoice)
         let buffer = await service.addInvoice(user, project, invoiceStr);
         let result = JSON.parse(String(buffer));
@@ -21,7 +21,7 @@ async function getInvoice(req, res) {
         const invoice = JSON.parse(String(result));
 
         if (invoice) res.json(invoice);
-        else res.status(404).json([]);
+        else res.status(404).json({});
     } catch (error) {
         res.status(500).json(error);
     }

@@ -24,7 +24,7 @@ async function createProject(req, res) {
         project.id = 'p_' + uid();
         project.balance = 0;
         project.status = 'pending';
-        project.starttime = moment().toDate()
+        project.starttime = moment().toDate().toISOString();
         // project.endtime = '11-08-2019:12:00:00';
 
         const result = await service.createProject(user, project);
@@ -71,7 +71,7 @@ async function deleteProject(req, res) {
         const userID = req.body.user;
         const projectID = req.body.project;
         const result = await service.deleteProject(userID, projectID);
-        res.json(JSON.parse(String(result)));
+        res.send(String(result));
     } catch (err) {
         res.status(404).json(err);
     }
@@ -166,14 +166,24 @@ async function checkProjectIfTimeout() {
     try {
         console.info('[check] check if project is timeout.');
         const query = queryObj();
+        query.selector.type.$eq = "project";
         query.selector.status = { $eq: 'open' };
         const result = await service.queryWithSelector(JSON.stringify(query));
         const projects = JSON.parse(String(result));
+
         projects.forEach(project => {
-            console.log(project);
+            const endtime = moment(project.endtime, moment.ISO_8601);
+            if (endtime.diff(moment()) <= 0) {
+                console.info(`[check] project ${project.id} is timeout.`);
+                if (project.accumulated < project.goal) { // ถ้ายอดสะสมไม่ถึงเป้าหมาย
+                    service.payBack(project.id);
+                } else {
+                    service.closeProject(project.id); // ทำการปิดโปรเจค
+                }
+            }
         });
     } catch (error) {
-
+        console.error('[check] ' + error);
     }
 }
 

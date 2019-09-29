@@ -17,7 +17,8 @@ const WALLET = process.env.WALLET || 'wallet1';
 const USER = 'user1';
 const FN_QUERY = 'query';
 const FN_DONATE = 'donate';
-const FN_ADD_INVOICE = 'addInvoice';
+const FN_PAYBACK = 'payBack';
+const FN_ADD_INVOICE = 'addInvioceAndTransfer';
 const FN_CLOSE_PROJECT = 'closeProject';
 const FN_UPDATE_PROJECT = 'updateProject'
 const FN_CREATE_PROJECT = 'createProject';
@@ -202,6 +203,20 @@ async function closeProject(key) {
 }
 
 /**
+ * ปิดโครงการและคืนเงิน
+ * @param {string} project uid of project
+ */
+async function payBack(project) {
+    try {
+        const contract = await getContractOrg(USER);
+        const result = await contract.submitTransaction(FN_PAYBACK, project);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+/**
  * **addInvoice** เพิ่มข้อมูลใบกำกับภาษีลงใน blockchain
  * @param {string} user user id
  * @param {string} project project id
@@ -209,8 +224,8 @@ async function closeProject(key) {
  */
 async function addInvoice(user, project, invoice) {
     try {
-        let contract = await getContractOrg(user);
-        let result = await contract.submitTransaction(FN_ADD_INVOICE, user, project, invoice);
+        const contract = await getContractOrg(user);
+        const result = await contract.submitTransaction(FN_ADD_INVOICE, user, project, invoice);
         return result;
     } catch (error) {
         console.error(error);
@@ -343,4 +358,5 @@ module.exports = {
     deleteProject,
     updateProjectStatus,
     donate,
+    payBack
 }

@@ -12,17 +12,16 @@ const DATETIME_LAYOUT = 'DD-MM-YYYY:HH:mm:ss';
 
 exports.saveProject = async (project) => {
     console.log('[save project to firebase]');
-
-    // เปลี่ยน string เป็น datetime
-    const endtime = moment(project.endtime, DATETIME_LAYOUT).toDate();
-    project.starttime = moment().toDate();
-    project.endtime = endtime;
-    
-    // TODO ลบส่วนที่จะไม่เก็บ
-    delete project.balance;
-    delete project.file;
-
     try {
+        // เปลี่ยน string เป็น datetime
+        const endtime = moment(project.endtime, DATETIME_LAYOUT).toDate();
+        project.starttime = moment().toDate();
+        project.endtime = endtime;
+
+        // TODO ลบส่วนที่จะไม่เก็บ
+        delete project.balance;
+        delete project.file;
+
         await ProjectCollection.doc(project.id).set(project);
     } catch (err) {
         throw err;
