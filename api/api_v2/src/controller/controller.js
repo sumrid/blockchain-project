@@ -24,7 +24,7 @@ exports.getTx = async (req, res) => {
 // ##############################
 // #   check time has expired.
 // ##############################
-const schedlue = require('node-schedule');
+// const schedlue = require('node-schedule');
 /**
  * Check if the time has expired.  
  * เป็นฟังก์ชันที่จะทำงานทุกเที่ยงของทุกวัน
