@@ -23,8 +23,8 @@ router.get('/project/:project/donations', projectController.getProjectDonations)
 // TODO : verify token
 router.post('/project/donate', donationController.donate);
 router.post('/project/donate/qr', donationController.createQR);             // v2 ออก QRcode promptpay 
-router.post('/project/donate/readqr', contorller.readQR);           // บริจาคและลบ QRcode
-router.post('/project/donate/qr/v2', contorller.createQrDonation);  // genQR + firebase
+router.post('/project/donate/readqr', donationController.readQR);           // บริจาคและลบ QRcode
+router.post('/project/donate/qr/v2', donationController.createQrDonation);  // genQR + firebase
 router.post('/project/donate/qr/v3', donationController.createQRv3);        // v3 ออกQR เป็นแบบ Url
 
 router.post('/invoice', invoiceController.sendInvoice);

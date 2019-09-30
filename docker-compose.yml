@@ -58,17 +58,6 @@ services:
     networks:
       - default
 
-  # web:
-  #   image: nginx
-  #   container_name: web_build
-  #   volumes:
-  #     - ./client-app/dist:/usr/share/nginx/html
-  #     - ./client-app/nginx.conf:/etc/nginx/conf.d/nginx.conf
-  #     - ./data/certbot/conf:/etc/letsencrypt # cert
-  #   ports:
-  #     - 80:80
-  #     - 443:443
-
   ###########################
   #      api แต่ละ org
   ########################### 

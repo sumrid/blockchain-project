@@ -1,32 +1,4 @@
-const uid = require('uuid/v4');
-const moment = require('moment');
 const service = require('../service/service');
-const buildUrl = require('build-url');
-const firebase = require('../service/firebase');
-
-const fs = require('fs');
-const path = require('path');
-const qrcode = require('qrcode');
-const generatePayload = require('promptpay-qr');
-
-const DATETIME_LAYOUT = 'DD-MM-YYYY:HH:mm:ss';
-
-
-/**
- * donate ทำการบริจาคเงินไปยังโครงการ
- */
-exports.donate = async (req, res) => {
-    const user = req.body.user;
-    const donation = req.body;
-    donation.time = moment().format(DATETIME_LAYOUT);
-
-    try {
-        await service.donate(user, donation);
-        res.json("Success.");
-    } catch (err) {
-        res.status(500).json(err);
-    }
-}
 
 exports.query = async (req, res) => {
     const key = req.params.key;
@@ -39,132 +11,6 @@ exports.query = async (req, res) => {
     }
 }
 
-
-/**
- * @function
- * createQR สำหรับการสร้างพร้อมเพย์ qr code  
- */
-exports.createQR = async (req, res) => {
-    const mobileNumber = "086-312-6030";
-    const IDCardNumber = "0-0000-00000-00-0";
-    const amount = req.body.amount;
-    const payload = generatePayload(mobileNumber, { amount }); // First parameter : mobileNumber || IDCardNumber
-    console.log('qr payload: ' + payload);
-
-    const options = { type: "svg", color: { dark: "#705f5f", light: "#fff" } };
-    qrcode.toString(payload, options, (err, svg) => {
-        if (err) return console.log(err);
-        fs.writeFileSync("./src/qr.svg", svg);
-
-        const p = path.join(__dirname, 'qr.svg');
-        res.sendFile(p);
-    });
-}
-/**
- * createQR v2
- */
-exports.createQrDonation = async (req, res) => {
-    const donation = req.body;
-    donation.id = uid();
-    // Save to DB
-    try {
-        await firebase.saveQR(donation);
-    } catch (err) {
-        res.status(500).json(err);
-    }
-    // Generate QR
-    const options = { type: "svg", color: { dark: "#705f5f", light: "#fff" } };
-    qrcode.toString(JSON.stringify(donation), options, (err, svg) => {
-        if (err) {
-            console.log(err);
-            res.status(500).json(err);
-        }
-        // ส่งไฟล์ qr กลับไป
-        const qrPath = path.join(__dirname, 'qr.svg');
-        fs.writeFileSync(qrPath, svg);
-        res.sendFile(qrPath);
-    });
-}
-/**
- * createQR v3  
- * สร้าง qr โดยใช้ url 
- * เมื่อแสกนแล้วให้เปิดหน้าเว็บ
- */
-exports.createQRv3 = async (req, res) => {
-    const ip = process.env.HOST_IP || require('ip').address();
-    const donation = req.body;
-    donation.id = uid();
-
-    const url = `http://${ip}/#/confirm`
-    const payload = buildUrl(url, {
-        queryParams: donation
-    });
-
-    // Generate QR
-    const options = { type: "svg", color: { dark: "#705f5f", light: "#fff" } };
-    qrcode.toString(payload, options, (err, svg) => {
-        if (err) {
-            console.log(err);
-            res.status(500).json(err);
-        }
-        // ส่งไฟล์ qr กลับไป
-        const qrPath = path.join(__dirname, 'qr.svg');
-        fs.writeFileSync(qrPath, svg);
-        res.sendFile(qrPath);
-    });
-}
-
-/**
- * ใช้คู่กับ createQR v2
- */
-exports.readQR = async (req, res) => {
-    const donation = req.body;
-    console.log(donation);
-    try {
-        // แล้วค่อยลบออก
-        await firebase.deleteQR(donation.id);
-        res.sendStatus(200);
-    } catch (err) {
-        res.status(500).json(err);
-    }
-}
-exports.getDonationByUserID = async (req, res) => {
-    const userid = req.params.id;
-    try {
-        const result = await service.getDonationByUserID(userid);
-        res.json(JSON.parse(String(result)));
-    } catch (err) {
-        res.json(err);
-    }
-}
-
-/**
- * @function
- * This function test to use firebasefirestore
- */
-exports.testSave = async (req, res) => {
-    const project = req.body;
-
-    // Generate key for project
-    project.id = 'p_' + uid();
-
-    try {
-        await firebase.saveProject(project);
-        res.json(project);
-    } catch (err) {
-        res.status(500);
-    }
-}
-exports.testGet = async (req, res) => {
-    const key = req.body.id;
-    try {
-        const result = await firebase.getProjectByID(key);
-        const time = moment(result.endtime.toDate()).utc(true);   // .utc(true) จะทำให้เป็นเวลา local (thai utc + 7)
-        res.json(time);
-    } catch (err) {
-        res.status(404).json(err);
-    }
-}
 exports.getTx = async (req, res) => {
     const id = req.params.txid;
     try {
@@ -197,21 +43,6 @@ const schedlue = require('node-schedule');
 //                 service.closeProject(project.id);
 //             } catch (err) {
 //                 console.error(err);
-//             }
-//         }
-//     });
-// });
-
-// Interval
-// [test]
-// schedlue.scheduleJob('*/30 * * * * *', async () => {
-//     const results = await service.getAllProjects();
-//     const projects = JSON.parse(String(results));
-//     projects.forEach((p) => {
-//         if (p.status != 'closed') {
-//             const endtime = moment(p.endtime, moment.ISO_8601);
-//             if (endtime.diff(moment()) <= 0) {
-//                 service.closeProject(p.id); // ทำการปิดโปรเจค
 //             }
 //         }
 //     });

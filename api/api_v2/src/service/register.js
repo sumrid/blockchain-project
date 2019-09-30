@@ -8,14 +8,20 @@ const ccpPath = path.resolve(__dirname, '..', 'connection_profile', ccpFile);
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
 const ccp = JSON.parse(ccpJSON);
 
-async function register(uid) {
+// Set org
+ccp.client.organization = process.env.ORG || 'Org1';
+
+async function regis(uid) {
     try {
+        console.info(`[${process.env.ORG}] [service] regis`);
+
         const ADMIN = 'admin';
         const MSP = process.env.MSP || 'Org1MSP';
         const WALLET_NAME = process.env.WALLET || 'wallet1';
         const AFFILIATION = process.env.AFFILIATION || 'org1.department1';
         await register(uid, ADMIN, MSP, WALLET_NAME, AFFILIATION, ccp);
     } catch (error) {
+        console.error(`[${process.env.ORG}] [service] register: ${error}`);
         throw error;
     }
 }
@@ -31,10 +37,12 @@ async function register(uid) {
  */
 async function register(userID, admin, msp, walletName, affiliation, ccp) {
     try {
+        console.info(`[${process.env.ORG}] [service] register: ${userID}, ${admin}, ${msp}, ${walletName}, ${affiliation}, ${ccp}`);
+
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), '..', walletName);
         const wallet = new FileSystemWallet(walletPath);
-        console.log(`Wallet path: ${walletPath}`);
+        console.log(`[${process.env.ORG}] [service] Wallet path: ${walletPath}`);
 
         // Check to see if we've already enrolled the user.
         // ตรวจสอบว่ามี user อยู่แล้วหรือไม่
@@ -71,10 +79,11 @@ async function register(userID, admin, msp, walletName, affiliation, ccp) {
         wallet.import(userID, userIdentity);
         console.log(`Successfully registered and enrolled admin user "${userID}" and imported it into the wallet`);
     } catch (err) {
+        console.error(`[${process.env.ORG}] [service] register: ${err}`);
         throw err;
     }
 }
 
 module.exports = {
-    register
+    regis
 }

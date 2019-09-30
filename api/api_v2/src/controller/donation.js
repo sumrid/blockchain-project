@@ -46,6 +46,32 @@ async function createQR(req, res) {
     }
 }
 
+/**
+ * createQR v2
+ */
+async function createQrDonation(req, res) {
+    const donation = req.body;
+    donation.id = uid();
+    // Save to DB
+    try {
+        await firebase.saveQR(donation);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+    // Generate QR
+    const options = { type: "svg", color: { dark: "#705f5f", light: "#fff" } };
+    qrcode.toString(JSON.stringify(donation), options, (err, svg) => {
+        if (err) {
+            console.log(err);
+            res.status(500).json(err);
+        }
+        // ส่งไฟล์ qr กลับไป
+        const qrPath = path.join(__dirname, 'qr.svg');
+        fs.writeFileSync(qrPath, svg);
+        res.sendFile(qrPath);
+    });
+}
+
 async function readQR(req, res) {
     try {
         const donation = req.body;
@@ -89,5 +115,6 @@ module.exports = {
     donate,
     readQR,
     createQR,
-    createQRv3
+    createQRv3,
+    createQrDonation
 }

@@ -1,5 +1,5 @@
 const service = require('../service/service');
-const regiter = require('../service/register');
+const register = require('../service/register');
 const firebase = require('../service/firebase');
 
 function queryObj() {
@@ -13,12 +13,13 @@ function queryObj() {
 }
 
 async function regisUser(req, res) {
+    console.info(`[${process.env.ORG}] [controller] regisUser`);
     try {
         const name = req.body.name;
         const email = req.body.email;
         const password = req.body.password;
         const user = await firebase.registerUser(name, email, password);
-        await regiter.register(user.uid);
+        await register.regis(user.uid);
         res.json({ user: user });
     } catch (error) {
         res.status(500).json(error);

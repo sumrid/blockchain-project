@@ -1,8 +1,9 @@
 if (process.env.NODE_ENV !== "test") {
     require('@google-cloud/trace-agent').start();
 }
-
+const fs = require('fs');
 const cors = require('cors');
+const https = require('https');
 const morgan = require('morgan');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -27,5 +28,13 @@ server.use('/api', require('./router'));
 server.listen(port, hostname, () => {
     console.log(`${ORG} server is running on port: ${port}`);
 });
+
+// https.createServer({
+//     key: fs.readFileSync('../../etc/letsencrypt/domain.key'),
+//     cert: fs.readFileSync('../../etc/letsencrypt/chained.pem')
+// }, server)
+// .listen(port, ()=> {
+//     console.log(`${ORG} server is running on port: ${port}`);
+// });
 
 module.exports = server;
