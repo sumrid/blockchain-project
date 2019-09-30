@@ -8,13 +8,12 @@ const ProjectCollection = db.collection('projects');
 const QRCollection = db.collection('qr');
 
 const moment = require('moment');
-const DATETIME_LAYOUT = 'DD-MM-YYYY:HH:mm:ss';
 
 exports.saveProject = async (project) => {
     console.log('[save project to firebase]');
     try {
         // เปลี่ยน string เป็น datetime
-        const endtime = moment(project.endtime, DATETIME_LAYOUT).toDate();
+        const endtime = moment(project.endtime).toDate();
         project.starttime = moment().toDate();
         project.endtime = endtime;
 

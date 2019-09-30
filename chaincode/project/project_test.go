@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"gotest.tools/assert"
@@ -36,8 +37,8 @@ func TestCreateProject(T *testing.T) {
 	status := "open"
 	balance := "0"
 	owner := "user1"
-	start := "11-07-2019:12:00:00"
-	end := "11-09-2020:12:00:00"
+	start := "1997-07-11T12:00:00Z"
+	end := "2021-01-01T12:00:00Z"
 	receiver := "user2"
 	goal := "500000"
 	args := [][]byte{
@@ -74,7 +75,7 @@ func TestCreateProject(T *testing.T) {
 	assert.Equal(T, p.Owner, owner)
 	assert.Equal(T, p.Receiver, receiver)
 	assert.Equal(T, p.Type, "project")
-	assert.Equal(T, p.EndTime.Format(DatetimeLayout), end)
+	assert.Equal(T, p.EndTime.Format(time.RFC3339), end)
 }
 
 func TestCreateProjectFails(T *testing.T) {

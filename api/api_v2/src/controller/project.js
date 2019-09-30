@@ -25,7 +25,6 @@ async function createProject(req, res) {
         project.balance = 0;
         project.status = 'pending';
         project.starttime = moment().toDate().toISOString();
-        // project.endtime = '11-08-2019:12:00:00';
 
         const result = await service.createProject(user, project);
         await firebase.saveProject(project);

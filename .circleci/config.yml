@@ -91,5 +91,5 @@ workflows:
   workflows:
     jobs:
       - api-test
-      - ui-test
       - chaincode-test
+      # - ui-test

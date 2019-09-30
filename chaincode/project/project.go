@@ -176,8 +176,8 @@ func (C *Chaincode) createProject(stub shim.ChaincodeStubInterface, args []strin
 	status := args[2]
 	balance, err := strconv.ParseFloat(args[3], 64)
 	owner := args[4]
-	start, err := time.Parse(DatetimeLayout, args[5])
-	end, err := time.Parse(DatetimeLayout, args[6])
+	start, err := time.Parse(time.RFC3339, args[5])
+	end, err := time.Parse(time.RFC3339, args[6])
 	receiver := args[7]
 	goal, err := strconv.ParseFloat(args[8], 64)
 	oType := "project" // กำหนดชนิดของข้อมูล
