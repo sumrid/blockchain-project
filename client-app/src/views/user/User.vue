@@ -1,97 +1,127 @@
 <template>
   <div>
     <!-- profile image -->
-    <div class="container">
+    <div class="container-fluid">
       <div class="row">
-        <div class="fb-profile">
-          <!-- 850*280 pixel -->
-          <img
-            align="left"
-            class="fb-image-lg"
-            src="http://lorempixel.com/850/280/nightlife/5/"
-            alt="Profile image example"
-          />
-          <img
-            align="left"
-            class="fb-image-profile thumbnail"
-            src="https://cdn2.vectorstock.com/i/1000x1000/25/31/user-icon-businessman-profile-man-avatar-vector-10552531.jpg"
-            alt="Profile image example"
-          />
-          <div class="fb-profile-text">
-            <h1>{{getUser.displayName}}</h1>
+        <div class="col">
+          <div class="fb-profile">
+            <img
+              align="left"
+              class="fb-image-lg"
+              src="http://lorempixel.com/850/280/nightlife/5/"
+              alt="Profile image example"
+            />
+            <img
+              align="left"
+              class="fb-image-profile"
+              src="https://cdn2.vectorstock.com/i/1000x1000/25/31/user-icon-businessman-profile-man-avatar-vector-10552531.jpg"
+              alt="Profile image example"
+            />
+            <div class="fb-profile-text">
+              <h1>{{getUser.displayName}}</h1>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="container">
+    <div class="container-fluid">
       <div class="row">
-        <div class="col-lg-12 col-md-12">
-          <b-tabs content-class="mt-3">
-            <b-tab title="ประวัติการบริจาค" active>
-              <p>ประวัติการบริจาค</p>
-              <div class="row">
-                <b-table striped hover :items="donations" :fields="donationFields"></b-table>
-              </div>
-            </b-tab>
-            <b-tab title="โครงการที่รับบริจาค">
-              <p>โครงการที่บริจาค</p>
-              <b-table-simple hover responsive>
-                <b-thead>
-                  <b-tr>
-                    <b-th>ชื่อ</b-th>
-                    <b-th>สถานะ</b-th>
-                    <b-th>วันที่สร้าง</b-th>
-                    <b-th>more</b-th>
-                  </b-tr>
-                </b-thead>
-                <b-tbody>
-                  <b-tr v-for="(item, index) in myReceive" :key="index.id">
-                    <b-td>{{item.title}}</b-td>
-                    <b-td>{{item.status}}</b-td>
-                    <b-td>{{item.starttime}}</b-td>
-                    <b-td>
-                      <router-link
-                        :to="{ name: 'confrimReceive', params: {id: item.id}}"
-                        v-if="item.status == 'pending'"
-                      >
-                        <b-button variant="warning">กดยอมรับ</b-button>
-                      </router-link>
-                      <router-link :to="{ name: 'project', params: { id: item.id }}">page</router-link>
-                    </b-td>
-                  </b-tr>
-                </b-tbody>
-              </b-table-simple>
-            </b-tab>
-            <b-tab title="โครงการของฉัน">
-              <p>โครงการของฉัน</p>
-              <b-table-simple hover responsive>
-                <b-thead>
-                  <b-tr>
-                    <b-th>ชื่อ</b-th>
-                    <b-th>ยอดเงินปัจจุบัน</b-th>
-                    <b-th>วันที่สร้าง</b-th>
-                    <b-th>สถานะ</b-th>
-                    <b-th></b-th>
-                  </b-tr>
-                </b-thead>
-                <b-tbody>
-                  <b-tr v-for="(item, index) in myprojects" :key="index.id">
-                    <b-td>{{item.title}}</b-td>
-                    <b-td>{{item.balance}}</b-td>
-                    <b-td>{{item.starttime}}</b-td>
-                    <b-td>{{item.status}}</b-td>
-                    <b-td>
-                      <router-link :to="{ name: 'editProject', params: { id: item.id }}">click</router-link>
-                    </b-td>
-                  </b-tr>
-                </b-tbody>
-              </b-table-simple>
-            </b-tab>
-            <b-tab title="ตรวจสอบความเคลื่อนไหว">
-              <p>ตรวจสอบความเคลื่อนไหว</p>
-            </b-tab>
-          </b-tabs>
+        <div class="col">
+          <b-card no-body>
+            <b-tabs pills card vertical>
+              <b-tab title="ข้อมูลส่วนตัว" active>
+                <edit-profile></edit-profile>
+              </b-tab>
+
+              <b-tab title="ยืนยันตัวตน">
+                <verify></verify>
+              </b-tab>
+
+              <b-tab title="การบริจาค">
+                <p>ประวัติการบริจาค</p>
+                <div class="row">
+                  <div class="col" v-if="Boolean(donations)">
+                    <b-table striped hover :items="donations" :fields="donationFields"></b-table>
+                  </div>
+                  <div class="col" v-else>
+                    <p class="text-center">ยังไม่มีการบริจาค</p>
+                  </div>
+                </div>
+              </b-tab>
+              <b-tab title="โครงการ">
+                <b-tabs content-class="mt-3">
+                  <b-tab title="โครงการที่รับบริจาค">
+                    <p>โครงการที่บริจาค</p>
+                    <b-table-simple hover responsive>
+                      <b-thead>
+                        <b-tr>
+                          <b-th>ชื่อ</b-th>
+                          <b-th>สถานะ</b-th>
+                          <b-th>วันที่สร้าง</b-th>
+                          <b-th>more</b-th>
+                        </b-tr>
+                      </b-thead>
+                      <b-tbody>
+                        <b-tr v-for="(item, index) in myReceive" :key="index.id">
+                          <b-td>{{item.title}}</b-td>
+                          <b-td>{{item.status}}</b-td>
+                          <b-td>{{item.starttime}}</b-td>
+                          <b-td>
+                            <router-link
+                              :to="{ name: 'confrimReceive', params: {id: item.id}}"
+                              v-if="item.status == 'pending'"
+                            >
+                              <b-button variant="warning">กดยอมรับ</b-button>
+                            </router-link>
+                            <router-link :to="{ name: 'project', params: { id: item.id }}">page</router-link>
+                          </b-td>
+                        </b-tr>
+                      </b-tbody>
+                    </b-table-simple>
+                  </b-tab>
+                  <b-tab tile="การบริจาค"></b-tab>
+                  <b-tab title="โครงการของฉัน">
+                    <p>โครงการของฉัน</p>
+                    <b-table-simple hover responsive>
+                      <b-thead>
+                        <b-tr>
+                          <b-th>ชื่อ</b-th>
+                          <b-th>ยอดเงินปัจจุบัน</b-th>
+                          <b-th>วันที่สร้าง</b-th>
+                          <b-th>สถานะ</b-th>
+                          <b-th></b-th>
+                        </b-tr>
+                      </b-thead>
+                      <b-tbody>
+                        <b-tr v-for="(item, index) in myprojects" :key="index.id">
+                          <b-td>{{item.title}}</b-td>
+                          <b-td>{{item.balance}}</b-td>
+                          <b-td>{{item.starttime}}</b-td>
+                          <b-td>{{item.status}}</b-td>
+                          <b-td>
+                            <router-link :to="{ name: 'editProject', params: { id: item.id }}">click</router-link>
+                          </b-td>
+                        </b-tr>
+                      </b-tbody>
+                    </b-table-simple>
+                  </b-tab>
+                  <b-tab title="ตรวจสอบความเคลื่อนไหว">
+                    <p>ตรวจสอบความเคลื่อนไหว</p>
+                  </b-tab>
+                </b-tabs>
+
+                <div class="row">
+                  <router-link to="createproject" v-if="isCreator">
+                    <button class="btn">
+                      <icon :icon="iconPlus" />สร้างโครงการ
+                    </button>
+                  </router-link>
+                </div>
+
+              </b-tab>
+            </b-tabs>
+          </b-card>
         </div>
 
         <!-- confirm modal -->
@@ -144,27 +174,25 @@
           </div>
         </div>-->
       </div>
-      <div class="row">
-        <router-link to="createproject" v-if="isCreator">
-          <button class="btn">
-            <icon :icon="iconPlus" />สร้างโครงการ
-          </button>
-        </router-link>
-      </div>
+
     </div>
   </div>
 </template>
 
 <script>
+import Verify from "./Verify";
+import auth from "../../firebase";
 import { mapGetters } from "vuex";
 import service from "../../service";
-import auth from "../../firebase";
+import EditProfile from "./EditProfile";
 import confirmProject from "../receiver/ConfirmProject";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 export default {
   components: {
-    confirmProject
+    confirmProject,
+    EditProfile,
+    Verify
   },
   data() {
     return {
@@ -243,13 +271,14 @@ body {
 .fb-profile img.fb-image-lg {
   z-index: 0;
   width: 100%;
+  height: 50%;
   margin-bottom: 10px;
 }
 
 .fb-image-profile {
   margin: -90px 10px 20px 80px;
   z-index: 9;
-  width: 20%;
+  width: 10rem;
 }
 
 /***
@@ -368,18 +397,5 @@ Licensed under MIT
 
 .btn:hover {
   background-color: #f4511e;
-}
-
-@media (max-width: 768px) {
-  .fb-profile-text > h1 {
-    font-weight: 700;
-    font-size: 16px;
-  }
-
-  .fb-image-profile {
-    margin: -45px 10px 0px 25px;
-    z-index: 9;
-    width: 20%;
-  }
 }
 </style>

@@ -118,46 +118,6 @@ func TestDonate(T *testing.T) {
 	assert.Equal(T, p.Accumulated, 99.00)
 }
 
-func TestGetDonationHistory(T *testing.T) {
-	loggerTest.Info(`Start testing function "getDonationHistory"`)
-
-	args := [][]byte{
-		[]byte("getDonationHistory"),
-		[]byte("p_01")}
-	res := stub.MockInvoke("004", args)
-
-	result := []Donation{}
-	json.Unmarshal(res.GetPayload(), &result)
-
-	if res.GetStatus() != shim.OK {
-		loggerTest.Error(res.GetMessage(), "Response status should 200")
-		T.Error("Response status should 200")
-	}
-	if len(result) != 1 {
-		T.Error("Donation should be 1.")
-	}
-	if result[0].UserID != "user" {
-		loggerTest.Error("User id should user")
-		T.Error("User id should user")
-	}
-}
-func TestQeuryAllProjects(T *testing.T) {
-	loggerTest.Info(`Start testing function "queryAllProjects"`)
-
-	// ไม่สามารถทดสอบการ query แบบ selector ได้
-	// args := [][]byte{
-	// 	[]byte("queryAllProjects"),
-	// }
-	// res := stub.MockInvoke("005", args)
-	// projects := []Project{}
-	// json.Unmarshal(res.GetPayload(), &projects)
-
-	// if res.GetStatus() != shim.OK {
-	// 	loggerTest.Error(res.GetMessage(), "Response status should 200")
-	// 	T.Error("Response status should 200")
-	// }
-}
-
 func TestQuery(T *testing.T) {
 	loggerTest.Info(`Start testing function "query"`)
 
@@ -172,18 +132,6 @@ func TestQuery(T *testing.T) {
 	assert.Assert(T, res.GetStatus() == shim.OK)
 	assert.Equal(T, p.ID, "p_01")
 	assert.Equal(T, p.Balance, 99.0)
-}
-
-func TestQueryDonationsByUserID(T *testing.T) {
-	loggerTest.Info(`Start testing function "queryDonationsByUserID"`)
-	// ไม่สามารถทดสอบการ query แบบ selector ได้
-	// args := [][]byte{
-	// 	[]byte("queryDonationByUserID"),
-	// 	[]byte("user"),
-	// }
-	// res := stub.MockInvoke("007", args)
-	// loggerTest.Info(res)
-	assert.Equal(T, true, true)
 }
 
 func TestGetHistoryInvalidAgrs(T *testing.T) {

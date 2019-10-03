@@ -15,17 +15,19 @@ const WALLET = process.env.WALLET || 'wallet1';
 
 // Function name in chaincode
 const USER = 'user1';
+const CHANNEL = 'donation';  // ชื่อ channel
+const CONTRACT = 'mychaincode'; // ชื่อ chaincode
+
 const FN_QUERY = 'query';
 const FN_DONATE = 'donate';
 const FN_PAYBACK = 'payBack';
-const FN_ADD_INVOICE = 'addInvioceAndTransfer';
+const FN_ADD_USER = 'addUser';
 const FN_CLOSE_PROJECT = 'closeProject';
 const FN_UPDATE_PROJECT = 'updateProject'
 const FN_CREATE_PROJECT = 'createProject';
 const FN_DELETE_PROJECT = 'deleteProject';
+const FN_ADD_INVOICE = 'addInvioceAndTransfer';
 const FN_UPDATE_PROJECT_STATUS = 'updateStatus';
-const CHANNEL = 'donation';  // ชื่อ channel
-const CONTRACT = 'mychaincode'; // ชื่อ chaincode
 
 // *********************
 // *    Service  v2    *
@@ -254,6 +256,19 @@ async function donate(userID, donation) {
     }
 }
 
+// ###################
+// #       User
+// ###################
+async function addUser(uid, role) {
+    try {
+        const contract = await getContractOrg(USER);
+        const result = await contract.submitTransaction(FN_ADD_USER, uid, role);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
 // ################
 //     Test zone
 // ################
@@ -357,6 +372,7 @@ module.exports = {
     updateProject,
     deleteProject,
     updateProjectStatus,
+    addUser,
     donate,
     payBack
 }

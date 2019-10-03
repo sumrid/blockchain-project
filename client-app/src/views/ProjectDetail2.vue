@@ -267,8 +267,7 @@
 import myFooter from '../components/Footer';
 import auth from "../firebase";
 const axios = require("axios");
-const util = require("../util");
-const API_IP = util.API_IP;
+import {API_IP, PROTOCOL} from '../util';
 import socket from "../service/socket";
 import service from "../service";
 import moment from "moment";
@@ -394,7 +393,7 @@ export default {
       try {
         // ทำการบริจาค
         await axios.default.post(
-          `http://${API_IP}:8000/api/project/donate`,
+          `${PROTOCOL}//${API_IP}:8000/api/project/donate`,
           donation
         );
         this.loading = false;
@@ -412,13 +411,13 @@ export default {
       const a = parseFloat(this.form.amount);
       let URL = "";
       if (version == 1) {
-        URL = `http://${API_IP}:8000/api/project/donate/qr/`; // v1 promptpay
+        URL = `${PROTOCOL}//${API_IP}:8000/api/project/donate/qr/`; // v1 promptpay
         this.qrmessage = "พร้อมเพย์ สามารถแสกนได้ผ่านทาง application ของธนาคาร";
       } else if (version == 2) {
-        URL = `http://${API_IP}:8000/api/project/donate/qr/v2`;
+        URL = `${PROTOCOL}//${API_IP}:8000/api/project/donate/qr/v2`;
         this.qrmessage = "";
       } else {
-        URL = `http://${API_IP}:8000/api/project/donate/qr/v3`;
+        URL = `${PROTOCOL}//${API_IP}:8000/api/project/donate/qr/v3`;
         this.qrmessage = "แสกนโดยใช้มือถือของท่าน";
       }
       axios.default

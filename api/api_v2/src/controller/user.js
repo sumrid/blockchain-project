@@ -1,3 +1,4 @@
+const validator = require('validator');
 const service = require('../service/service');
 const register = require('../service/register');
 const firebase = require('../service/firebase');
@@ -14,20 +15,50 @@ function queryObj() {
 
 async function regisUser(req, res) {
     console.info(`[${process.env.ORG}] [controller] regisUser`);
+    const name = req.body.name;
+    const email = req.body.email;
+    const password = req.body.password;
+    const role = req.body.role || "";
+
     try {
-        const name = req.body.name;
-        const email = req.body.email;
-        const password = req.body.password;
         const user = await firebase.registerUser(name, email, password);
-        await register.regis(user.uid);
+        const setRole = firebase.setUserRole(user.uid, role);
+        const regisCA = register.regis(user.uid);
+        const addToBlock = service.addUser(user.uid, role);
+        await Promise.all([setRole, regisCA, addToBlock]);
         res.json({ user: user });
     } catch (error) {
         res.status(500).json(error);
     }
 }
 
+async function updateUser(req, res) {
+    try {
+        const uid = req.params.id;
+        await firebase.updateUser(uid, req.body);
+        res.json({uid, ...req.body});
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
 async function getUser(req, res) {
-    res.json({ message: "not implemented." });
+    try {
+        const input = req.params.id;
+        const isEmail = validator.isEmail(input);
+        if (isEmail) {
+            const user = await firebase.getUserByEmail(input);
+            const isExsits = await register.checkUserExists(user.uid);
+            if (isExsits) res.json(user.uid);
+            else res.status(404).json({ message: "user not found." });
+        } else {
+            const isExsits = await register.checkUserExists(input);
+            if (isExsits) res.json(input);
+            else res.status(404).json({ message: "user not found." });
+        }
+    } catch (error) {
+        res.status(404).json(error);
+    }
 }
 
 async function getDonations(req, res) {
@@ -84,6 +115,7 @@ async function getReceiveProject(req, res) {
 module.exports = {
     getUser,
     regisUser,
+    updateUser,
     getProjects,
     getDonations,
     getReceiveProject

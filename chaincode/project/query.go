@@ -35,13 +35,14 @@ func (C *Chaincode) query(stub shim.ChaincodeStubInterface, args []string) peer.
 	}
 
 	jsonResp := fmt.Sprintf(`{"Name":"%s","Amount":"%s"}`, key, string(valbytes))
-	logger.Infof("Query Response:%sn", jsonResp)
+	logger.Infof("Query Response: %sn", jsonResp)
 	return shim.Success(valbytes)
 }
 
 func (C *Chaincode) queryAllWithSelector(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	logger.Info("queryAllWithSelector: start")
 	if len(args) < 1 {
+		logger.Error("Incorrect number of arguments. Expecting key to query")
 		return shim.Error("Incorrect number of arguments. Expecting key to query")
 	}
 

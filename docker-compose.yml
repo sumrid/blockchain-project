@@ -1,39 +1,9 @@
 version: "3"
 
 services:
-  # api:
-  #   image: node:10.15.3-stretch-slim
-  #   container_name: api
-  #   environment:
-  #     - HOST_IP=192.168.1.2 # ip ของเครื่องที่เรารันอยู่ สำหรับทำ qr
-  #     - NODE_ENV=docker
-  #   volumes:
-  #     - ./api/api_v2:/app
-  #     - ./api/wallet1:/wallet1
-  #     - ./api/wallet2:/wallet2
-  #   working_dir: /app
-  #   command: npm start
-  #   ports:
-  #     - 8000:8000
-  #   networks:
-  #     - default
-
-  # user-api:
-  #   image: node:10.15.3-stretch-slim
-  #   container_name: user-api
-  #   environment:
-  #     - NODE_ENV=docker
-  #   volumes:
-  #     - ./api/user-api:/user-api
-  #     - ./api/wallet1:/wallet1
-  #     - ./api/wallet2:/wallet2
-  #   working_dir: /user-api
-  #   command: npm start
-  #   ports:
-  #     - 8001:8001
-  #   networks:
-  #     - default
-
+  #################
+  #   Client web
+  #################
   client-web:
     image: node:10.15.3-stretch-slim
     container_name: web
@@ -58,6 +28,17 @@ services:
     networks:
       - default
 
+  # web:
+  #   image: nginx
+  #   container_name: web_build
+  #   volumes:
+  #     - ./client-app/dist:/usr/share/nginx/html                     # html file
+  #     - ./client-app/nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf  # config file
+  #     - ./client-app/nginx/cert:/etc/letsencrypt  
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+
   ###########################
   #      api แต่ละ org
   ########################### 
@@ -65,11 +46,16 @@ services:
     image: node:10.15.3-stretch-slim
     container_name: donator-api
     environment:
+      - ORG=Org1
       - HOST_IP=192.168.1.2 # ip ของเครื่องที่เรารันอยู่ สำหรับทำ qr
       - NODE_ENV=docker
+      - CCP=connection.docker.json
+      - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
     volumes:
-      - ./api/donator-api:/app
+      - ./api/api_v2:/app
       - ./api/wallet1:/wallet1
+      - ../cert:/cert # map Google gcp cert on server to container
+      - ./client-app/nginx/cert:/etc/letsencrypt
     working_dir: /app
     command: npm start
     ports:
@@ -82,10 +68,14 @@ services:
     container_name: creator-api
     environment:
       - NODE_ENV=docker
-      - REVENUE_URL=http://revenue-api:8080
+      - ORG=Org2
+      - CCP=connection.docker.json
+      - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
     volumes:
-      - ./api/creator-api:/app
+      - ./api/api_v2:/app
       - ./api/wallet2:/wallet2
+      - ../cert:/cert # map Google gcp cert on server to container
+      - ./client-app/nginx/cert:/etc/letsencrypt
     working_dir: /app
     command: npm start
     ports:
@@ -98,9 +88,14 @@ services:
     container_name: receiver-api
     environment:
       - NODE_ENV=docker
+      - ORG=Org3
+      - CCP=connection.docker.json
+      - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
     volumes:
-      - ./api/receiver-api:/app
+      - ./api/api_v2:/app
       - ./api/wallet3:/wallet3
+      - ../cert:/cert # map Google gcp cert on server to container
+      - ./client-app/nginx/cert:/etc/letsencrypt
     working_dir: /app
     command: npm start
     ports:

@@ -68,6 +68,9 @@ async function getProjectByID(id) {
     }
 }
 
+// #################
+// #      User
+// #################
 async function getMyProject(uid) {
     try {
         const res = await axios.get(CREATOR_API + '/api/user/' + uid + '/project');
@@ -83,6 +86,19 @@ async function getMyReceive(uid) {
         return res.data;
     } catch (err) {
         throw err;
+    }
+}
+
+async function checkUserExists(user) {
+    const res = await axios.get(RECEIVER_API + `/api/user/${user}`);
+    return res.data;
+}
+
+async function updateUser(uid, data) {
+    try {
+        await axios.put(CREATOR_API + `/api/user/${uid}`, data);
+    } catch (error) {
+        throw error;
     }
 }
 
@@ -113,10 +129,6 @@ async function getDonationHistory(projectID) {
     }
 }
 
-async function checkUserExists(user) {
-    const res = await axios.get(RECEIVER_API + `/api/user/${user}`);
-    return res.data;
-}
 
 /**
  * ดึงรายการการบริจาคของผู้ใช้คนนั้น
@@ -204,6 +216,7 @@ async function getUserInfo(uid) {
  */
 async function getProjectInfo(uid) {
     try {
+        console.info(`[service] [getProjectInfo] ${uid}`);
         const doc = await firestore().collection('projects').doc(uid).get();
         return doc.data();
     } catch (err) {
@@ -213,6 +226,7 @@ async function getProjectInfo(uid) {
 
 async function getProjectsInfo() {
     try {
+        console.info(`[service] [getProjectsInfo] get all project`);
         const res = await firestore().collection('projects').get();
         let project = [];
         res.forEach((sp)=> {
@@ -228,6 +242,7 @@ async function getProjectsInfo() {
 export default {
     donate,
     getEvents,
+    updateUser,
     getInvoice,
     getUserInfo,
     getProjects,

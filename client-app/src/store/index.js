@@ -4,12 +4,16 @@ import Vuex from 'vuex';
 Vue.use(Vuex);
 
 const state = {
-    user: ''
+    user: '',
+    userInfo: ''
 }
 
 const actions = {
     setUser: ({commit}, user) => {
         commit('SET_USER', user);
+    },
+    setUserInfo: ({commit}, userInfo) => {
+        commit('SET_USER_INFO', userInfo);
     }
 }
 
@@ -19,12 +23,18 @@ const actions = {
 const mutations = {
     SET_USER (state, user) {
         state.user = user;
+    },
+    SET_USER_INFO (state, userInfo) {
+        state.userInfo = userInfo
     }
 }
 
 const getters = {
     getUser: (state) => {
         return state.user;
+    },
+    getUserInfo: (state) => {
+        return state.userInfo;
     }
 }
 

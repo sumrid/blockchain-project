@@ -204,7 +204,7 @@ export default {
     onSubmit: async function() {
       this.isLoading = true;
       try {
-        this.form.endtime = moment(this.form.date).format(DATE_LAYOUT);
+        this.form.endtime = this.form.date;
         const res = await service.createProject(this.form);
         this.res = res;
         this.isLoading = false;

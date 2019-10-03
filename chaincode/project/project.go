@@ -10,11 +10,11 @@ import (
 	"github.com/hyperledger/fabric/protos/peer"
 )
 
+// สถานะของโครงการ
 const (
-	DatetimeLayout = "02-01-2006:15:04:05"
-	Open           = "open"
-	Closed         = "closed"
-	Fail           = "fail"
+	Open   = "open"
+	Closed = "closed"
+	Fail   = "fail"
 )
 
 // Project เป็นโครงการสำหรับเก็บช้อมูลใน blockchain
@@ -93,13 +93,14 @@ type Invoice struct {
 	Date         time.Time `json:"date"`
 	Type         string    `json:"type"`
 	TxID         string    `json:"txid"`
+	Verified     bool      `json:"verified"`
 }
+
+var logger = shim.NewLogger("chaincode")
 
 // Chaincode ...
 type Chaincode struct {
 }
-
-var logger = shim.NewLogger("chaincode")
 
 // Init เป็นฟังก์ชันเอาไว้เริ่มต้น chaincode
 // จะถูกเรียกใช้ตอนที่ทำการ Instantiate
@@ -120,18 +121,8 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return C.donate(stub, args)
 	} else if fn == "getHistory" { // ...
 		return C.getHistory(stub, args)
-	} else if fn == "getDonationHistory" { // ดึงรายการการบริจาคของโครงการนั้นๆ ด้วย uid
-		return C.getDonationHistory(stub, args)
-	} else if fn == "queryAllProjects" { // ดึงโครงการทั้งหมดออกมา
-		return C.queryAllProjects(stub, args)
 	} else if fn == "closeProject" { // เปลี่ยนสถานะโครงการเป็นปิด เมื่อเวลาหมดลง
 		return C.closeProject(stub, args)
-	} else if fn == "queryDonationByUserID" { // ดึงรายการบริจาคด้วย uid ของผู้ใช้
-		return C.queryDonationByUserID(stub, args)
-	} else if fn == "queryProjectByUserID" {
-		return C.queryProjectByUserID(stub, args)
-	} else if fn == "queryProjectByReceiverID" {
-		return C.queryProjectByReceiverID(stub, args)
 	} else if fn == "updateStatus" {
 		return C.updateStatus(stub, args)
 	} else if fn == "updateProject" {
@@ -142,18 +133,18 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return C.payBack(stub, args)
 	} else if fn == "withdraw" {
 		return C.withdraw(stub, args)
-	} else if fn == "queryEvent" {
-		return C.queryEventByProjectID(stub, args)
 	} else if fn == "addInvoice" {
 		return C.addInvioce(stub, args)
-	} else if fn == "queryInvoiceByProjectID" {
-		return C.queryInvoiceByProjectID(stub, args)
 	} else if fn == "deleteInvoice" {
 		return C.deleteInvoice(stub, args)
 	} else if fn == "addInvioceAndTransfer" {
 		return C.addInvioceAndTransfer(stub, args)
 	} else if fn == "queryAllWithSelector" {
 		return C.queryAllWithSelector(stub, args)
+	} else if fn == "addUser" {
+		return C.addUser(stub, args)
+	} else if fn == "deleteUser" {
+		return C.deleteUser(stub, args)
 	}
 
 	logger.Error("invoke did not find func: " + fn)

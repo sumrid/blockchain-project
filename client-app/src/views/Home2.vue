@@ -84,7 +84,9 @@ export default {
       this.result = result;
     },
     imageUrl: function(id) {
+      console.info(`[home] [imageUrl] project id: ${id}`);
       const p = this.info.find(p => p.id === id); // find in array.
+      console.info(`[home] [imageUrl] ${JSON.stringify(p)}`);
       return p.image;
     }
   },
