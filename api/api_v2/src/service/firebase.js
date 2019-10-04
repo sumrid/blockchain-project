@@ -8,6 +8,7 @@ const ProjectCollection = db.collection('projects');
 const QRCollection = db.collection('qr');
 
 const moment = require('moment');
+const nodemailer = require('nodemailer');
 
 // ####################
 // #     Project
@@ -113,6 +114,37 @@ async function deleteUser(uid) {
     }
 }
 
+async function sendConfirmEmail(email) {
+    try {
+        const link = await admin.auth().generateEmailVerificationLink(email);
+        console.log(`[firebase] [sendConfirmEmail] link: ${link}`);
+        await sendEmail(email, link);
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function sendEmail(email, link) {
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'donate.chain@gmail.com',
+            pass: process.env.GMAIL_PASS || '81555084',
+        },
+    });
+    try {
+        const info = await transporter.sendMail({
+            from: 'donate.chain@gmail.com',
+            to: email,
+            subject: 'Donate-web [ยืนยัน Email]',
+            html: `<a href="${link}">กดเพิ่อยืนยัน Email</a>`
+        });
+        console.info(info);
+    } catch (error) {
+        throw error;
+    }
+}
+
 // ####################
 // #      QR code
 // ####################
@@ -145,6 +177,7 @@ module.exports = {
     updateUser,
     setUserRole,
     getUserByEmail,
+    sendConfirmEmail,
     deleteUser,
     saveQR,
     deleteQR

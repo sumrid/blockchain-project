@@ -26,6 +26,7 @@ const FN_CLOSE_PROJECT = 'closeProject';
 const FN_UPDATE_PROJECT = 'updateProject'
 const FN_CREATE_PROJECT = 'createProject';
 const FN_DELETE_PROJECT = 'deleteProject';
+const FN_UPDATE_USER_VERIFY = 'updateUserVerify';
 const FN_ADD_INVOICE = 'addInvioceAndTransfer';
 const FN_UPDATE_PROJECT_STATUS = 'updateStatus';
 
@@ -269,6 +270,16 @@ async function addUser(uid, role) {
     }
 }
 
+async function changeUserVerifyState(checkerID, userID, verifyState) {
+    try {
+        const contract = await getContractOrg(checkerID);
+        const result = await contract.submitTransaction(FN_UPDATE_USER_VERIFY, userID, verifyState.toString());
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
 // ################
 //     Test zone
 // ################
@@ -372,6 +383,7 @@ module.exports = {
     updateProject,
     deleteProject,
     updateProjectStatus,
+    changeUserVerifyState,
     addUser,
     donate,
     payBack

@@ -34,6 +34,7 @@ router.get('/invoice/:id', invoiceController.getInvoice);
 router.post('/user', userController.regisUser);
 router.get('/user/:id', userController.getUser);
 router.put('/user/:id', userController.updateUser);
+router.put('/user/:id/verify/idcard', userController.verifyUserIDCard);
 router.get('/user/:id/project', userController.getProjects);
 router.get('/user/:id/donation', userController.getDonations);
 router.get('/user/:id/receive', userController.getReceiveProject);

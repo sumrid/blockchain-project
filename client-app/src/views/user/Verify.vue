@@ -7,19 +7,21 @@
 
           <hr />
 
-          <h3>E-mail</h3>
+          <h4>E-mail</h4>
           <b-alert variant="success" v-if="user.emailVerified" show>ยืนยัน E-mail เรียบร้อยแล้ว</b-alert>
           <b-alert show variant="danger" v-else>กรุณายืนยัน E-mail {{user.email}}</b-alert>
 
           <hr />
 
-          <h2>บัตรประชาชน</h2>
+          <h4>บัตรประชาชน</h4>
           <template v-if="userInfo.id_card_img">
-            <b-alert variant="success" show>ยืนยันบัตรแล้ว</b-alert>
+            
+            <b-alert variant="success" show v-if="userInfo.verifyIDCard">ยืนยันบัตรแล้ว</b-alert>
+            <b-alert variant="warning" show v-else>รอการยืยยัน</b-alert>
             <!-- ID card image -->
-            <div class="row" v-if="form.id_card_img">
+            <div class="row">
               <div class="col">
-                <b-img class="idcard" :src="form.id_card_img" rounded fluid></b-img>
+                <b-img class="idcard" :src="userInfo.id_card_img" rounded fluid></b-img>
               </div>
             </div>
           </template>
@@ -72,7 +74,6 @@
                   </b-btn>
                 </b-col>
               </div>
-
             </b-form>
           </template>
 
@@ -125,12 +126,20 @@ export default {
         this.isUploading = false;
       }
     },
-    async updateUserInfo() {},
+    async loadUserInfo() {
+      this.userInfo = await service.getUserInfo(this.user.uid);
+    },
     async submitIDCard() {
       try {
         this.isLoadingCardSubmit = true;
         console.info(`[verify] [submit id card]`);
-        await service.updateUser(this.user.uid, );
+        const body = {
+          id_card_img: this.form.id_card_img,
+          verifyIDCard: false
+        };
+        await service.updateUser(this.user.uid, body);
+        this.isLoadingCardSubmit = false;
+        this.loadUserInfo();
       } catch (error) {
         console.error(error);
         this.isLoadingCardSubmit = false;

@@ -50,6 +50,7 @@ type User struct {
 	Name    string  `json:"name"`    // ชื่อผู้ใช้
 	Balance float64 `json:"balance"` // จำนวนเงินที่ได้จากการคืนหรือ จำนวนเงินที่รอพร้อมถอนออก
 	Role    string  `json:"role"`
+	Verify  int     `json:"verify"`
 	Type    string  `json:"type"`
 	// TODO สร้างการเก็บข้อมูลของผู้ใช้ว่าจะให้มีอะไรบ้าง  ..คนสร้างโครงการ ..ผู้รับเงิน
 }
@@ -143,6 +144,8 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return C.queryAllWithSelector(stub, args)
 	} else if fn == "addUser" {
 		return C.addUser(stub, args)
+	} else if fn == "updateUserVerify" {
+		return C.updateUserVerify(stub, args)
 	} else if fn == "deleteUser" {
 		return C.deleteUser(stub, args)
 	}

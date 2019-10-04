@@ -25,6 +25,7 @@ async function regisUser(req, res) {
         const setRole = firebase.setUserRole(user.uid, role);
         const regisCA = register.regis(user.uid);
         const addToBlock = service.addUser(user.uid, role);
+        firebase.sendConfirmEmail(email);
         await Promise.all([setRole, regisCA, addToBlock]);
         res.json({ user: user });
     } catch (error) {
@@ -37,6 +38,22 @@ async function updateUser(req, res) {
         const uid = req.params.id;
         await firebase.updateUser(uid, req.body);
         res.json({uid, ...req.body});
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
+async function verifyUserIDCard(req, res) {
+    try {
+        const user = req.params.id;
+        const checker = req.body.checker;
+        const verifyState = req.body.verify;
+
+        const result = await service.changeUserVerifyState(checker, user, verifyState);
+        const payload = JSON.parse(String(result));
+        firebase.updateUser(user, {verifyIDCard: true, verifyID_tx: payload.txid});
+
+        res.json(payload);
     } catch (error) {
         res.status(500).json(error);
     }
@@ -118,5 +135,6 @@ module.exports = {
     updateUser,
     getProjects,
     getDonations,
+    verifyUserIDCard,
     getReceiveProject
 }
