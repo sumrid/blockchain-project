@@ -70,7 +70,7 @@
 
 <script>
 import moment from "moment";
-import data from "../data";
+import data from "../mock_data";
 const axios = require("axios").default;
 const url = window.location.hostname;
 

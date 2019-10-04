@@ -16,8 +16,8 @@
           <h4>บัตรประชาชน</h4>
           <template v-if="userInfo.id_card_img">
             
-            <b-alert variant="success" show v-if="userInfo.verifyIDCard">ยืนยันบัตรแล้ว</b-alert>
-            <b-alert variant="warning" show v-else>รอการยืยยัน</b-alert>
+            <b-alert variant="success" show v-if="userInfo.verifyIDCard">ยืนยันบัตรแล้ว <br>รหัสธุรกรรม: {{userInfo.verifyID_tx}}</b-alert>
+            <b-alert variant="warning" show v-else>รอการยืนยัน</b-alert>
             <!-- ID card image -->
             <div class="row">
               <div class="col">
