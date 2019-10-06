@@ -55,46 +55,46 @@ func (C *Chaincode) updateUserVerify(stub shim.ChaincodeStubInterface, args []st
 	usrAsByte, err := stub.GetState(uid)
 	if err != nil {
 		return shim.Error(err.Error())
-	} else if usrAsByte == nil {
-		return shim.Error("User not found.")
 	}
-
+	
 	usr := User{}
-	err = json.Unmarshal(usrAsByte, &usr)
-	if err != nil {
-		return shim.Error(err.Error())
+	if usrAsByte == nil {
+		usr.ID = uid
+		usr.Type = "user"
+	} else {
+		err = json.Unmarshal(usrAsByte, &usr)
+		if err != nil {
+			return shim.Error(err.Error())
+		}
 	}
 
 	// Update
 	usr.Verify = vfy
 
+	
+	usrAsByte, err = json.Marshal(usr)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+	
+	// Put state
+	stub.PutState(usr.ID, usrAsByte)
+	
 	type payload struct {
 		TxID    string      `json:"txid"`
 		Payload interface{} `json:"payload"`
 	}
 
-	usrAsByte, err = json.Marshal(usr)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	// Put state
-	stub.PutState(usr.ID, usrAsByte)
-
 	res := payload{}
 	res.TxID = stub.GetTxID()
 	res.Payload = usr
-
 	resAsByte, _ := json.Marshal(res)
 
 	return shim.Success(resAsByte)
 }
 
 func (C *Chaincode) deleteUser(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-
 	uid := args[0]
-
 	stub.DelState(uid)
-
 	return shim.Success(nil)
 }

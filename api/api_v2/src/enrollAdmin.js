@@ -9,14 +9,15 @@ const { FileSystemWallet, X509WalletMixin } = require('fabric-network');
 const fs = require('fs');
 const path = require('path');
 
-const ccpPath = path.resolve(__dirname, 'connection_profile', 'connection1.json');   // ที่อยู่ไฟล์ xxx.json
+const ccpPath = path.resolve(__dirname, 'connection_profile', 'connection.json');   // ที่อยู่ไฟล์ xxx.json
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');  // อ่านไฟล์
 const ccp = JSON.parse(ccpJSON);         // เปลี่ยน string เป็น json
 
-const WALLET_NAME = 'wallet1';
+const WALLET_NAME = 'wallet2';
 const ADMIN = 'admin';
-const ORG_MSP = 'Org1MSP';
-const CA_NAME = 'ca1.example.com';
+const ORG_MSP = 'Org2MSP';
+const CA_NAME = 'ca2.example.com';
+ccp.client.organization = "Org2";
 
 async function main() {
     try {

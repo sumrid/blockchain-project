@@ -136,5 +136,5 @@ module.exports = {
     getProjects,
     getDonations,
     verifyUserIDCard,
-    getReceiveProject
+    getReceiveProject,
 }

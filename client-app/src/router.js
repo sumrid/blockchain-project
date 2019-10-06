@@ -4,6 +4,7 @@ import Router from 'vue-router';
 import Me from '@/views/user/User.vue';
 import SendInvoice from './views/SendInvoice';
 import HomeV2 from './views/Home2.vue'
+import Tx from './views/Tx.vue';
 import Contact from './views/Contact.vue';
 import EditProfile from './views/user/EditProfile.vue';
 import EditProject from './views/EditProject.vue';
@@ -97,6 +98,10 @@ export default new Router({
       path: '/contact',
       name: 'contact',
       component: Contact
+    },{
+      path: '/tx/:txid',
+      name: 'tx',
+      component: Tx
     }
   ]
 })

@@ -6,6 +6,7 @@ const userController = require('./controller/user');
 const invoiceController = require('./controller/invoice');
 const projectController = require('./controller/project');
 const donationController = require('./controller/donation');
+const transferController = require('./controller/transfer');
 
 router.get('/query/:key', contorller.query);
 
@@ -29,6 +30,8 @@ router.post('/project/donate/qr/v3', donationController.createQRv3);        // v
 
 router.post('/invoice', invoiceController.sendInvoice);
 router.get('/invoice/:id', invoiceController.getInvoice);
+
+router.post('/withdraw', transferController.withdrawFromProject);
 
 // User
 router.post('/user', userController.regisUser);

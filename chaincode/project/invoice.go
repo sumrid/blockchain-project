@@ -11,7 +11,7 @@ import (
 
 // addInvoice เพิ่มใบกำกับภาษีเข้าระบบ
 func (C *Chaincode) addInvioce(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	prjct := args[0]
+	prj := args[0]
 	invArg := args[1] // invoice json string
 
 	invObj := Invoice{}
@@ -28,7 +28,7 @@ func (C *Chaincode) addInvioce(stub shim.ChaincodeStubInterface, args []string) 
 		return shim.Error("Invoice invoice already exixts.")
 	}
 
-	invObj.ProjectID = prjct
+	invObj.ProjectID = prj
 	invObj.Type = "invoice"
 	invObj.TxID = stub.GetTxID()
 
@@ -42,7 +42,7 @@ func (C *Chaincode) addInvioce(stub shim.ChaincodeStubInterface, args []string) 
 	return shim.Success(invAsByte)
 }
 
-// ทำการเพิ่มใบกำกับภาษี และ ถอนเงินจากโครงการใบให้คนเพิ่มใบกำกับภาษี
+// ทำการเพิ่มใบกำกับภาษี และ ถอนเงินจากโครงการไปให้คนเพิ่มใบกำกับภาษี
 func (C *Chaincode) addInvioceAndTransfer(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	logger.Info("addInvioceAndTransfer: start")
 	usrID := args[0]
@@ -126,32 +126,6 @@ func (C *Chaincode) addInvioceAndTransfer(stub shim.ChaincodeStubInterface, args
 	stub.PutState(evt.ID, evtAsByte)
 
 	return shim.Success(invAsByte)
-}
-
-func (C *Chaincode) queryInvoiceByProjectID(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	logger.Info("queryInvoiceByProjectID: start.")
-
-	prj := args[0]
-	queryStr := fmt.Sprintf(`{"selector":{"type":{"$eq": "invoice"},"project":{"$eq":"%s"}}}`, prj)
-	resutls, err := C.queryWithSelector(stub, queryStr)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	var invs []Invoice
-	for _, invAsByte := range resutls {
-		inv := Invoice{}
-		json.Unmarshal(invAsByte, &inv)
-
-		invs = append(invs, inv)
-	}
-
-	payload, err := json.Marshal(invs)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	return shim.Success(payload)
 }
 
 func (C *Chaincode) deleteInvoice(stub shim.ChaincodeStubInterface, args []string) peer.Response {

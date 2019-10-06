@@ -10,150 +10,6 @@ import (
 	"github.com/hyperledger/fabric/protos/peer"
 )
 
-// สถานะของโครงการ
-const (
-	Open   = "open"
-	Closed = "closed"
-	Fail   = "fail"
-)
-
-// Project เป็นโครงการสำหรับเก็บช้อมูลใน blockchain
-type Project struct {
-	ID          string    `json:"id"`          // เป็นรหัสของโครงการ จะมีลักษณะเป็น 'p_30d1ea-c0af...'
-	Title       string    `json:"title"`       // ชื่อหรือหัวข้อของโครงการ
-	Status      string    `json:"status"`      // สถานะของโครงการว่าเปิดอยู่ หรือ หมดเวลาแล้ว
-	Balance     float64   `json:"balance"`     // ยอดจำนวนเงินปัจุบันของโครงการ
-	Accumulated float64   `json:"accumulated"` // ยอดเงินสะสมทั้งหมด
-	Owner       string    `json:"owner"`       // เป็น uid ของผู้ที่เป็นเจ้าของโครงการ
-	StartTime   time.Time `json:"starttime"`   // เวลาที่การสร้างโครงการ
-	EndTime     time.Time `json:"endtime"`     // เวลาที่โครงการสิ้นสุด
-	Receiver    string    `json:"receiver"`    // uid ของผู้รับเงิน TODO เพิ่มไอดีผู้รับเงิน
-	Goal        float64   `json:"goal"`        // จำนวนเงินที่ต้องการ TODO เพิ่มยอดเงินที่ต้องการด้วย
-	Condition   int       `json:"condition"`   // เงื่อนไขการตัดเงินของโครงการ
-	Type        string    `json:"type"`
-}
-
-// Donation ข้อมูลของการบริจาค
-type Donation struct {
-	TxID        string    `json:"txid"`        // Transaction ID ของการบริจาคครั้งนั้น
-	UserID      string    `json:"user"`        // uid ของผู้บริจาคเงิน
-	DisplayName string    `json:"displayname"` // ชื่อที่จะแสดงบนรายการบริจาค
-	ProjectID   string    `json:"project"`     // uid ของโปรเจค
-	Amount      float64   `json:"amount"`      // จำนวนเงินที่การบริจาคมาในครั้งหนี่ง
-	Time        time.Time `json:"time"`        // เวลาที่ทำการบริจาค
-	Type        string    `json:"type"`
-}
-
-// User ข้อมูลของผู้ใช้
-type User struct {
-	ID      string  `json:"id"`      // uid ของฝู้ใช้
-	Name    string  `json:"name"`    // ชื่อผู้ใช้
-	Balance float64 `json:"balance"` // จำนวนเงินที่ได้จากการคืนหรือ จำนวนเงินที่รอพร้อมถอนออก
-	Role    string  `json:"role"`
-	Verify  int     `json:"verify"`
-	Type    string  `json:"type"`
-	// TODO สร้างการเก็บข้อมูลของผู้ใช้ว่าจะให้มีอะไรบ้าง  ..คนสร้างโครงการ ..ผู้รับเงิน
-}
-
-// Event เหตุการณ์ของโครงการ เช่น เปิดโครงการ, ยอมรับ, ปิด, ล้มเหลว เมื่อเวลาไหน
-type Event struct {
-	ID        string `json:"id"`
-	TxID      string `json:"txid"`
-	ProjectID string `json:"project"`
-	Event     string `json:"event"`
-	Message   string `json:"message"`
-	Timestamp int64  `json:"timestamp"`
-	Type      string `json:"type"`
-}
-
-// WithdrawRequest ขอเงินโอนเงิน
-type WithdrawRequest struct {
-	ID            string `json:"id"`
-	Type          string `json:"type"`
-	Project       string `json:"project"` // uid ของโครงการ
-	Status        string `json:"status"`
-	InvoiceNumber string `json:"invoice"`
-}
-
-// Item สินค้าในใบกำกับภาษี
-type Item struct {
-	Name   string  `json:"name"`
-	Price  float64 `json:"price"`
-	Amount int     `json:"amount"`
-}
-
-// Invoice ข้อมูลของใบกำกับภาษี
-type Invoice struct {
-	ID           string    `json:"id"`      // invoice uid
-	ProjectID    string    `json:"project"` // รหัสโครงการ
-	Number       int       `json:"number"`  // เลขที่ใบกำกับภาษี
-	CustomerName string    `json:"cusname"`
-	VAT          float64   `json:"vat"`
-	Items        []Item    `json:"items"`
-	Total        float64   `json:"total"`
-	Date         time.Time `json:"date"`
-	Type         string    `json:"type"`
-	TxID         string    `json:"txid"`
-	Verified     bool      `json:"verified"`
-}
-
-var logger = shim.NewLogger("chaincode")
-
-// Chaincode ...
-type Chaincode struct {
-}
-
-// Init เป็นฟังก์ชันเอาไว้เริ่มต้น chaincode
-// จะถูกเรียกใช้ตอนที่ทำการ Instantiate
-func (C *Chaincode) Init(stub shim.ChaincodeStubInterface) peer.Response {
-	logger.Info("Init chaincode success.")
-	return shim.Success([]byte("Init Success"))
-}
-
-// Invoke เป็นฟังก์ชันหลักที่ chaincode ต้องมี
-func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
-	fn, args := stub.GetFunctionAndParameters()
-
-	if fn == "query" { // ดึงข้อมูลใน blockchain จากคีย์
-		return C.query(stub, args)
-	} else if fn == "createProject" { // สร้างโครงการ
-		return C.createProject(stub, args)
-	} else if fn == "donate" { // ทำการบริจาคเงินให้กับโครงการ
-		return C.donate(stub, args)
-	} else if fn == "getHistory" { // ...
-		return C.getHistory(stub, args)
-	} else if fn == "closeProject" { // เปลี่ยนสถานะโครงการเป็นปิด เมื่อเวลาหมดลง
-		return C.closeProject(stub, args)
-	} else if fn == "updateStatus" {
-		return C.updateStatus(stub, args)
-	} else if fn == "updateProject" {
-		return C.updateProject(stub, args)
-	} else if fn == "deleteProject" {
-		return C.deleteProject(stub, args)
-	} else if fn == "payBack" {
-		return C.payBack(stub, args)
-	} else if fn == "withdraw" {
-		return C.withdraw(stub, args)
-	} else if fn == "addInvoice" {
-		return C.addInvioce(stub, args)
-	} else if fn == "deleteInvoice" {
-		return C.deleteInvoice(stub, args)
-	} else if fn == "addInvioceAndTransfer" {
-		return C.addInvioceAndTransfer(stub, args)
-	} else if fn == "queryAllWithSelector" {
-		return C.queryAllWithSelector(stub, args)
-	} else if fn == "addUser" {
-		return C.addUser(stub, args)
-	} else if fn == "updateUserVerify" {
-		return C.updateUserVerify(stub, args)
-	} else if fn == "deleteUser" {
-		return C.deleteUser(stub, args)
-	}
-
-	logger.Error("invoke did not find func: " + fn)
-	return shim.Error("Received unknown function " + fn)
-}
-
 // createProject - สำหรับสร้างโครงการ
 // มีการรับ agrs ดังนี้
 // 	- args[0] function name
@@ -361,26 +217,6 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 	return shim.Success(dByte)
 }
 
-// getDonationHistory by project ID
-func (C *Chaincode) getDonationHistory(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	if len(args) != 1 {
-		return shim.Error("Incorrect number of arguments.")
-	}
-
-	// Set key for query
-	donationKey := "history_" + args[0]
-
-	// Get state for key
-	bytes, err := stub.GetState(donationKey)
-	if err != nil {
-		return shim.Error(err.Error())
-	} else if bytes == nil {
-		return shim.Success([]byte("[]"))
-	}
-
-	return shim.Success(bytes)
-}
-
 // getHistory แสดงรายการการเปลี่ยนแปลง ของ key นั้นๆ
 func (C *Chaincode) getHistory(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 1 {
@@ -420,139 +256,6 @@ func (C *Chaincode) getHistory(stub shim.ChaincodeStubInterface, args []string) 
 
 	// Return
 	return shim.Success(bytes)
-}
-
-func (C *Chaincode) queryAllProjects(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	// Query all projects
-	query := `{"selector":{"id":{"$regex":"p_"}}}`
-
-	results, err := C.queryWithSelector(stub, query)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	var projects []Project
-	for _, pByte := range results {
-		p := Project{}
-		json.Unmarshal(pByte, &p)
-
-		projects = append(projects, p)
-	}
-
-	// Return result
-	res, _ := json.Marshal(projects)
-	return shim.Success(res)
-}
-
-// Query donation by userID
-func (C *Chaincode) queryDonationByUserID(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	userID := args[0]
-	queryString := fmt.Sprintf(`{"selector":{"type":{"$eq": "donation"},"user":{"$eq":"%s"}}}`, userID)
-
-	results, err := C.queryWithSelector(stub, queryString)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	var donations []Donation
-	for _, dByte := range results {
-		d := Donation{}
-		err = json.Unmarshal(dByte, &d)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		donations = append(donations, d)
-	}
-
-	payload, err := json.Marshal(donations)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	// Return result
-	return shim.Success(payload)
-}
-
-// Query project by ownerID
-func (C *Chaincode) queryProjectByUserID(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	userID := args[0]
-	queryString := fmt.Sprintf(`{"selector":{"type":{"$eq": "project"},"owner":{"$eq":"%s"}}}`, userID)
-
-	results, err := C.queryWithSelector(stub, queryString)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	var projects []Project
-	for _, pByte := range results {
-		p := Project{}
-		err = json.Unmarshal(pByte, &p)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		projects = append(projects, p)
-	}
-
-	payload, err := json.Marshal(projects)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	return shim.Success(payload)
-}
-
-func (C *Chaincode) queryProjectByReceiverID(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	reID := args[0]
-	queryString := fmt.Sprintf(`{"selector":{"type":{"$eq": "project"},"receiver":{"$eq":"%s"}}}`, reID)
-
-	results, err := C.queryWithSelector(stub, queryString)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	var projects []Project
-	for _, pByte := range results {
-		p := Project{}
-		err = json.Unmarshal(pByte, &p)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		projects = append(projects, p)
-	}
-
-	payload, err := json.Marshal(projects)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	return shim.Success(payload)
-}
-
-func (C *Chaincode) queryProjectBySelector(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	// TODO อาจจะทำ query by selector
-	query := args[0]
-	results, err := C.queryWithSelector(stub, query)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	// Byte to struct
-	var projects []Project
-	for _, pByte := range results {
-		p := Project{}
-		err = json.Unmarshal(pByte, &p)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		projects = append(projects, p)
-	}
-
-	payload, err := json.Marshal(projects)
-	if err != nil {
-		return shim.Error(err.Error())
-	}
-
-	return shim.Success(payload)
 }
 
 func (C *Chaincode) closeProject(stub shim.ChaincodeStubInterface, args []string) peer.Response {
@@ -798,7 +501,7 @@ func (C *Chaincode) withdraw(stub shim.ChaincodeStubInterface, args []string) pe
 	user := args[0]                                // user id
 	project := args[1]                             // project id
 	amount, err := strconv.ParseFloat(args[2], 64) // amount to withdraw
-	inv := args[3]
+	inv := args[3]                                 // invoice id
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -856,36 +559,70 @@ func (C *Chaincode) withdraw(stub shim.ChaincodeStubInterface, args []string) pe
 	return shim.Success(pay)
 }
 
-func (C *Chaincode) queryEventByProjectID(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	proj := args[0]
-	queryStr := fmt.Sprintf(`{"selector":{"type":{"$eq": "event"},"project":{"$eq":"%s"}}}`, proj)
+// โอนเงินให้เจ้าของโครงการ
+func (C *Chaincode) transfer(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 
-	results, err := C.queryWithSelector(stub, queryStr)
+	ursID := args[0]
+	prjID := args[1]
+	amt, err := strconv.ParseFloat(args[2], 64)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 
-	var evts []Event
-	for _, evtByte := range results {
-		evt := Event{}
-		err = json.Unmarshal(evtByte, &evt)
-		if err != nil {
-			return shim.Error(err.Error())
-		}
-		evts = append(evts, evt)
-	}
-
-	payload, err := json.Marshal(evts)
+	usrAsByte, err := stub.GetState(ursID)
+	prjAsByte, err := stub.GetState(prjID)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 
-	return shim.Success(payload)
-}
+	usr := User{}
+	prj := Project{}
 
-func main() {
-	err := shim.Start(new(Chaincode))
+	err = json.Unmarshal(usrAsByte, &usr)
+	err = json.Unmarshal(prjAsByte, &prj)
 	if err != nil {
-		fmt.Printf("Error start chaincode: %s", err)
+		return shim.Error(err.Error())
 	}
+
+	if prj.Balance < amt {
+		return shim.Error("Not enough money to transfer.")
+	}
+
+	usr.Balance += amt
+	prj.Balance -= amt
+
+	trnsf := Donation{}
+	trnsf.ID = "transfer_" + stub.GetTxID()
+	trnsf.TxID = stub.GetTxID()
+	trnsf.UserID = ursID
+	trnsf.ProjectID = prjID
+	trnsf.Amount = amt
+	trnsf.Type = "transfer"
+	t, _ := stub.GetTxTimestamp()
+	trnsf.Time = time.Unix(t.GetSeconds(), 0)
+
+	// Create event
+	evt := Event{}
+	evt.ID = "event_" + stub.GetTxID()
+	evt.Type = "event"
+	evt.TxID = stub.GetTxID()
+	evt.ProjectID = prjID
+	evt.Event = "withdraw"
+	evt.Message = fmt.Sprintf("Transfer money to %s %.2f Baht", ursID, amt)
+	evt.Timestamp = t.GetSeconds()
+
+	usrAsByte, err = json.Marshal(usr)
+	prjAsByte, err = json.Marshal(prj)
+	evtAsByte, err := json.Marshal(evt)
+	trnsfAsByte, err := json.Marshal(trnsf)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	stub.PutState(ursID, usrAsByte)
+	stub.PutState(prj.ID, prjAsByte)
+	stub.PutState(evt.ID, evtAsByte)
+	stub.PutState(trnsf.ID, trnsfAsByte)
+
+	return shim.Success(trnsfAsByte)
 }

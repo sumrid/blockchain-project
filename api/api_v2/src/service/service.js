@@ -22,6 +22,7 @@ const FN_QUERY = 'query';
 const FN_DONATE = 'donate';
 const FN_PAYBACK = 'payBack';
 const FN_ADD_USER = 'addUser';
+const FN_WITHDRAW = 'withdraw';
 const FN_CLOSE_PROJECT = 'closeProject';
 const FN_UPDATE_PROJECT = 'updateProject'
 const FN_CREATE_PROJECT = 'createProject';
@@ -219,6 +220,16 @@ async function payBack(project) {
     }
 }
 
+async function withdrawFromProject(user, project, amount) {
+    try {
+        const contract = await getContractOrg(user);
+        const result = await contract.submitTransaction(FN_WITHDRAW, user, project, amount.toString());
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
 /**
  * **addInvoice** เพิ่มข้อมูลใบกำกับภาษีลงใน blockchain
  * @param {string} user user id
@@ -257,9 +268,9 @@ async function donate(userID, donation) {
     }
 }
 
-// ###################
-// #       User
-// ###################
+// #####################
+// #        User
+// #####################
 async function addUser(uid, role) {
     try {
         const contract = await getContractOrg(USER);
@@ -386,5 +397,6 @@ module.exports = {
     changeUserVerifyState,
     addUser,
     donate,
-    payBack
+    payBack,
+    withdrawFromProject
 }

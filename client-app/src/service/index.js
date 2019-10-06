@@ -182,6 +182,15 @@ async function sendInvoice(user, project, invoice) {
     }
 }
 
+async function getTx(txid) {
+    try {
+        const res = await axios.get(`${CREATOR_API}/api/tx/${txid}`);
+        return res.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
 // #############################
 //     Revenue Departments
 // #############################
@@ -240,6 +249,7 @@ async function getProjectsInfo() {
 
 
 export default {
+    getTx,
     donate,
     getEvents,
     updateUser,
