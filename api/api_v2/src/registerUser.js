@@ -8,15 +8,16 @@ const { FileSystemWallet, Gateway, X509WalletMixin } = require('fabric-network')
 const fs = require('fs');
 const path = require('path');
 
-const ccpPath = path.resolve(__dirname, 'connection_profile', 'connection1.json');
+const ccpPath = path.resolve(__dirname, 'connection_profile', 'connection.json');
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
 const ccp = JSON.parse(ccpJSON);
 
-const WALLET_NAME = 'wallet1';
+const WALLET_NAME = 'wallet2';
 const ADMIN = 'admin';
-const USER = 'user2';
-const AFFILIATION = 'org1.department1';
-const MSP = 'Org1MSP';
+const USER = 'user1';
+const AFFILIATION = 'org2.department1';
+const MSP = 'Org2MSP';
+ccp.client.organization = "Org2";
 
 async function main() {
     try {

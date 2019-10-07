@@ -49,6 +49,7 @@
                   </div>
                 </div>
               </b-tab>
+
               <b-tab title="โครงการ">
                 <b-tabs content-class="mt-3">
                   <b-tab title="โครงการที่รับบริจาค">
@@ -80,7 +81,7 @@
                       </b-tbody>
                     </b-table-simple>
                   </b-tab>
-                  <b-tab tile="การบริจาค"></b-tab>
+                  
                   <b-tab title="โครงการของฉัน">
                     <p>โครงการของฉัน</p>
                     <b-table-simple hover responsive>
@@ -105,6 +106,9 @@
                         </b-tr>
                       </b-tbody>
                     </b-table-simple>
+
+                    <project v-for="(item, index) in myprojects" :key="index" :id="item.id"></project>
+
                   </b-tab>
                   <b-tab title="ตรวจสอบความเคลื่อนไหว">
                     <p>ตรวจสอบความเคลื่อนไหว</p>
@@ -185,6 +189,7 @@ import auth from "../../firebase";
 import { mapGetters } from "vuex";
 import service from "../../service";
 import EditProfile from "./EditProfile";
+import Project from '../../components/MyProject';
 import confirmProject from "../receiver/ConfirmProject";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
@@ -192,7 +197,8 @@ export default {
   components: {
     confirmProject,
     EditProfile,
-    Verify
+    Project,
+    Verify,
   },
   data() {
     return {
