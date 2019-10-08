@@ -2,7 +2,7 @@
     <v-container>
         <v-row>
             <v-col>
-                <p class="headline">จัดการผู้ใช้</p>
+                <p class="headline">รายชื่อโครงการ</p>
             </v-col>
         </v-row>
     </v-container>

@@ -81,38 +81,16 @@
                       </b-tbody>
                     </b-table-simple>
                   </b-tab>
-                  
+
                   <b-tab title="โครงการของฉัน">
                     <p>โครงการของฉัน</p>
-                    <b-table-simple hover responsive>
-                      <b-thead>
-                        <b-tr>
-                          <b-th>ชื่อ</b-th>
-                          <b-th>ยอดเงินปัจจุบัน</b-th>
-                          <b-th>วันที่สร้าง</b-th>
-                          <b-th>สถานะ</b-th>
-                          <b-th></b-th>
-                        </b-tr>
-                      </b-thead>
-                      <b-tbody>
-                        <b-tr v-for="(item, index) in myprojects" :key="index.id">
-                          <b-td>{{item.title}}</b-td>
-                          <b-td>{{item.balance}}</b-td>
-                          <b-td>{{item.starttime}}</b-td>
-                          <b-td>{{item.status}}</b-td>
-                          <b-td>
-                            <router-link :to="{ name: 'editProject', params: { id: item.id }}">click</router-link>
-                          </b-td>
-                        </b-tr>
-                      </b-tbody>
-                    </b-table-simple>
-
                     <project v-for="(item, index) in myprojects" :key="index" :id="item.id"></project>
-
                   </b-tab>
+                  <!--
                   <b-tab title="ตรวจสอบความเคลื่อนไหว">
                     <p>ตรวจสอบความเคลื่อนไหว</p>
                   </b-tab>
+                  -->
                 </b-tabs>
 
                 <div class="row">
@@ -122,7 +100,6 @@
                     </button>
                   </router-link>
                 </div>
-
               </b-tab>
             </b-tabs>
           </b-card>
@@ -178,7 +155,6 @@
           </div>
         </div>-->
       </div>
-
     </div>
   </div>
 </template>
@@ -189,7 +165,7 @@ import auth from "../../firebase";
 import { mapGetters } from "vuex";
 import service from "../../service";
 import EditProfile from "./EditProfile";
-import Project from '../../components/MyProject';
+import Project from "../../components/MyProject";
 import confirmProject from "../receiver/ConfirmProject";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
@@ -198,7 +174,7 @@ export default {
     confirmProject,
     EditProfile,
     Project,
-    Verify,
+    Verify
   },
   data() {
     return {

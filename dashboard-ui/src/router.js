@@ -2,8 +2,9 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Login from './views/Login.vue'
-import User from './views/User.vue'
-import Project from './views/Project.vue'
+import User from './views/Users.vue'
+import Project from './views/Projects.vue'
+import Invoices from './views/Invoices.vue';
 
 Vue.use(Router)
 
@@ -31,6 +32,11 @@ export default new Router({
       path: '/users',
       name: 'users',
       component: User
+    },
+    {
+      path: '/invoices',
+      name: 'invoices',
+      component: Invoices
     },
     {
       path: '/about',

@@ -41,7 +41,7 @@ async function updateProject(project) {
 }
 
 async function getProject() {
-    snapshot = await ProjectCollection.get();
+    const snapshot = await ProjectCollection.get();
     return snapshot;
 }
 
@@ -75,10 +75,11 @@ async function registerUser(name, email, password) {
     }
 }
 
-async function setUserRole(uid, role) {
+async function setUser(uid, name, role) {
     try {
         const data = {
             uid: uid,
+            name: name,
             role: role,
             verify: 0
         }
@@ -99,6 +100,15 @@ async function updateUser(uid, data) {
 async function getUserByEmail(email) {
     try {
         const user = await admin.auth().getUserByEmail(email);
+        return user;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getUserByUID(uid) {
+    try {
+        const user = await admin.auth().getUser(uid);
         return user;
     } catch (error) {
         throw error;
@@ -175,7 +185,8 @@ module.exports = {
     getProjectByID,
     registerUser,
     updateUser,
-    setUserRole,
+    setUser,
+    getUserByUID,
     getUserByEmail,
     sendConfirmEmail,
     deleteUser,

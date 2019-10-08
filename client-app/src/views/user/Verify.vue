@@ -77,9 +77,6 @@
             </b-form>
           </template>
 
-          <hr />
-          {{user}}
-          <hr />
           {{userInfo}}
         </div>
       </div>
