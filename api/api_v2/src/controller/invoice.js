@@ -1,5 +1,15 @@
 const service = require('../service/service');
 
+function queryObj() {
+    return {
+        selector: {
+            type: {
+                $eq: ""
+            }
+        }
+    }
+}
+
 async function sendInvoice(req, res) {
     try {
         const user = req.body.user;
@@ -27,7 +37,24 @@ async function getInvoice(req, res) {
     }
 }
 
+async function getAllInvoices(req, res) {
+    try {
+        const query = queryObj();
+        query.selector.type.$eq = "invoice";
+        const queryString = JSON.stringify(query);
+
+        const result = await service.queryWithSelector(queryString);
+        const invoices = JSON.parse(String(result));
+
+        if (invoices) res.json(invoices);
+        else res.status(404).json([]);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
 module.exports = {
+    getAllInvoices,
     sendInvoice,
     getInvoice
 }

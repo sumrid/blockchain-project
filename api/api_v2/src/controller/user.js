@@ -45,13 +45,22 @@ async function updateUser(req, res) {
 
 async function deleteUser(req, res) {
     try {
-        const uid = req.params.id;
+        const input = req.params.id;
         // Input email or uid
+        const isEmail = validator.isEmail(input);
+        if (isEmail) {
+            const user = await firebase.getUserByEmail(input);
+            await firebase.deleteUser(user.uid);
+            await service.deleteUser(user.uid);
+            await register.deleteUser(user.uid);
+        } else {
+            await firebase.deleteUser(input);
+            await service.deleteUser(input);
+            await register.deleteUser(input);
+        }
         
-        // delete in world state
-        // auth
-        // firestore
-        res.json({ uid });
+        // delete in wallet
+        res.json({ input });
     } catch (error) {
         res.status(500).json(error);
     }

@@ -23,6 +23,7 @@ const FN_DONATE = 'donate';
 const FN_PAYBACK = 'payBack';
 const FN_ADD_USER = 'addUser';
 const FN_WITHDRAW = 'withdraw';
+const FN_DELETE_USER = 'deleteUser';
 const FN_CLOSE_PROJECT = 'closeProject';
 const FN_UPDATE_PROJECT = 'updateProject'
 const FN_CREATE_PROJECT = 'createProject';
@@ -291,6 +292,15 @@ async function changeUserVerifyState(checkerID, userID, verifyState) {
     }
 }
 
+async function deleteUser(user, uid) {
+    try {
+        const contract = await getContractOrg(user);
+        await contract.submitTransaction(FN_DELETE_USER, uid);
+    } catch (error) {
+        throw error;
+    }
+}
+
 // ################
 //     Test zone
 // ################
@@ -395,6 +405,7 @@ module.exports = {
     deleteProject,
     updateProjectStatus,
     changeUserVerifyState,
+    deleteUser,
     addUser,
     donate,
     payBack,

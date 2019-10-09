@@ -29,6 +29,7 @@ server.listen(port, hostname, () => {
     console.log(`${ORG} server is running on port: ${port}`);
 });
 
+// HTTPS server
 // https.createServer({
 //     key: fs.readFileSync('../../etc/letsencrypt/domain.key'),
 //     cert: fs.readFileSync('../../etc/letsencrypt/chained.pem')

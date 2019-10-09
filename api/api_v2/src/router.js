@@ -30,6 +30,7 @@ router.post('/project/donate/qr/v3', donationController.createQRv3);        // v
 
 router.post('/invoice', invoiceController.sendInvoice);
 router.get('/invoice/:id', invoiceController.getInvoice);
+router.get('/invoices', invoiceController.getAllInvoices);
 
 router.post('/withdraw', transferController.withdrawFromProject);
 

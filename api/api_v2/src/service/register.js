@@ -39,6 +39,18 @@ async function checkUserExists(uid) {
     }
 }
 
+async function deleteUser(uid) {
+    try {
+        const WALLET = process.env.WALLET || 'wallet1';
+        const walletPath = path.join(process.cwd(), '..', WALLET);
+        const wallet = new FileSystemWallet(walletPath);
+
+        await wallet.delete(uid)
+    } catch (error) {
+        throw error;
+    }
+}
+
 /**
  * register **ทำการลงทะเบียนแล้วเก็บ key ไว้ใน wallet**
  * @param {string} userID uid ของผู้ใช้งาน
@@ -99,5 +111,6 @@ async function register(userID, admin, msp, walletName, affiliation, ccp) {
 
 module.exports = {
     regis,
+    deleteUser,
     checkUserExists
 }

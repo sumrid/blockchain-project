@@ -97,6 +97,15 @@ async function updateUser(uid, data) {
     }
 }
 
+async function deleteUser(uid) {
+    try {
+        await admin.auth().deleteUser(uid);
+        await db.collection('users').doc(uid).delete();
+    } catch (error) {
+        throw error;
+    }
+}
+
 async function getUserByEmail(email) {
     try {
         const user = await admin.auth().getUserByEmail(email);
@@ -110,15 +119,6 @@ async function getUserByUID(uid) {
     try {
         const user = await admin.auth().getUser(uid);
         return user;
-    } catch (error) {
-        throw error;
-    }
-}
-
-
-async function deleteUser(uid) {
-    try {
-        await admin.auth().deleteUser(uid);
     } catch (error) {
         throw error;
     }
