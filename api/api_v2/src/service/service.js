@@ -292,9 +292,9 @@ async function changeUserVerifyState(checkerID, userID, verifyState) {
     }
 }
 
-async function deleteUser(user, uid) {
+async function deleteUser(uid) {
     try {
-        const contract = await getContractOrg(user);
+        const contract = await getContractOrg(USER);
         await contract.submitTransaction(FN_DELETE_USER, uid);
     } catch (error) {
         throw error;

@@ -153,7 +153,9 @@
                     <div class="card-body">
                       <h4 class="card-title">{{owner.name}}</h4>
                       <p class="card-text">Project owner</p>
-                      <a href class="btn btn-primary">See Profile</a>
+                      <router-link :to="{name: 'owner', params: { id: owner.uid } }">
+                        <a href class="btn btn-primary">See Profile</a>
+                      </router-link>
                     </div>
                   </div>
                 </div>
@@ -233,12 +235,12 @@
 <script>
   // const generatePayload = require("promptpay-qr");
   // const qrcode = require("qrcode");
-  import myFooter from '../components/Footer';
-  import auth from "../firebase";
+  import myFooter from '@/components/Footer';
+  import auth from "@/firebase";
   const axios = require("axios");
-  import { API_IP, PROTOCOL } from '../util';
-  import socket from "../service/socket";
-  import service from "../service";
+  import { API_IP, PROTOCOL } from '@/util';
+  import socket from "@/service/socket";
+  import service from "@/service";
   import moment from "moment";
 
   export default {

@@ -21,16 +21,19 @@
             <b-btn variant="light" id="btn-invoice">เพิ่มใบกำกับภาษี</b-btn>
           </router-link>
           <div id="btn-withdraw">
-            <b-btn variant="light" id="btn-withdraw" disabled>ขอเงินจากโครงการ</b-btn>
+            <router-link :to="{ name: 'withdraw', params: {id:id}}">
+              <b-btn variant="light" id="btn-withdraw">ขอเงินจากโครงการ</b-btn>
+            </router-link>
           </div>
           <router-link :to="{ name: 'editProject', params: { id: id }}">
             <b-btn variant="warning">แก้ไขข้อมูล</b-btn>
           </router-link>
 
           <b-tooltip target="btn-invoice" triggers="hover">นำใบกำกับภาษีมายืนยัน</b-tooltip>
-          <b-tooltip target="btn-withdraw" triggers="hover">
-            ขอเงินจากโครงการออกไปใช้ก่อน แล้วจึงนำใบกำกับภาษีมาเป็นหลักฐาน
-          </b-tooltip>
+          <b-tooltip
+            target="btn-withdraw"
+            triggers="hover"
+          >ขอเงินจากโครงการออกไปใช้ก่อน แล้วจึงนำใบกำกับภาษีมาเป็นหลักฐาน</b-tooltip>
         </b-button-group>
       </div>
     </div>

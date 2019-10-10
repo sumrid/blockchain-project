@@ -2,9 +2,6 @@ import axios from 'axios';
 import { API_IP , PROTOCOL} from '../util';
 import { firestore } from 'firebase';
 
-
-// const SERVICE_URL = `http://${API_IP}:8000`;
-// const USER_SERVICE = `http://${API_IP}:8001`;
 const DONATOR_API = `${PROTOCOL}//${API_IP}:8000`;
 const CREATOR_API = `${PROTOCOL}//${API_IP}:8001`;
 const RECEIVER_API = `${PROTOCOL}//${API_IP}:8002`;
@@ -71,6 +68,15 @@ async function getProjectByID(id) {
 // #################
 // #      User
 // #################
+async function getUserByID(uid) {
+    try {
+        const res = await axios.get(`${DONATOR_API}/api/user/${uid}`);
+        return res.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
 async function getMyProject(uid) {
     try {
         const res = await axios.get(CREATOR_API + '/api/user/' + uid + '/project');
@@ -257,6 +263,7 @@ export default {
     getUserInfo,
     getProjects,
     sendInvoice,
+    getUserByID,
     getMyProject,
     getMyReceive,
     createProject,

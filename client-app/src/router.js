@@ -1,15 +1,17 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-import Me from '@/views/user/User.vue';
-import SendInvoice from './views/SendInvoice';
-import HomeV2 from './views/Home2.vue'
 import Tx from './views/Tx.vue';
+import Owner from "./views/Owner.vue";
+import HomeV2 from './views/Home2.vue'
+import Me from '@/views/user/User.vue';
 import Contact from './views/Contact.vue';
-import EditProfile from './views/user/EditProfile.vue';
+import SendInvoice from './views/SendInvoice';
+import Withdraw from './views/WithdrawFromProject';
 import EditProject from './views/EditProject.vue';
 import QRCodeReader from './views/QRCodeReader.vue';
 import CreateProject from './views/CreateProject.vue';
+import EditProfile from './views/user/EditProfile.vue';
 import ProjectDetail2 from './views/ProjectDetail2.vue';
 import ConfirmDonation from './views/ConfirmDonation.vue';
 import ConfirmProject from './views/receiver/ConfirmProject.vue';
@@ -46,6 +48,12 @@ export default new Router({
       path: '/project/:id/sendinvoice',
       name: 'sendInvoice',
       component: SendInvoice
+    },
+    {
+      path: '/project/:id/withdraw',
+      name: 'withdraw',
+      component: Withdraw,
+      props: true
     },
     {
       path: '/project/:id/confirm-receive',
@@ -98,10 +106,17 @@ export default new Router({
       path: '/contact',
       name: 'contact',
       component: Contact
-    },{
+    },
+    {
       path: '/tx/:txid',
       name: 'tx',
       component: Tx
+    },
+    {
+      path: '/owner/:id',
+      name: 'owner',
+      component: Owner,
+      props: true
     }
   ]
 })

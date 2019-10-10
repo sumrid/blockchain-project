@@ -99,8 +99,8 @@ async function updateUser(uid, data) {
 
 async function deleteUser(uid) {
     try {
-        await admin.auth().deleteUser(uid);
-        await db.collection('users').doc(uid).delete();
+        await admin.auth().deleteUser(uid);             // auth
+        await db.collection('users').doc(uid).delete(); // DB
     } catch (error) {
         throw error;
     }

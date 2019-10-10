@@ -44,8 +44,10 @@ async function deleteUser(uid) {
         const WALLET = process.env.WALLET || 'wallet1';
         const walletPath = path.join(process.cwd(), '..', WALLET);
         const wallet = new FileSystemWallet(walletPath);
+        const isExixts = await wallet.exists(uid);
 
-        await wallet.delete(uid)
+        if (isExixts) await wallet.delete(uid);
+        else return;
     } catch (error) {
         throw error;
     }

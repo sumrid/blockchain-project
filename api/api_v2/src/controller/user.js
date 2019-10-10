@@ -54,12 +54,10 @@ async function deleteUser(req, res) {
             await service.deleteUser(user.uid);
             await register.deleteUser(user.uid);
         } else {
-            await firebase.deleteUser(input);
-            await service.deleteUser(input);
-            await register.deleteUser(input);
+            await firebase.deleteUser(input); // auth, DB
+            await service.deleteUser(input);  // world state
+            await register.deleteUser(input); // wallet
         }
-        
-        // delete in wallet
         res.json({ input });
     } catch (error) {
         res.status(500).json(error);
