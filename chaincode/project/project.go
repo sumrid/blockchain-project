@@ -114,7 +114,7 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 	var err error
 
 	// Check arguments
-	if len(args) != 5 {
+	if len(args) < 5 {
 		return shim.Error("Incorrect number of arguments.")
 	}
 
@@ -215,6 +215,10 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 
 	// Return
 	return shim.Success(dByte)
+}
+
+func (C *Chaincode) donateWithXXXX(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	
 }
 
 // getHistory แสดงรายการการเปลี่ยนแปลง ของ key นั้นๆ
