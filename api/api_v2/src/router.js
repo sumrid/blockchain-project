@@ -38,9 +38,10 @@ router.post('/withdraw', transferController.withdrawFromProject);
 router.post('/user', userController.regisUser);
 router.get('/users', userController.getAllUsers);
 router.get('/user/:id', userController.getUser);
-router.get('/user/:id/uid', userController.getUser);
 router.put('/user/:id', userController.updateUser);
-router.delete('/user/:id', userController.deleteUser)
+router.post('/user/:id/rating', userController.rating);
+router.get('/user/:id/uid', userController.getUser);
+router.delete('/user/:id', userController.deleteUser);
 router.put('/user/:id/verify/idcard', userController.verifyUserIDCard);
 router.get('/user/:id/project', userController.getProjects);
 router.get('/user/:id/donation', userController.getDonations);

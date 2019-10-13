@@ -155,6 +155,10 @@ async function sendEmail(email, link) {
     }
 }
 
+async function addRating(rater, user, rate) {
+    await db.collection('rating').doc().set({rater, user, rate});
+}
+
 // ####################
 // #      QR code
 // ####################
@@ -191,5 +195,6 @@ module.exports = {
     sendConfirmEmail,
     deleteUser,
     saveQR,
-    deleteQR
+    deleteQR,
+    addRating
 }

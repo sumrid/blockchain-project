@@ -179,7 +179,31 @@ async function getReceiveProject(req, res) {
     }
 }
 
+async function rating(req, res) {
+    try {
+        const user = req.params.id;
+        const rater = req.body.rater;
+        const rate = req.body.rate;
+
+        await firebase.addRating(rater, user, rate);
+
+        res.json(req.body);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
+async function getRate(req, res) {
+    try {
+        const id = req.params.id;
+        
+    } catch (error) {
+        
+    }
+}
+
 module.exports = {
+    rating,
     getUser,
     regisUser,
     deleteUser,

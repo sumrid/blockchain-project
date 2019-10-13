@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon src/main.js",
     "start": "node src/main.js",
-    "test": "jest --coverage --forceExit"
+    "test": "jest --coverage --forceExit",
+    "init": "node src/init/syncUser.js"
   },
   "keywords": [
     "api"
