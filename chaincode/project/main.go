@@ -33,13 +33,14 @@ type Project struct {
 
 // Donation ข้อมูลของการบริจาค
 type Donation struct {
-	ID string `json:"id"`
+	ID          string    `json:"id"`
 	TxID        string    `json:"txid"`        // Transaction ID ของการบริจาคครั้งนั้น
 	UserID      string    `json:"user"`        // uid ของผู้บริจาคเงิน
 	DisplayName string    `json:"displayname"` // ชื่อที่จะแสดงบนรายการบริจาค
 	ProjectID   string    `json:"project"`     // uid ของโปรเจค
 	Amount      float64   `json:"amount"`      // จำนวนเงินที่การบริจาคมาในครั้งหนี่ง
 	Time        time.Time `json:"time"`        // เวลาที่ทำการบริจาค
+	Method      string    `json:"method"`
 	Type        string    `json:"type"`
 }
 
@@ -119,6 +120,8 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return C.createProject(stub, args)
 	} else if fn == "donate" { // ทำการบริจาคเงินให้กับโครงการ
 		return C.donate(stub, args)
+	} else if fn == "donateWithWallet" {
+		return C.donateWithWallet(stub, args)
 	} else if fn == "getHistory" { // ...
 		return C.getHistory(stub, args)
 	} else if fn == "closeProject" { // เปลี่ยนสถานะโครงการเป็นปิด เมื่อเวลาหมดลง

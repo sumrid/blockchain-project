@@ -71,7 +71,6 @@ func (C *Chaincode) updateUserVerify(stub shim.ChaincodeStubInterface, args []st
 	// Update
 	usr.Verify = vfy
 
-	
 	usrAsByte, err = json.Marshal(usr)
 	if err != nil {
 		return shim.Error(err.Error())

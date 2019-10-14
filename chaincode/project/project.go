@@ -217,8 +217,66 @@ func (C *Chaincode) donate(stub shim.ChaincodeStubInterface, args []string) peer
 	return shim.Success(dByte)
 }
 
-func (C *Chaincode) donateWithXXXX(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	
+func (C *Chaincode) donateWithWallet(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	usrID := args[0]
+	prjID := args[1]
+	amount, err := strconv.ParseFloat(args[2], 64)
+	disName := args[3]
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	donation := Donation{}
+	donation.ID = "donation_" + stub.GetTxID()
+	donation.TxID = stub.GetTxID()
+	donation.UserID = usrID
+	donation.DisplayName = disName
+	donation.ProjectID = prjID
+	donation.Amount = amount
+	t, _ := stub.GetTxTimestamp()
+	donation.Time = time.Unix(t.GetSeconds(), 0)
+	donation.Method = "wallet"
+	donation.Type = "donation"
+
+	usr := User{}
+	prj := Project{}
+
+	usrAsByte, _ := stub.GetState(prjID)
+	prjAsByte, _ := stub.GetState(prjID)
+
+	if usrAsByte == nil {
+		return shim.Error("User not fond.")
+	}
+	if prjAsByte == nil {
+		return shim.Error("Project not fond.")
+	}
+
+	err = json.Unmarshal(usrAsByte, &usr)
+	err = json.Unmarshal(prjAsByte, &prj)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	if (usr.Balance < amount) {
+		return shim.Error("Not enough money.")
+	}
+
+	usr.Balance -= amount
+	prj.Balance += amount
+	prj.Accumulated += amount
+
+	usrAsByte, err = json.Marshal(usr)
+	prjAsByte, err = json.Marshal(prj)
+	dntAsByte, err := json.Marshal(donation)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	stub.PutState(usr.ID, usrAsByte)
+	stub.PutState(prj.ID, prjAsByte)
+	stub.PutState(donation.ID, dntAsByte)
+
+	return shim.Success(dntAsByte)
 }
 
 // getHistory แสดงรายการการเปลี่ยนแปลง ของ key นั้นๆ
