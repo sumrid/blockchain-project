@@ -93,6 +93,7 @@ async function getUser(req, res) {
                 res.json({ ...user, ...userBlock });
             }
             else {
+                console.info(`[service] [getUser]: user not in wallet`);
                 res.status(404).json({ message: "user not found." });
             }
         } else {
@@ -181,13 +182,28 @@ async function getReceiveProject(req, res) {
 
 async function rating(req, res) {
     try {
-        const user = req.params.id;
+        const creator = req.params.id;
         const rater = req.body.rater;
         const rate = req.body.rate;
+        const user = await firebase.getUserData(creator);
+        await firebase.addRating(rater, creator, rate);
 
-        await firebase.addRating(rater, user, rate);
+        // if (user) {
+        //     // const num = user.num_rating || 0;
+        //     // const avg = user.avg_rating || 0;
 
-        res.json(req.body);
+        //     // num += 1;
+        //     // avg = (avg + rate) / num;
+
+        //     // user.num_rating = num;
+        //     // user.avg_rating = avg;
+
+        //     res.json(user);
+        // } else {
+
+        // }
+
+        res.json({creator, rater, rate});
     } catch (error) {
         res.status(500).json(error);
     }
@@ -196,15 +212,28 @@ async function rating(req, res) {
 async function getRate(req, res) {
     try {
         const id = req.params.id;
-        
+        const rating = await firebase.getRatingByCreator(id);
+        if (rating.length > 0) {
+            const num_rating = rating.length;
+            let avg_rating = 0;
+            let total_rate = 0;
+            rating.forEach(item => {
+                total_rate += item.rate;
+            });
+            avg_rating = total_rate / num_rating;
+            res.json({avg_rating, total_rate, num_rating});
+        } else {
+            res.status(404).json({});
+        }
     } catch (error) {
-        
+        res.status(500).json(error);
     }
 }
 
 module.exports = {
     rating,
     getUser,
+    getRate,
     regisUser,
     deleteUser,
     updateUser,

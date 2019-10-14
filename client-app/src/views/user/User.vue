@@ -8,7 +8,7 @@
             <img
               align="left"
               class="fb-image-lg"
-              src="http://lorempixel.com/850/280/nightlife/5/"
+              src="@/assets/cover2.jpg"
               alt="Profile image example"
             />
             <img

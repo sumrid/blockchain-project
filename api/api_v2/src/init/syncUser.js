@@ -12,8 +12,6 @@ const ccpPath = path.resolve(__dirname, '..', 'connection_profile', ccpFile);
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
 const ccp = JSON.parse(ccpJSON);
 
-// Set org
-ccp.client.organization = process.env.ORG || 'Org1';
 
 const WALLET = process.env.WALLET || 'wallet1';
 const walletPath = path.join(process.cwd(), '..', WALLET);
@@ -25,6 +23,8 @@ const CHANNEL = 'donation';  // ชื่อ channel
 const CONTRACT = 'mychaincode'; // ชื่อ chaincode
 const MSP = 'Org1MSP';
 const AFFILIATION = 'org1.department1';
+// Set org
+ccp.client.organization = process.env.ORG || 'Org1';
 
 async function main() {
     const list = await auth().listUsers();

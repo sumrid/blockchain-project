@@ -40,6 +40,7 @@ router.get('/users', userController.getAllUsers);
 router.get('/user/:id', userController.getUser);
 router.put('/user/:id', userController.updateUser);
 router.post('/user/:id/rating', userController.rating);
+router.get('/user/:id/rating', userController.getRate);
 router.get('/user/:id/uid', userController.getUser);
 router.delete('/user/:id', userController.deleteUser);
 router.put('/user/:id/verify/idcard', userController.verifyUserIDCard);

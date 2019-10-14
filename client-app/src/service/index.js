@@ -108,6 +108,24 @@ async function updateUser(uid, data) {
     }
 }
 
+async function getCreatorRating(uid) {
+    try {
+        const res = await axios.get(DONATOR_API + `/api/user/${uid}/rating`);
+        return res.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function sendRating(creator, rater, rate) {
+    await axios.post(DONATOR_API + `/api/user/${creator}/rating`, {rater, rate});
+}
+
+async function isRate(creator, rater) {
+    const res = await axios.get();
+    return res.data;
+}
+
 /**
  * donate ทำการบริจาคไปยังโครงการที่ต้องการ
  * 
@@ -257,7 +275,9 @@ async function getProjectsInfo() {
 export default {
     getTx,
     donate,
+    isRate,
     getEvents,
+    sendRating,
     updateUser,
     getInvoice,
     getUserInfo,
@@ -273,6 +293,7 @@ export default {
     getInvoiceByID,
     checkUserExists,
     getProjectsInfo,
+    getCreatorRating,
     getDonationHistory,
     updateProjectStatus,
     getDonationByUserID,

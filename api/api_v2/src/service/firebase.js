@@ -75,13 +75,20 @@ async function registerUser(name, email, password) {
     }
 }
 
+async function getUserData(uid) {
+    const user = await db.collection('users').doc(uid).get();
+    return user.data();
+}
+
 async function setUser(uid, name, role) {
     try {
         const data = {
             uid: uid,
             name: name,
             role: role,
-            verify: 0
+            verify: 0,
+            avg_rating: 0,
+            num_rating: 0
         }
         await db.collection('users').doc(uid).set(data);
     } catch (error) {
@@ -155,8 +162,22 @@ async function sendEmail(email, link) {
     }
 }
 
-async function addRating(rater, user, rate) {
-    await db.collection('rating').doc().set({rater, user, rate});
+async function addRating(rater, creator, rate) {
+    await db.collection('rating').doc(`${creator}_${rater}`).set({rater, creator, rate});
+}
+
+async function getRating(creator, rater) {
+    const res = await db.collection('rating').doc(`${creator}_${rater}`).get();
+    return res.data();
+}
+
+async function getRatingByCreator(uid) {
+    const res = await db.collection('rating').where('creator', '==', uid).get();
+    const ratings = [];
+    res.forEach(doc => {
+        ratings.push(doc.data());
+    });
+    return ratings;
 }
 
 // ####################
@@ -190,11 +211,14 @@ module.exports = {
     registerUser,
     updateUser,
     setUser,
+    getUserData,
     getUserByUID,
     getUserByEmail,
     sendConfirmEmail,
     deleteUser,
     saveQR,
     deleteQR,
-    addRating
+    addRating,
+    getRating,
+    getRatingByCreator
 }
