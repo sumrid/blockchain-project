@@ -95,6 +95,7 @@ type Invoice struct {
 	Type         string    `json:"type"`
 	TxID         string    `json:"txid"`
 	Verified     bool      `json:"verified"`
+	AddBy        string    `json:"add_by"`
 }
 
 var logger = shim.NewLogger("chaincode")

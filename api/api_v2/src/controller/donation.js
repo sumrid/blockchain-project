@@ -14,11 +14,29 @@ async function donate(req, res) {
         const donation = req.body;
         donation.time = moment().toDate().toISOString();
 
+        if (donation.method == "wallet") {
+            await donateWithWallet(res, donation);
+        }
+
         const result = await service.donate(user, donation);
         const payload = JSON.parse(String(result));
         res.json(payload);
     } catch (err) {
         res.status(500).json(err);
+    }
+}
+
+async function donateWithWallet(res, donation) {
+    try {
+        const user = donation.user || 'user1';
+        const project = donation.project;
+        const amount = donation.amount;
+        const displayname = donation.displayname;
+        const result = await service.donateWithWallet(user, project, amount, displayname);
+        const payload = JSON.parse(String(result));
+        res.json(payload);
+    } catch (error) {
+        res.status(500).json(error);
     }
 }
 

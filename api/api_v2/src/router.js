@@ -8,6 +8,7 @@ const projectController = require('./controller/project');
 const donationController = require('./controller/donation');
 const transferController = require('./controller/transfer');
 
+router.get('/tx/:txid', contorller.getTx);
 router.get('/query/:key', contorller.query);
 
 router.put('/project', projectController.updateProject);
@@ -48,7 +49,6 @@ router.get('/user/:id/project', userController.getProjects);
 router.get('/user/:id/donation', userController.getDonations);
 router.get('/user/:id/receive', userController.getReceiveProject);
 
-router.get('/tx/:txid', contorller.getTx);
 router.get('/', (req, res) => {
     res.send('Hello world! from home');
 });

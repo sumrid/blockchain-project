@@ -46,6 +46,7 @@ async function main() {
 }
 
 async function addToBlock(uid, role) {
+    console.info(`[info] add user: ${uid} to block`);
     try {
         const userExists = await wallet.exists('admin');
         if (!userExists) {
@@ -57,13 +58,16 @@ async function addToBlock(uid, role) {
         const contract = network.getContract(CONTRACT);
     
         await contract.submitTransaction('addUser', uid, role); // add user
-        console.info(`user: ${uid} add to block`);
+        console.info(`[info] user: ${uid} add to block success.`);
     } catch (error) {
+        console.error(error);
         throw error;
     }
 }
 
 async function regisToWallet(uid) {
+    console.info(`[info] add user: ${uid} to wallet`);
+
     const userExists = await wallet.exists(uid);
     if (userExists) {
         console.log(`[info] An identity for the user ${uid} already exists in the wallet`);

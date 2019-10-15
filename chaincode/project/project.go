@@ -241,7 +241,7 @@ func (C *Chaincode) donateWithWallet(stub shim.ChaincodeStubInterface, args []st
 	usr := User{}
 	prj := Project{}
 
-	usrAsByte, _ := stub.GetState(prjID)
+	usrAsByte, _ := stub.GetState(usrID)
 	prjAsByte, _ := stub.GetState(prjID)
 
 	if usrAsByte == nil {
@@ -258,7 +258,7 @@ func (C *Chaincode) donateWithWallet(stub shim.ChaincodeStubInterface, args []st
 	}
 
 	if (usr.Balance < amount) {
-		return shim.Error("Not enough money.")
+		return shim.Error("Not enough money in wallet.")
 	}
 
 	usr.Balance -= amount

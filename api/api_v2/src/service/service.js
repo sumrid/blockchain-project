@@ -28,6 +28,7 @@ const FN_CLOSE_PROJECT = 'closeProject';
 const FN_UPDATE_PROJECT = 'updateProject'
 const FN_CREATE_PROJECT = 'createProject';
 const FN_DELETE_PROJECT = 'deleteProject';
+const FN_DONATE_WALLET = 'donateWithWallet';
 const FN_UPDATE_USER_VERIFY = 'updateUserVerify';
 const FN_ADD_INVOICE = 'addInvioceAndTransfer';
 const FN_UPDATE_PROJECT_STATUS = 'updateStatus';
@@ -269,6 +270,16 @@ async function donate(userID, donation) {
     }
 }
 
+async function donateWithWallet(user, project, amount, displayname) {
+    try {
+        const contract = await getContractOrg(user);
+        const result = await contract.submitTransaction(FN_DONATE_WALLET, user, project, amount.toString(), displayname);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
 // #####################
 // #        User
 // #####################
@@ -403,6 +414,7 @@ module.exports = {
     createProject,
     updateProject,
     deleteProject,
+    donateWithWallet,
     updateProjectStatus,
     changeUserVerifyState,
     deleteUser,
