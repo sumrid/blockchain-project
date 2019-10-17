@@ -203,7 +203,7 @@ async function rating(req, res) {
 
         // }
 
-        res.json({creator, rater, rate});
+        res.json({ creator, rater, rate });
     } catch (error) {
         res.status(500).json(error);
     }
@@ -217,11 +217,36 @@ async function getRate(req, res) {
             const num_rating = rating.length;
             let avg_rating = 0;
             let total_rate = 0;
+            let one_star = 0;
+            let two_star = 0;
+            let three_star = 0;
+            let four_star = 0;
+            let five_star = 0;
+
             rating.forEach(item => {
                 total_rate += item.rate;
+                switch (item.rate) {
+                    case 1:
+                        one_star++;
+                        break;
+                    case 2:
+                        two_star++;
+                        break;
+                    case 3:
+                        three_star++;
+                        break;
+                    case 4:
+                        four_star++;
+                        break;
+                    case 5:
+                        five_star++;
+                        break;
+                    default:
+                        break;
+                }
             });
             avg_rating = total_rate / num_rating;
-            res.json({avg_rating, total_rate, num_rating});
+            res.json({ avg_rating, total_rate, num_rating, one_star, two_star, three_star, four_star, five_star });
         } else {
             res.status(404).json({});
         }

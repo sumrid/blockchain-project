@@ -26,7 +26,10 @@
               <span class="heading">User Rating</span>
               <star :rating="rating.avg_rating" :increment="0.01" read-only></star>
               <small>จากผู้ใช้ {{rating.num_rating}} คน</small>
+              <p>5 star</p> <b-progress :value="rating.five_star" :max="rating.num_rating" variant="success"></b-progress>
+
               <hr>
+              <!-- login แล้ว -->
               <b-card title="ให้คะแนน" v-if="getUser">
                 <star :star-size="20" v-model="form.rate"></star>
                 <p v-if="form.rate">คุณเลือก {{form.rate}} คะแนน</p>
@@ -36,6 +39,8 @@
                   <b-spinner small type="grow" label="Loading..."></b-spinner> กำลังให้คะแนน
                 </b-button>
               </b-card>
+
+              <!-- ยังไม่ login -->
               <b-card title="ให้คะแนน" v-else>
                 <b-alert show variant="warning">กรุณาเข้าสู่ระบบเพื่อทำการให้คะแนน</b-alert>
                 <star :star-size="20" v-model="form.rate"></star>
@@ -47,6 +52,8 @@
             <b-tab title="ตรวจสอบความเคลื่อนไหว"></b-tab>
           </b-tabs>
         </div>
+
+        <!-- infomation -->
         <div class="col-sm-4">
           <b-card header="Profile">
             <div class="panel-body">
