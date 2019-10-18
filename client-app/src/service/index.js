@@ -126,6 +126,10 @@ async function isRate(creator, rater) {
     return res.data;
 }
 
+async function sendConfirmEmail(email) {
+    await axios.get(`${DONATOR_API}/api/user/${email}/send-confirm-email`);
+}
+
 /**
  * donate ทำการบริจาคไปยังโครงการที่ต้องการ
  * 
@@ -294,6 +298,7 @@ export default {
     checkUserExists,
     getProjectsInfo,
     getCreatorRating,
+    sendConfirmEmail,
     getDonationHistory,
     updateProjectStatus,
     getDonationByUserID,

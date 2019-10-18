@@ -48,6 +48,7 @@ router.put('/user/:id/verify/idcard', userController.verifyUserIDCard);
 router.get('/user/:id/project', userController.getProjects);
 router.get('/user/:id/donation', userController.getDonations);
 router.get('/user/:id/receive', userController.getReceiveProject);
+router.get('/user/:email/send-confirm-email', userController.sendConfirmEmail);
 
 router.get('/', (req, res) => {
     res.send('Hello world! from home');

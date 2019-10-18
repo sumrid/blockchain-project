@@ -9,14 +9,21 @@
 
           <h4>E-mail</h4>
           <b-alert variant="success" v-if="user.emailVerified" show>ยืนยัน E-mail เรียบร้อยแล้ว</b-alert>
-          <b-alert show variant="danger" v-else>กรุณายืนยัน E-mail {{user.email}}</b-alert>
+          <template v-else>
+            <b-alert show variant="danger">กรุณายืนยัน E-mail {{user.email}}</b-alert>
+            <b-button variant="outline-primary" @click="sendEmail" v-if="!isSent">Resend e-mail</b-button>
+            <b-button variant="outline-primary"  v-else disabled>ส่ง email แล้ว</b-button>
+          </template>
 
           <hr />
 
           <h4>บัตรประชาชน</h4>
           <template v-if="userInfo.id_card_img">
-            
-            <b-alert variant="success" show v-if="userInfo.verifyIDCard">ยืนยันบัตรแล้ว <br>รหัสธุรกรรม: {{userInfo.verifyID_tx}}</b-alert>
+            <b-alert variant="success" show v-if="userInfo.verifyIDCard">
+              ยืนยันบัตรแล้ว
+              <br />
+              รหัสธุรกรรม: {{userInfo.verifyID_tx}}
+            </b-alert>
             <b-alert variant="warning" show v-else>รอการยืนยัน</b-alert>
             <!-- ID card image -->
             <div class="row">
@@ -76,7 +83,6 @@
               </div>
             </b-form>
           </template>
-
           {{userInfo}}
         </div>
       </div>
@@ -97,7 +103,8 @@ export default {
       userInfo: {},
       file: null,
       isUploading: false,
-      isLoadingCardSubmit: false
+      isLoadingCardSubmit: false,
+      isSent: false
     };
   },
   computed: {
@@ -140,6 +147,14 @@ export default {
       } catch (error) {
         console.error(error);
         this.isLoadingCardSubmit = false;
+      }
+    },
+    async sendEmail() {
+      try {
+        await service.sendConfirmEmail(this.user.email);
+        this.isSent = true;
+      } catch (error) {
+        console.error(error);
       }
     }
   }

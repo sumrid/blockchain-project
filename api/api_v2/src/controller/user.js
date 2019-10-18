@@ -255,6 +255,16 @@ async function getRate(req, res) {
     }
 }
 
+async function sendConfirmEmail(req, res) {
+    try {
+        const email = req.params.email;
+        firebase.sendConfirmEmail(email);
+        res.json({email});
+    } catch (error) {
+        res.status(500).json(error);        
+    }
+}
+
 module.exports = {
     rating,
     getUser,
@@ -265,6 +275,7 @@ module.exports = {
     getAllUsers,
     getProjects,
     getDonations,
+    sendConfirmEmail,
     verifyUserIDCard,
     getReceiveProject,
 }
