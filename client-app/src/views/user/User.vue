@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- profile image -->
-    <div class="container-fluid">
+    <div>
       <div class="row">
         <div class="col">
           <div class="fb-profile">

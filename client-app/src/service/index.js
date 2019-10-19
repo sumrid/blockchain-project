@@ -2,7 +2,7 @@ import axios from 'axios';
 import { API_IP , PROTOCOL} from '../util';
 import { firestore } from 'firebase';
 
-const DONATOR_API = `${PROTOCOL}//${API_IP}:8000`;
+const MAIN_API = `${PROTOCOL}//${API_IP}:8000`;
 const CREATOR_API = `${PROTOCOL}//${API_IP}:8001`;
 const RECEIVER_API = `${PROTOCOL}//${API_IP}:8002`;
 
@@ -17,7 +17,7 @@ const REVENUE_API = `${PROTOCOL}//${API_IP}:8080`;
  */
 async function createProject(project) {
     try {
-        const res = await axios.post(CREATOR_API + '/api/project', project);
+        const res = await axios.post(MAIN_API + '/api/project', project);
         return res.data;
     } catch (err) {
         throw err;
@@ -25,7 +25,7 @@ async function createProject(project) {
 }
 
 async function updateProject(project) {
-    const res = await axios.put(DONATOR_API + '/api/project', project);
+    const res = await axios.put(MAIN_API + '/api/project', project);
     return res.data;
 }
 
@@ -35,7 +35,7 @@ async function updateProjectStatus(user, project, status) {
         project: project,
         status: status
     }
-    const res = await axios.post(RECEIVER_API + '/api/project/update/status', body);
+    const res = await axios.post(MAIN_API + '/api/project/update/status', body);
     return res.data;
 }
 
@@ -45,7 +45,7 @@ async function updateProjectStatus(user, project, status) {
  */
 async function getProjects() {
     try {
-        const res = await axios.get(DONATOR_API + '/api/project');
+        const res = await axios.get(MAIN_API + '/api/project');
         return res.data;
     } catch (err) {
         throw err;
@@ -58,7 +58,7 @@ async function getProjects() {
  */
 async function getProjectByID(id) {
     try {
-        const res = await axios.get(DONATOR_API + '/api/query/' + id);
+        const res = await axios.get(MAIN_API + '/api/query/' + id);
         return res.data;
     } catch (err) {
         throw err;
@@ -70,7 +70,7 @@ async function getProjectByID(id) {
 // #################
 async function getUserByID(uid) {
     try {
-        const res = await axios.get(`${DONATOR_API}/api/user/${uid}`);
+        const res = await axios.get(`${MAIN_API}/api/user/${uid}`);
         return res.data;
     } catch (error) {
         throw error;
@@ -79,7 +79,7 @@ async function getUserByID(uid) {
 
 async function getMyProject(uid) {
     try {
-        const res = await axios.get(CREATOR_API + '/api/user/' + uid + '/project');
+        const res = await axios.get(MAIN_API + '/api/user/' + uid + '/project');
         return res.data;
     } catch (err) {
         throw err;
@@ -88,7 +88,7 @@ async function getMyProject(uid) {
 
 async function getMyReceive(uid) {
     try {
-        const res = await axios.get(RECEIVER_API + '/api/user/' + uid + '/receive');
+        const res = await axios.get(MAIN_API + '/api/user/' + uid + '/receive');
         return res.data;
     } catch (err) {
         throw err;
@@ -96,13 +96,13 @@ async function getMyReceive(uid) {
 }
 
 async function checkUserExists(user) {
-    const res = await axios.get(RECEIVER_API + `/api/user/${user}`);
+    const res = await axios.get(MAIN_API + `/api/user/${user}`);
     return res.data;
 }
 
 async function updateUser(uid, data) {
     try {
-        await axios.put(CREATOR_API + `/api/user/${uid}`, data);
+        await axios.put(MAIN_API + `/api/user/${uid}`, data);
     } catch (error) {
         throw error;
     }
@@ -110,7 +110,7 @@ async function updateUser(uid, data) {
 
 async function getCreatorRating(uid) {
     try {
-        const res = await axios.get(DONATOR_API + `/api/user/${uid}/rating`);
+        const res = await axios.get(MAIN_API + `/api/user/${uid}/rating`);
         return res.data;
     } catch (error) {
         throw error;
@@ -118,7 +118,7 @@ async function getCreatorRating(uid) {
 }
 
 async function sendRating(creator, rater, rate) {
-    await axios.post(DONATOR_API + `/api/user/${creator}/rating`, {rater, rate});
+    await axios.post(MAIN_API + `/api/user/${creator}/rating`, {rater, rate});
 }
 
 async function isRate(creator, rater) {
@@ -127,7 +127,7 @@ async function isRate(creator, rater) {
 }
 
 async function sendConfirmEmail(email) {
-    await axios.get(`${DONATOR_API}/api/user/${email}/send-confirm-email`);
+    await axios.get(`${MAIN_API}/api/user/${email}/send-confirm-email`);
 }
 
 /**
@@ -137,7 +137,7 @@ async function sendConfirmEmail(email) {
  */
 async function donate(donation) {
     try {
-        const res = await axios.post(DONATOR_API + '/api/project/donate', donation);
+        const res = await axios.post(MAIN_API + '/api/project/donate', donation);
         return res.data;
     } catch (err) {
         throw err;
@@ -150,7 +150,7 @@ async function donate(donation) {
  */
 async function getDonationHistory(projectID) {
     try {
-        const res = await axios.get(`${DONATOR_API}/api/project/${projectID}/donations`);
+        const res = await axios.get(`${MAIN_API}/api/project/${projectID}/donations`);
         return res.data;
     } catch (err) {
         throw err;
@@ -164,7 +164,7 @@ async function getDonationHistory(projectID) {
  */
 async function getDonationByUserID(uid) {
     try {
-        const res = await axios.get(`${DONATOR_API}/api/user/${uid}/donation`);
+        const res = await axios.get(`${MAIN_API}/api/user/${uid}/donation`);
         return res.data;
     } catch (err) {
         throw err;
@@ -173,7 +173,7 @@ async function getDonationByUserID(uid) {
 
 async function getEvents(uid) {
     try {
-        const res = await axios.get(`${DONATOR_API}/api/project/${uid}/events`);
+        const res = await axios.get(`${MAIN_API}/api/project/${uid}/events`);
         return res.data;
     } catch (error) {
         throw error;
@@ -182,7 +182,7 @@ async function getEvents(uid) {
 
 async function getInvoice(uid) {
     try {
-        const res = await axios.get(`${DONATOR_API}/api/project/${uid}/invoice`);
+        const res = await axios.get(`${MAIN_API}/api/project/${uid}/invoice`);
         return res.data;
     } catch (error) {
         throw error;
@@ -202,7 +202,7 @@ async function sendInvoice(user, project, invoice) {
             project: project,
             invoice: invoice
         }
-        const res = await axios.post(`${CREATOR_API}/api/invoice`, req);
+        const res = await axios.post(`${MAIN_API}/api/invoice`, req);
         return res.data;
     } catch (error) {
         console.log(error);
@@ -212,7 +212,7 @@ async function sendInvoice(user, project, invoice) {
 
 async function getTx(txid) {
     try {
-        const res = await axios.get(`${CREATOR_API}/api/tx/${txid}`);
+        const res = await axios.get(`${MAIN_API}/api/tx/${txid}`);
         return res.data;
     } catch (error) {
         throw error;

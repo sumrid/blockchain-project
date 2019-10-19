@@ -1,6 +1,6 @@
 <template>
-  <div class="container-fluid">
-    <footer id="footer" class="footer-1">
+  <div>
+    <footer id="footer">
       <div class="main-footer widgets-dark typo-light">
         <div class="container">
           <div class="row">
