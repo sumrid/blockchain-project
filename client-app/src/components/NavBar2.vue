@@ -29,9 +29,9 @@
       <b-navbar-nav class="ml-auto" v-if="!getUser">
         <!-- item group user -->
         <li class="nav-item">
-          <a class="nav-link" href="#">
+          <router-link class="nav-link" to="/regis">
             <icon icon="user-secret" />Sign Up
-          </a>
+          </router-link>
         </li>
         <li class="nav-item">
           <a class="nav-link" href @click.prevent="showModal">

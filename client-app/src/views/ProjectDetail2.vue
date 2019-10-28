@@ -376,7 +376,7 @@ export default {
       form: {
         user: "", // user uid
         amount: "",
-        displayname: "", // user displayName
+        displayname: "" // user displayName
       },
       card: {},
       svg: null,
@@ -452,6 +452,7 @@ export default {
         console.log("get data from DB");
         console.log(info);
         this.info = info;
+        document.title = "Donate-web | " + this.info.title;
       });
     },
     getDontions: function(ID) {

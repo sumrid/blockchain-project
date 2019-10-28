@@ -70,6 +70,9 @@ export default {
     this.projects = await service.getProjects();
     this.info = await service.getProjectsInfo();
   },
+  created() {
+    document.title = "Donate-Web | หน้าแรก";
+  },
   methods: {
     updateTime: function(end) {
       const endtime = moment(end, moment.ISO_8601);

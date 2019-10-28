@@ -6,13 +6,16 @@ import Owner from "./views/Owner.vue";
 import HomeV2 from './views/Home2.vue'
 import Me from '@/views/user/User.vue';
 import Contact from './views/Contact.vue';
+import Regis from './views/user/Regis.vue';
 import SendInvoice from './views/SendInvoice';
 import Withdraw from './views/WithdrawFromProject';
+import RegisUser from './views/user/RegisUser.vue';
 import EditProject from './views/EditProject.vue';
 import QRCodeReader from './views/QRCodeReader.vue';
 import CreateProject from './views/CreateProject.vue';
 import EditProfile from './views/user/EditProfile.vue';
 import ProjectDetail2 from './views/ProjectDetail2.vue';
+import RegisCreator from './views/user/RegisCreator.vue';
 import ConfirmDonation from './views/ConfirmDonation.vue';
 import ConfirmProject from './views/receiver/ConfirmProject.vue';
 import auth from './firebase';
@@ -117,6 +120,21 @@ export default new Router({
       name: 'owner',
       component: Owner,
       props: true
+    },
+    {
+      path: '/regis',
+      name: 'regis',
+      component: Regis
+    },
+    {
+      path: '/regis/user',
+      name: 'regisUser',
+      component: RegisUser,
+    },
+    {
+      path: '/regis/creator',
+      name: 'regisCreator',
+      component: RegisCreator
     }
   ]
 })
