@@ -23,7 +23,7 @@
                 <ul class="thumbnail-widget">
                   <li>
                     <div class="thumb-content">
-                      <a href="#">หน้าแรก</a>
+                      <router-link to="/">หน้าแรก</router-link>
                     </div>
                     <!-- ฟังก์ชั่นเลื่อนไปข้างบนสุด -->
                   </li>
@@ -68,7 +68,7 @@
                   <span></span>
                 </h5>
                 <p>สมัครสมาชิก เพื่อรับความโปร่งใสในการบริจาค ที่นี่!</p>
-                <a class="btn" href="#." target="_blank">สมัครสมาชิก</a>
+                <router-link class="btn" to="/regis" target="_blank">สมัครสมาชิก</router-link>
               </div>
             </div>
 

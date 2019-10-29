@@ -34,10 +34,19 @@
               <b-form-input required type="password" :state="isMatch" v-model="form.rePass"></b-form-input>
             </b-form-group>
 
-            <b-button type="submit" block :disabled="!canRegis">ลงทะเบียน</b-button>
+            <b-button block disabled v-if="isLoading">
+              <b-spinner small type="grow"></b-spinner>กำลังลงทะเบียน
+            </b-button>
+            <b-button type="submit" block :disabled="!canRegis" v-else>ลงทะเบียน</b-button>
           </b-form>
         </b-col>
       </b-row>
+
+      <!-- regis success modal -->
+      <b-modal id="success-modal" title="ลงทะเบียนสำเร็จ" hide-footer="true" hide-header="true" @close="toHome" @hide="toHome">
+        <p>กรุณากดยืนยันการลงทะเบียนใน E-mail ที่ใช้ลงทะเบียน</p>
+        <b-button block @click="toHome">ตกลง</b-button>
+      </b-modal>
     </div>
     <my-footer />
   </div>
@@ -72,7 +81,7 @@ export default {
       }
     },
     canRegis() {
-        return this.isMatch;
+      return this.isMatch;
     }
   },
   created() {
@@ -80,18 +89,36 @@ export default {
   },
   methods: {
     async onSubmit() {
+      this.isLoading = true;
       const url = `${PROTOCOL}//${API_IP}:8000/api/user`;
       const form = this.form;
       try {
-        const res = await axios.post(url, form);
-        const body = {
-            name: `${form.name} ${form.lastname}`,
-            email: form.email
-        }
-        await axios.put(`${url}/${res.data.user.uid}`, body);
+        // regis user
+        const Regisbody = {
+          name: `${form.name} ${form.lastname}`,
+          email: form.email,
+          password: form.pass,
+          role: "donator"
+        };
+        const res = await axios.post(url, Regisbody);
+
+        // add user data
+        const userData = {
+          name: `${form.name} ${form.lastname}`,
+          email: form.email
+        };
+        await axios.put(`${url}/${res.data.user.uid}`, userData);
+
+        this.form = {};
+        this.isLoading = false;
+        this.$bvModal.show("success-modal");
       } catch (error) {
-          console.error(error);
+        this.isLoading = false;
+        console.error(error);
       }
+    },
+    toHome() {
+      this.$router.replace("/");
     }
   }
 };

@@ -30,6 +30,7 @@
     "vue-credit-card-field": "^0.3.14",
     "vue-currency-filter": "^3.4.2",
     "vue-currency-input": "^1.8.3",
+    "vue-phone-number-input": "^0.2.6",
     "vue-qrcode-reader": "^2.0.3",
     "vue-router": "^3.0.3",
     "vue-star-rating": "^1.6.1",

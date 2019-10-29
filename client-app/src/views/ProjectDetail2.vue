@@ -107,6 +107,7 @@
               </b-table-simple>
             </b-tab>
             <b-tab title="ความเคลื่อนไหวโครงการ">
+              <!--
               <div class="activity-feed">
                 <div class="feed-item" v-for="(e, index) in events" :key="index">
                   <div class="col-md-8 col-sm-12 col-xs-12 morningdetail">
@@ -136,6 +137,8 @@
                   </div>
                 </div>
               </div>
+              -->
+              <events :events="events" />
             </b-tab>
             <b-tab title="ติดต่อโครงการ">
               <h3 class="text-center text-uppercase">contact us</h3>
@@ -350,6 +353,7 @@
 
 <script>
 import myFooter from "@/components/Footer";
+import Events from '../components/EventItem';
 import auth from "@/firebase";
 const axios = require("axios");
 import { API_IP, PROTOCOL } from "@/util";
@@ -360,6 +364,7 @@ import credit from "vue-credit-card-field";
 
 export default {
   components: {
+    Events,
     myFooter,
     CreditCardField: credit.CreditCardField,
     InlineCreditCardField: credit.InlineCreditCardField
@@ -694,6 +699,7 @@ a + a {
 }
 
 /* Event */
+/*
 .morningdetail {
   background-color: #3a3c45;
   border-radius: 12px;
@@ -705,7 +711,6 @@ a + a {
 
 .activity-feed {
   padding: 1rem;
-  /* margin-top: 120px; */
 }
 
 .activity-feed .feed-item {
@@ -728,6 +733,7 @@ a + a {
   background: #fff;
   border: 1px solid #e2b104;
 }
+*/
 
 /* -------------- pricing ----------------- */
 .pricingTable {
