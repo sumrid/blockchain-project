@@ -1,27 +1,29 @@
 <template>
   <div>
     <!-- Clarity Section -->
-    <div class="container" style="background-color:#f1f1f1">
-      <div class="row">
-        <div class="column-33">
-          <img
-            src="https://d2e111jq13me73.cloudfront.net/sites/default/files/styles/blog_article/public/blog/csm-blog/raise-kid-conscience2-blog-1138x658.jpg?itok=VUcKiAz8"
-            alt="App"
-            width="335"
-            height="471"
-          />
-        </div>
-        <div class="column-66">
-          <h1 class="xlarge-font">
-            <b>ช่วยเหลือเด็กๆ</b>
-          </h1>
-          <h1 class="large-font" style="columns: #ff8d1e;">
-            <b>ขาดสารอาหารทั่วประเทศ</b>
-          </h1>
-          <p>
-            <span style="font-size:24px">โรคขาดสารอาหาร</span> เป็นภาวะที่ร่างกายขาดสารอาหารและอาจทำให้เกิดปัญหาสุขภาพตามมา โดยอาจมีอาการ เช่น อ่อนเพลีย ผิวหนังมีลักษณะผิดปกติ กระดูกหยุดเจริญเติบโต หรือมีภาวะสมองเสื่อม เป็นต้น ซึ่งโรคขาดสารอาหารมักเกิดขึ้นเมื่อร่างกายได้รับสารอาหารที่จำเป็นไม่เพียงพอ โดยเฉพาะอาหารหลักอย่างโปรตีน คาร์โบไฮเดรต ไขมัน วิตามิน หรือแร่ธาตุต่าง ๆ หากผู้ป่วยไม่ได้รับการรักษาอย่างเหมาะสมทันท่วงที อาจมีอาการร้ายแรงถึงขั้นเสียชีวิตได้
-          </p>
-          <button class="btn btn-outline-secondary" style="background-color:#ff8d1e">Read More</button>
+    <div class="container-fluid" style="background-color:#fcf2e0">
+      <div class="container">
+        <div class="row">
+          <div class="column-33">
+            <img
+              src="https://d2e111jq13me73.cloudfront.net/sites/default/files/styles/blog_article/public/blog/csm-blog/raise-kid-conscience2-blog-1138x658.jpg?itok=VUcKiAz8"
+              alt="App"
+              width="335"
+              height="471"
+            />
+          </div>
+          <div class="column-66">
+            <h1 class="xlarge-font">
+              <b>ช่วยเหลือเด็กๆ</b>
+            </h1>
+            <h1 class="large-font" style="columns: #ff8d1e;">
+              <b>ขาดสารอาหารทั่วประเทศ</b>
+            </h1>
+            <p>
+              <span style="font-size:24px">โรคขาดสารอาหาร</span> เป็นภาวะที่ร่างกายขาดสารอาหารและอาจทำให้เกิดปัญหาสุขภาพตามมา โดยอาจมีอาการ เช่น อ่อนเพลีย ผิวหนังมีลักษณะผิดปกติ กระดูกหยุดเจริญเติบโต หรือมีภาวะสมองเสื่อม เป็นต้น ซึ่งโรคขาดสารอาหารมักเกิดขึ้นเมื่อร่างกายได้รับสารอาหารที่จำเป็นไม่เพียงพอ โดยเฉพาะอาหารหลักอย่างโปรตีน คาร์โบไฮเดรต ไขมัน วิตามิน หรือแร่ธาตุต่าง ๆ หากผู้ป่วยไม่ได้รับการรักษาอย่างเหมาะสมทันท่วงที อาจมีอาการร้ายแรงถึงขั้นเสียชีวิตได้
+            </p>
+            <button class="btn btn-outline-secondary" style="background-color:#ff8d1e">Read More</button>
+          </div>
         </div>
       </div>
     </div>
@@ -61,7 +63,7 @@ export default {
   data() {
     return {
       projects: [],
-      info:[],
+      info: [],
       time: moment().format("LTS")
     };
   },
@@ -102,7 +104,6 @@ export default {
 </script>
 
 <style scoped>
-
 * {
   box-sizing: border-box;
 }

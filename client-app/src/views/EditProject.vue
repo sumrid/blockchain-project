@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="row">
-      <div class="col">
+      <div class="col m-4">
         <H1 class="text-center">เพิ่มโครงการ</H1>
       </div>
     </div>
@@ -153,6 +153,7 @@ export default {
       }
     },
     onSubmit: async function() {
+      console.log(JSON.stringify(this.form));
       //   this.isLoading = true;
       //   try {
       //     this.form.endtime = moment(this.form.date).format(DATE_LAYOUT);

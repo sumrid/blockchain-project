@@ -97,7 +97,9 @@
                 <b-button variant="success" disabled @click="sumbitRate" v-if="!isLoading">ให้คะแนน</b-button>
               </b-card>
             </b-tab>
-            <b-tab title="ประวัติการสร้างโครงการ"></b-tab>
+            <b-tab title="ประวัติการสร้างโครงการ">
+              <b-table :items="projects" :fields="fieldsTabel"></b-table>
+            </b-tab>
             <b-tab title="ตรวจสอบความเคลื่อนไหว"></b-tab>
           </b-tabs>
         </div>
@@ -154,6 +156,7 @@
 import service from "../service";
 import star from "vue-star-rating";
 import { mapGetters } from "vuex";
+import moment from 'moment';
 export default {
   components: {
     star
@@ -164,12 +167,18 @@ export default {
   data() {
     return {
       owner: {},
-      ownerInfo: {},
       rating: {},
+      projects: [],
+      ownerInfo: {},
       form: {
         rate: null
       },
-      isLoading: false
+      isLoading: false,
+      fieldsTabel: [
+        {key: "title", label: "ชื่อโครงการ"},
+        {key: "status", label: "สถานะโครงการ"},
+        {key: "endtime", label: "วันสิ้นสุด", formatter: this.timeFormatter},
+      ]
     };
   },
   created() {
@@ -183,6 +192,7 @@ export default {
       this.owner;
       this.ownerInfo = await service.getUserInfo(this.id);
       this.rating = await service.getCreatorRating(this.id);
+      this.projects = await service.getMyProject(this.id);
     },
     async sumbitRate() {
       try {
@@ -194,6 +204,9 @@ export default {
       } catch (error) {
         this.isLoading = false;
       }
+    },
+    timeFormatter(value, key, item) {
+      return moment(value).format('LL');
     }
   }
 };

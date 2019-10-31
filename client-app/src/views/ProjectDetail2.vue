@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- info -->
     <div class="container">
       <div class="row">
         <div class="col title">
@@ -188,7 +189,7 @@
 
       <!-- donation history -->
       <div class="row">
-        <div class="col text-center">
+        <div class="col text-center m-4">
           <h3>ประวัติการบริจาค</h3>
         </div>
       </div>
@@ -199,11 +200,13 @@
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- donate input -->
-      <b-card v-if="project.status == 'open'" id="donate">
+    <!-- donation input -->
+    <div class="container-fluid donate-container">
+      <div class="container">
         <div class="row">
-          <div class="col text-center">
+          <div class="col text-center m-4">
             <h3>ร่วมบริจาค</h3>
           </div>
         </div>
@@ -221,7 +224,7 @@
                 </span>
               </div>
               <div>
-                <b-button block>Donate</b-button>
+                <b-button block @click="form.amount = 100">Donate</b-button>
               </div>
             </div>
           </div>
@@ -237,7 +240,7 @@
                 </span>
               </div>
               <div class="pricingTable-sign-up">
-                <b-button block>Donate</b-button>
+                <b-button block @click="form.amount = 200">Donate</b-button>
               </div>
             </div>
           </div>
@@ -253,7 +256,7 @@
                 </span>
               </div>
               <div class="pricingTable-sign-up">
-                <b-button block>Donate</b-button>
+                <b-button block @click="form.amount = 500">Donate</b-button>
               </div>
             </div>
           </div>
@@ -269,7 +272,7 @@
                 </span>
               </div>
               <div class="pricingTable-sign-up">
-                <b-button block>Donate</b-button>
+                <b-button block @click="form.amount = 1000">Donate</b-button>
               </div>
             </div>
           </div>
@@ -343,8 +346,10 @@
             </div>
           </div>
         </div>
-      </b-card>
+      </div>
     </div>
+
+    <!-- footer -->
     <div>
       <my-footer />
     </div>
@@ -353,7 +358,7 @@
 
 <script>
 import myFooter from "@/components/Footer";
-import Events from '../components/EventItem';
+import Events from "../components/EventItem";
 import auth from "@/firebase";
 const axios = require("axios");
 import { API_IP, PROTOCOL } from "@/util";
@@ -562,6 +567,9 @@ export default {
 
 
 <style scoped>
+.donate-container {
+  background-color: #fcf2e0
+}
 .qr {
   align-content: center;
   align-self: center;
@@ -627,15 +635,7 @@ a + a {
   padding: 16px;
   margin: 1rem;
   border-radius: 10px;
-  /* text-align: center; */
   background-color: #fff4f4;
-  /* position */
-  /* position: absolute; */
-  /* size */
-  /* top: 72px; */
-  /* right: 10px; */
-  /* height: 600px; */
-  /* width: 440px; */
 }
 
 .cardprofile {
@@ -697,43 +697,6 @@ a + a {
 .ig:hover {
   color: #d6249f;
 }
-
-/* Event */
-/*
-.morningdetail {
-  background-color: #3a3c45;
-  border-radius: 12px;
-  position: absolute;
-  margin-left: -3rem;
-  margin-top: 4rem;
-  padding-top: 1rem;
-}
-
-.activity-feed {
-  padding: 1rem;
-}
-
-.activity-feed .feed-item {
-  position: relative;
-  padding-bottom: 220px;
-  padding-left: 30px;
-  margin-bottom: 5rem;
-  border-left: 2px solid #e2b104;
-}
-
-.activity-feed .feed-item:after {
-  content: "";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: -10px;
-  width: 20px;
-  height: 20px;
-  border-radius: 13px;
-  background: #fff;
-  border: 1px solid #e2b104;
-}
-*/
 
 /* -------------- pricing ----------------- */
 .pricingTable {

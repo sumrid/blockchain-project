@@ -199,6 +199,9 @@ export default {
       iconPlus: faPlus
     };
   },
+  created() {
+    document.title = "Donate-web | ข้อมูลของฉัน"
+  },
   mounted() {
     auth.onAuthStateChanged(user => {
       if (user) {
