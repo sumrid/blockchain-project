@@ -40,6 +40,7 @@ async function updateProject(req, res) {
         const project = {
             id: req.body.id,
             title: req.body.title,
+            image: req.body.image,
             detail: req.body.detail
             // TODO อาจจะให้แก้ใขได้มากกว่านี้
         }
@@ -70,6 +71,7 @@ async function deleteProject(req, res) {
         const userID = req.body.user;
         const projectID = req.body.project;
         const result = await service.deleteProject(userID, projectID);
+        await firebase.deleteProject(projectID);
         res.send(String(result));
     } catch (err) {
         res.status(404).json(err);

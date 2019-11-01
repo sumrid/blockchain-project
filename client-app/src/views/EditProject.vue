@@ -17,16 +17,26 @@
               v-model="form.title"
             />
           </div>
+
+          <!-- รูปภาพหลัก -->
           <div class="form-group">
-            <label for="exampleFormControlFile1">รูปหลัก</label>
+            <label>รูปหลัก</label>
             <b-form-file
-              v-model="file"
-              :state="Boolean(file)"
+              v-model="mainImage"
+              :state="Boolean(mainImage)"
               placeholder="Choose a file or drop it here..."
               drop-placeholder="Drop file here..."
               accept="image/jpeg, image/png, image/gif"
             ></b-form-file>
           </div>
+          <b-row align-content="center" v-if="isMainImageUpload">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="false"></span> Uploading...
+          </b-row>
+          <b-row align-content="center" align-h="center">
+            <b-col>
+              <b-img :src="form.image" fluid rounded width="500"></b-img>
+            </b-col>
+          </b-row>
           <div class="form-group">
             <label>จำนวนเงินที่ต้องการ</label>
             <input
@@ -37,7 +47,8 @@
               v-model="form.goal"
             />
           </div>
-          
+
+          <!--
           <b-form-group label="ผู้ที่ทำการรับเงินจากโครงการนี้">
             <b-form-input
               class="form-control"
@@ -46,10 +57,10 @@
               placeholder="กรุณาใส่ id หรือ email ของผู้รับ"
               trim
               type="email"
-            ></b-form-input>
-            
+            ></b-form-input>  
           </b-form-group>
-          
+          -->
+
           <div class="form-group">
             <label>รายละเอียด</label>
             <vue-editor useCustomImageHandler @image-added="uploadImage" v-model="form.detail"></vue-editor>
@@ -76,17 +87,16 @@
               @tags-changed="newTags => form.tags = newTags"
             />
           </div>
-          <button type="submit" class="btn btn-primary">
-            <span
-              v-if="isLoading"
-              class="spinner-border spinner-border-sm"
-              role="status"
-              aria-hidden="false"
-            ></span>Submit
-          </button>
+
+          <!-- Button -->
+          <b-button v-if="isLoading" class="btn btn-primary" disabled block variant="info">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="false"></span> Updating...
+          </b-button>
+          <b-button v-else type="submit" class="btn btn-primary" block variant="info">Submit</b-button>
         </form>
       </div>
     </div>
+    <b-toast id="success-toast" title="อัพเดตสำเร็จ" variant="success">ทำการแก้ไขข้อมูลเรียบร้อยแล้ว</b-toast>
     <p>{{form}}</p>
     <p v-if="error">Error: {{error}}</p>
     <p v-if="res">ผลลัพธ์: {{res}}</p>
@@ -120,11 +130,18 @@ export default {
       isUploading: false,
       isRequired: true,
       isReceiver: false,
+      mainImage: null,
+      isMainImageUpload: false,
       tag: "",
       error: "",
       res: "",
-      th: th,
+      th: th
     };
+  },
+  watch: {
+    mainImage() {
+      this.uploadMainImage();
+    }
   },
   computed: {
     ...mapGetters(["getUser"]),
@@ -136,7 +153,28 @@ export default {
   },
   methods: {
     getProject: async function(id) {
-      this.form = await service.getProjectByID(id);
+      // this.form = await service.getProjectByID(id);
+      this.form = await service.getProjectInfo(id); // firebase
+      console.info(`[info] [get project]`);
+    },
+    async uploadMainImage() {
+      console.info(`[info] upload image`);
+      // Upload main image
+      try {
+        this.isMainImageUpload = true;
+        const type = this.mainImage.name.split(".").pop(); // สกุลไฟล์
+        const imgName = `main.${type}`;
+        const ref = storage().ref(`project/${this.form.id}/${imgName}`);
+        await ref.put(this.mainImage);
+        const url = await ref.getDownloadURL();
+        this.form.image = url;
+        this.isMainImageUpload = false;
+        console.info(`[info] upload image success`);
+      } catch (err) {
+        console.error(err);
+        console.error(`[error] upload image fail.`);
+        this.isMainImageUpload = false;
+      }
     },
     uploadImage: async function(file, Editor, cursorLocation, resetUploader) {
       try {
@@ -153,27 +191,23 @@ export default {
       }
     },
     onSubmit: async function() {
-      console.log(JSON.stringify(this.form));
-      //   this.isLoading = true;
-      //   try {
-      //     this.form.endtime = moment(this.form.date).format(DATE_LAYOUT);
-      //     const res = await service.createProject(this.form);
-      //     this.res = res;
-      //     this.isLoading = false;
-      //   } catch (err) {
-      //     this.error = err;
-      //     this.isLoading = false;
-      //   }
-    },
+      console.info(`[info] submit data.`);
+      this.isLoading = true;
+      try {
+        const res = await service.updateProject(this.form);
+        this.res = res;
+        this.isLoading = false;
+        this.$bvToast.show("success-toast");
+        console.info(`[info] submit success.`);
+      } catch (err) {
+        this.error = err;
+        this.isLoading = false;
+        console.error(`[error] submit fail.`);
+      }
+    }
   },
   mounted() {
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        this.form.owner = user.uid;
-      } else {
-        this.form.owner = "";
-      }
-    });
+    auth.onAuthStateChanged(user => {});
   }
 };
 </script>

@@ -67,7 +67,7 @@ async function deleteUser(req, res) {
 async function verifyUserIDCard(req, res) {
     try {
         const user = req.params.id;
-        const checker = req.body.checker;
+        const checker = req.body.checker; // คนที่ทำการตรวจสอบ
         const verifyState = req.body.verify;
 
         const result = await service.changeUserVerifyState(checker, user, verifyState);

@@ -16,6 +16,18 @@ services:
     networks:
       - default
 
+  dashboard:
+    image: node:10.15.3-stretch-slim
+    container_name: dashboard
+    volumes:
+      - ./dashboard-ui:/dashboard-ui
+    working_dir: /dashboard-ui
+    command: npm run serve
+    ports:
+      - 81:8080
+    networks:
+      - default
+
   socket:
     image: node:10.15.3-stretch-slim
     container_name: socket

@@ -40,6 +40,10 @@ async function updateProject(project) {
     }
 }
 
+async function deleteProject(uid) {
+    await ProjectCollection.doc(uid).delete();
+}
+
 async function getProject() {
     const snapshot = await ProjectCollection.get();
     return snapshot;
@@ -58,6 +62,7 @@ async function getProjectByID(key) {
 // #     User
 // ###############
 /**
+ * ลงทะเบียนผู้ใช้
  * @param {string} name
  * @param {string} email
  * @param {string} password
@@ -208,6 +213,7 @@ module.exports = {
     updateProject,
     getProject,
     getProjectByID,
+    deleteProject,
     registerUser,
     updateUser,
     setUser,

@@ -776,4 +776,17 @@ a + a {
     margin-bottom: 20px;
   }
 }
+
+.ql-align-center {
+  background: #000;
+}
+
+p.ql-align-center {
+  background: #000;
+}
+
+div>p.ql-align-center {
+  background: #000;
+}
+
 </style>

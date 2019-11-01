@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="row">
-      <div class="col">
+      <div class="col m-4">
         <H1 class="text-center">เพิ่มโครงการ</H1>
       </div>
     </div>
@@ -49,7 +49,8 @@
             <input class="form-control" placeholder="จำนวน" required v-model="form.goal" type="number" />
             <!-- <currency-input :value="form.goal"/> -->
           </div>
-          <!-- <div class="form-group"> -->
+
+          <!-- คนรับเงิน
           <b-form-group label="ผู้ที่ทำการรับเงินจากโครงการนี้">
             <b-form-input
               class="form-control"
@@ -62,7 +63,8 @@
             ></b-form-input>
             <b-form-invalid-feedback v-if="!isReceiver">ไม่มีผู้ใช้นี้</b-form-invalid-feedback>
           </b-form-group>
-          <!-- </div> -->
+           -->
+
           <div class="form-group">
             <label>รายละเอียด</label>
             <vue-editor useCustomImageHandler @image-added="uploadImage" v-model="form.detail"></vue-editor>
