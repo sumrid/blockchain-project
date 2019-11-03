@@ -1,5 +1,6 @@
 const uid = require('uuid/v4');
 const moment = require('moment');
+const express = require('express');
 const schedlue = require('node-schedule');
 const service = require('../service/service');
 const firebase = require('../service/firebase');
@@ -63,6 +64,23 @@ async function updateProjectStatus(req, res) {
         res.json(JSON.parse(String(result)));
     } catch (err) {
         res.status(500).json(err);
+    }
+}
+
+/**
+ * อนุมัติโครงการ
+ * @param {express.request} req 
+ * @param {express.response} res 
+ */
+async function approveProject(req, res) {
+    try {
+        const project = req.params.project;
+        const approver = req.body.approver;
+        const result = await service.approveProject(approver, project);
+        const payload = JSON.parse(String(result));
+        res.json(payload);
+    } catch (error) {
+        res.status(500).json(error);
     }
 }
 
@@ -198,6 +216,7 @@ module.exports = {
     createProject,
     updateProject,
     updateProjectStatus,
+    approveProject,
     deleteProject,
     getAllProjects,
     getProjectByID,

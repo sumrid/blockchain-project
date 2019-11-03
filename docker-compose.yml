@@ -69,7 +69,7 @@ services:
       - ../cert:/cert # map Google gcp cert on server to container
       - ./client-app/nginx/cert:/etc/letsencrypt
     working_dir: /app
-    command: npm start
+    command: npm run dev
     ports:
       - 8000:8000
     networks:
@@ -89,7 +89,7 @@ services:
       - ../cert:/cert # map Google gcp cert on server to container
       - ./client-app/nginx/cert:/etc/letsencrypt
     working_dir: /app
-    command: npm start
+    command: npm run dev
     ports:
       - 8001:8001
     networks:
@@ -109,7 +109,7 @@ services:
       - ../cert:/cert # map Google gcp cert on server to container
       - ./client-app/nginx/cert:/etc/letsencrypt
     working_dir: /app
-    command: npm start
+    command: npm run dev
     ports:
       - 8002:8002
     networks:

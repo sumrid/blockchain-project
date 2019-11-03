@@ -26,8 +26,9 @@ type Project struct {
 	StartTime   time.Time `json:"starttime"`   // เวลาที่การสร้างโครงการ
 	EndTime     time.Time `json:"endtime"`     // เวลาที่โครงการสิ้นสุด
 	Receiver    string    `json:"receiver"`    // uid ของผู้รับเงิน TODO เพิ่มไอดีผู้รับเงิน
-	Goal        float64   `json:"goal"`        // จำนวนเงินที่ต้องการ TODO เพิ่มยอดเงินที่ต้องการด้วย
-	Condition   int       `json:"condition"`   // เงื่อนไขการตัดเงินของโครงการ
+	Approver    string    `json:"approver"`
+	Goal        float64   `json:"goal"`      // จำนวนเงินที่ต้องการ TODO เพิ่มยอดเงินที่ต้องการด้วย
+	Condition   int       `json:"condition"` // เงื่อนไขการตัดเงินของโครงการ
 	Type        string    `json:"type"`
 }
 
@@ -131,6 +132,8 @@ func (C *Chaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return C.updateStatus(stub, args)
 	} else if fn == "updateProject" {
 		return C.updateProject(stub, args)
+	} else if fn == "approveProject" {
+		return C.approveProject(stub, args)
 	} else if fn == "deleteProject" {
 		return C.deleteProject(stub, args)
 	} else if fn == "payBack" { // คืนเงินให้คนบริจาค

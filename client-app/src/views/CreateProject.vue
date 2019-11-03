@@ -21,7 +21,7 @@
             <label for="exampleFormControlFile1">รูปหลัก</label>
             <b-form-file
               v-model="mainImage"
-              :state="Boolean(file)"
+              :state="Boolean(mainImage)"
               required
               placeholder="Choose a file or drop it here..."
               drop-placeholder="Drop file here..."
@@ -46,7 +46,13 @@
               จำนวนเงินที่ต้องการ
               <strong>{{form.goal | currency}}</strong>
             </label>
-            <input class="form-control" placeholder="จำนวน" required v-model="form.goal" type="number" />
+            <input
+              class="form-control"
+              placeholder="จำนวน"
+              required
+              v-model="form.goal"
+              type="number"
+            />
             <!-- <currency-input :value="form.goal"/> -->
           </div>
 
@@ -63,7 +69,7 @@
             ></b-form-input>
             <b-form-invalid-feedback v-if="!isReceiver">ไม่มีผู้ใช้นี้</b-form-invalid-feedback>
           </b-form-group>
-           -->
+          -->
 
           <div class="form-group">
             <label>รายละเอียด</label>
@@ -103,9 +109,23 @@
         </form>
       </div>
     </div>
-    <p>{{form}}</p>
-    <p v-if="error">Error: {{error}}</p>
-    <p v-if="res">ผลลัพธ์: {{res}}</p>
+    <b-row class="m-4">
+      <b-col>
+        <b-alert variant="success" show>
+          <p>{{form}}</p>
+        </b-alert>
+        <p v-if="error">Error: {{error}}</p>
+        <p v-if="res">ผลลัพธ์: {{res}}</p>
+      </b-col>
+    </b-row>
+
+    <!--### Toast ###-->
+    <b-toast id="success-toast" title="สำเร็จ" variant="success">
+      เพิ่มโครงการสำเร็จแล้ว
+    </b-toast>
+    <b-toast id="error-toast" title="เกิดข้อผิดผลาด" variant="danger">
+      เกิดข้อผิดผลาด !! กรุณาลองใหม่อีกครั้ง
+    </b-toast>
   </div>
 </template>
 
@@ -163,6 +183,9 @@ export default {
     ...mapGetters(["getUser"]),
     ...mapState(["user"])
   },
+  created() {
+    document.title = "Donate-web | สร้างโครงการ";
+  },
   watch: {
     receiverInput: function() {
       clearTimeout(this.timeoutNum);
@@ -209,9 +232,12 @@ export default {
         this.form.endtime = this.form.date;
         const res = await service.createProject(this.form);
         this.res = res;
+        this.form = {};
+        this.showToast(1);
         this.isLoading = false;
       } catch (err) {
         this.error = err;
+        this.showToast(2);
         this.isLoading = false;
       }
     },
@@ -223,6 +249,10 @@ export default {
         this.isReceiver = false;
         this.form.receiver = "";
       }
+    },
+    showToast(type) {
+      if (type == 1) this.$bvToast.show('success-toast');
+      else this.$bvToast.show('error-toast');
     }
   },
   mounted() {

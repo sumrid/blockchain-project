@@ -2,9 +2,9 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Login from './views/Login.vue'
-import User from './views/Users.vue'
-import Project from './views/Projects.vue'
-import Invoices from './views/Invoices.vue';
+import User from '@/views/menu/Users.vue'
+import Project from '@/views/menu/Projects.vue'
+import Invoices from '@/views/menu/Invoices.vue';
 
 Vue.use(Router)
 

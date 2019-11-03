@@ -14,8 +14,8 @@
 </template>
 
 <script>
-import service from "../service/invoice";
-import InvItem from "../components/InvoiceItem";
+import service from "@/service/invoice";
+import InvItem from "@/components/InvoiceItem";
 
 export default {
   components: {

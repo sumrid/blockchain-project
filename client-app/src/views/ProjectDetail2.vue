@@ -59,86 +59,17 @@
         </div>
       </div>
 
-      <!-- Tab -->
+      <!-- Tabs -->
       <div class="row">
         <div class="col">
           <b-tabs content-class="mt-3">
             <b-tab title="รายละเอียดโครงการ" active>
-              <div v-html="info.detail"></div>
+              <div id="project-info" v-html="info.detail"></div>
             </b-tab>
             <b-tab title="ค่าใช้จ่ายโครงการ">
-              <b-table-simple class="table table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>ลำดับค่าใช้จ่าย</th>
-                    <th>ชื่อรายการ</th>
-                    <th>จำนวน</th>
-                    <th>มูลค่าต่อหน่วย</th>
-                    <th>รวมมูลค่า</th>
-                    <th>สถานะการใช้</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>ค่าธรรมเนียมเว็บไซต์</td>
-                    <td>1</td>
-                    <td>1000</td>
-                    <td>1000</td>
-                    <td>
-                      <span class="label label-success">Active</span>
-                    </td>
-                  </tr>
-                  <tr v-for="(inv, index) in invoices" :key="index">
-                    <td>{{inv.id}}</td>
-                    <td>xxx</td>
-                    <td>xxx</td>
-                    <td>xxx</td>
-                    <td>{{inv.total | currency}}</td>
-                    <td>
-                      <b-button v-b-toggle="inv.id" variant>รายละเอียด</b-button>
-                    </td>
-                    <div>
-                      <b-collapse :id="inv.id">
-                        <b-card>{{inv}}</b-card>
-                      </b-collapse>
-                    </div>
-                  </tr>
-                </tbody>
-              </b-table-simple>
+              <invoice-list :invoices="invoices"></invoice-list>
             </b-tab>
             <b-tab title="ความเคลื่อนไหวโครงการ">
-              <!--
-              <div class="activity-feed">
-                <div class="feed-item" v-for="(e, index) in events" :key="index">
-                  <div class="col-md-8 col-sm-12 col-xs-12 morningdetail">
-                    <div class="col-md-8 col-sm-2 col-xs-8">
-                      <h5>
-                        <span style="color:#E2B104;" class="text-uppercase">{{e.event}}</span>
-                      </h5>
-                    </div>
-
-                    <div class="col-md-4 col-sm-10 col-xs-4">
-                      <h5 style="color: #E2B104;">
-                        เมื่อเวลา:
-                        <span style="color: #B7B7B7">{{unixToDate(e.timestamp)}}</span>
-                      </h5>
-                    </div>
-
-                    <div class="col-md-12 col-xs-12">
-                      <h5 style="color: white; font-weight: normal;">
-                        <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
-                        <span style="color: #B7B7B7">Mohali, Punjab</span>
-                      </h5>
-                    </div>
-
-                    <div class="col-md-12 col-sm-12 col-xs-12">
-                      <p style="color:#B7B7B7 ">{{e.message}}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              -->
               <events :events="events" />
             </b-tab>
             <b-tab title="ติดต่อโครงการ">
@@ -153,7 +84,7 @@
                   <div class="cardprofile">
                     <img
                       class="card-img-top"
-                      src="https://cdnb.artstation.com/p/assets/images/images/010/966/743/large/von-vincent-sison-doraemon-nobita.jpg?1527169782"
+                      src="@/assets/user.png"
                       alt="Card image"
                       style="width:50%"
                     />
@@ -166,6 +97,7 @@
                     </div>
                   </div>
                 </div>
+                <!--
                 <div class="col">
                   <div class="cardprofile">
                     <img
@@ -181,6 +113,7 @@
                     </div>
                   </div>
                 </div>
+                -->
               </div>
             </b-tab>
           </b-tabs>
@@ -203,7 +136,7 @@
     </div>
 
     <!-- donation input -->
-    <div class="container-fluid donate-container">
+    <div class="container-fluid donate-container" v-if="project.status == 'open'">
       <div class="container">
         <div class="row">
           <div class="col text-center m-4">
@@ -359,6 +292,7 @@
 <script>
 import myFooter from "@/components/Footer";
 import Events from "../components/EventItem";
+import InvoiceList from '@/components/invoice/InvoiceItemList';
 import auth from "@/firebase";
 const axios = require("axios");
 import { API_IP, PROTOCOL } from "@/util";
@@ -371,6 +305,7 @@ export default {
   components: {
     Events,
     myFooter,
+    InvoiceList,
     CreditCardField: credit.CreditCardField,
     InlineCreditCardField: credit.InlineCreditCardField
   },
@@ -382,7 +317,7 @@ export default {
       project: {},
       receiver: {},
       invoices: [],
-      donations: {},
+      donations: [],
       form: {
         user: "", // user uid
         amount: "",
@@ -436,7 +371,7 @@ export default {
     },
     percent() {
       return (this.project.balance / this.project.goal) * 100;
-    }
+    },
   },
   watch: {
     project: function() {
@@ -777,16 +712,9 @@ a + a {
   }
 }
 
-.ql-align-center {
-  background: #000;
-}
-
-p.ql-align-center {
-  background: #000;
-}
-
-div>p.ql-align-center {
-  background: #000;
+/* แสดงข้อมูลโครงการ */
+div#project-info >>> .ql-align-center {
+  text-align: center;
 }
 
 </style>

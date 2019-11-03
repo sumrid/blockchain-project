@@ -688,3 +688,45 @@ func (C *Chaincode) transfer(stub shim.ChaincodeStubInterface, args []string) pe
 
 	return shim.Success(trnsfAsByte)
 }
+
+func (C *Chaincode) approveProject(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	apprv := args[0]
+	prjID := args[1]
+
+	prjAsByte, err := stub.GetState(prjID)
+	if err != nil {
+		return shim.Error(err.Error())
+	} else if prjAsByte == nil {
+		return shim.Error("Project not found.")
+	}
+
+	prj := Project{}
+	err = json.Unmarshal(prjAsByte, &prj)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	prj.Approver = apprv
+	prj.Status = Open
+
+	evt := Event{}
+	evt.ID = "event_" + stub.GetTxID()
+	evt.Type = "event"
+	evt.TxID = stub.GetTxID()
+	evt.ProjectID = prjID
+	evt.Event = "approve"
+	evt.Message = fmt.Sprintf("Project approved by user: %s", apprv)
+	t, _ := stub.GetTxTimestamp()
+	evt.Timestamp = t.GetSeconds()
+
+	prjAsByte, err = json.Marshal(prj)
+	evtAsByte, err := json.Marshal(evt)
+	if err != nil {
+		return shim.Error(err.Error())
+	}
+
+	stub.PutState(prj.ID, prjAsByte)
+	stub.PutState(evt.ID, evtAsByte)
+
+	return shim.Success(prjAsByte)
+}

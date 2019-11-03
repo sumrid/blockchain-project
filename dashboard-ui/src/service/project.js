@@ -11,7 +11,13 @@ async function getProject(uid) {
     return res.data;
 }
 
+async function approveProject(approver, project, status) {
+    const res = await Axios.post(`${API_URL}/api/project/${project}/approve`, { approver });
+    return res.data;
+}
+
 export default {
     getProject,
-    getProjects
+    getProjects,
+    approveProject
 }

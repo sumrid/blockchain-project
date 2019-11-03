@@ -18,6 +18,7 @@ router.delete('/project', projectController.deleteProject);
 router.get('/project/:project', projectController.getProjectByID);
 router.post('/project/status', projectController.updateProjectStatus);
 router.get('/project/:project/events', projectController.getProjectEvents);
+router.post('/project/:project/approve', projectController.approveProject);
 router.get('/project/:project/invoice', projectController.getProjectInvoices);
 router.get('/project/:project/history', projectController.getProjectDonations);
 router.get('/project/:project/donations', projectController.getProjectDonations);

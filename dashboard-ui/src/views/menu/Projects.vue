@@ -14,8 +14,8 @@
 </template>
 
 <script>
-import service from '../service/project';
-import project from '../components/ProjectItem';
+import service from '../../service/project';
+import project from '@/components/ProjectItem';
 export default {
     components: {
         project
