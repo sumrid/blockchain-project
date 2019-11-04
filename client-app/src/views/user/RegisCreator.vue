@@ -6,6 +6,7 @@
           <h3>คนสร้างโครงการ</h3>
         </div>
       </div>
+      <!-- Form input -->
       <b-row align-h="center" class="p-4">
         <b-col lg="8">
           <b-form @submit.prevent="onSubmit">
@@ -43,7 +44,7 @@
               <b-form-input
                 required
                 type="text"
-                v-model="form.pass"
+                v-model="form.id_card_number"
                 maxlength="13"
                 aria-describedby="input-live-help"
               ></b-form-input>
@@ -149,7 +150,12 @@ export default {
         // add user data
         const userData = {
           name: `${form.name} ${form.lastname}`,
-          email: form.email
+          email: form.email,
+          id_card_number: form.id_card_number,
+          birthDate: form.birthDate,
+          address: form.address,
+          job: form.job,
+          phone: form.phone
         };
         await axios.put(`${url}/${res.data.user.uid}`, userData);
 

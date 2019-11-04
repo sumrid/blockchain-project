@@ -14,7 +14,7 @@
             <img
               align="left"
               class="fb-image-profile"
-              src="https://cdn2.vectorstock.com/i/1000x1000/25/31/user-icon-businessman-profile-man-avatar-vector-10552531.jpg"
+              src="@/assets/user.png"
               alt="Profile image example"
             />
             <div class="fb-profile-text">
@@ -42,7 +42,11 @@
                 <p>ประวัติการบริจาค</p>
                 <div class="row">
                   <div class="col" v-if="Boolean(donations)">
-                    <b-table striped hover :items="donations" :fields="donationFields"></b-table>
+                    <b-table striped hover :items="donations" :fields="donationFields">
+                      <template v-slot:cell(invoice)="data">
+                        <b-button variant="outline-primary" size="sm" :to="{ name: 'invoice-view', params: { txid: data.item.txid }}">รายละเอียด</b-button>
+                      </template>
+                    </b-table>
                   </div>
                   <div class="col" v-else>
                     <p class="text-center">ยังไม่มีการบริจาค</p>
@@ -50,8 +54,13 @@
                 </div>
               </b-tab>
 
-              <b-tab title="โครงการ">
+              <b-tab title="โครงการ" v-if="isCreator">
                 <b-tabs content-class="mt-3">
+                  <b-tab title="โครงการของฉัน">
+                    <p>โครงการของฉัน</p>
+                    <project v-for="(item, index) in myprojects" :key="index" :id="item.id"></project>
+                  </b-tab>
+
                   <b-tab title="โครงการที่รับบริจาค">
                     <p>โครงการที่บริจาค</p>
                     <b-table-simple hover responsive>
@@ -82,10 +91,6 @@
                     </b-table-simple>
                   </b-tab>
 
-                  <b-tab title="โครงการของฉัน">
-                    <p>โครงการของฉัน</p>
-                    <project v-for="(item, index) in myprojects" :key="index" :id="item.id"></project>
-                  </b-tab>
                   <!--
                   <b-tab title="ตรวจสอบความเคลื่อนไหว">
                     <p>ตรวจสอบความเคลื่อนไหว</p>
@@ -194,13 +199,17 @@ export default {
         {
           key: "time",
           sortable: true
+        },
+        {
+          key: "invoice",
+          label: "ใบเสร็จ"
         }
       ],
       iconPlus: faPlus
     };
   },
   created() {
-    document.title = "Donate-web | ข้อมูลของฉัน"
+    document.title = "Donate-web | ข้อมูลของฉัน";
   },
   mounted() {
     auth.onAuthStateChanged(user => {

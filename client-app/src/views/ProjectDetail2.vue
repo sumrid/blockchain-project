@@ -129,7 +129,16 @@
       <div class="row">
         <div class="col text-center">
           <div class="row">
-            <b-table striped hover :items="donations" :fields="fields"></b-table>
+            <b-table
+              striped
+              hover
+              :items="donations"
+              :fields="fields"
+              :sort-by.sync="sortBy"
+              :sort-desc.sync="sortDesc"
+            >
+              <template v-slot:cell(amount)="data">{{data.value | currency}}</template>
+            </b-table>
           </div>
         </div>
       </div>
@@ -151,10 +160,7 @@
                 <span class="heading">
                   <h3>Lv.10</h3>
                 </span>
-                <span class="price-value">
-                  100 baht
-                  <span class="month">10 ชิ้น</span>
-                </span>
+                <span class="price-value">100 baht</span>
               </div>
               <div>
                 <b-button block @click="form.amount = 100">Donate</b-button>
@@ -167,10 +173,7 @@
                 <span class="heading">
                   <h3>Lv.20</h3>
                 </span>
-                <span class="price-value">
-                  200 baht
-                  <span class="month">20 ชิ้น</span>
-                </span>
+                <span class="price-value">200 baht</span>
               </div>
               <div class="pricingTable-sign-up">
                 <b-button block @click="form.amount = 200">Donate</b-button>
@@ -183,10 +186,7 @@
                 <span class="heading">
                   <h3>Lv.50</h3>
                 </span>
-                <span class="price-value">
-                  500 baht
-                  <span class="month">50 ชิ้น</span>
-                </span>
+                <span class="price-value">500 baht</span>
               </div>
               <div class="pricingTable-sign-up">
                 <b-button block @click="form.amount = 500">Donate</b-button>
@@ -199,10 +199,7 @@
                 <span class="heading">
                   <h3>Lv.99</h3>
                 </span>
-                <span class="price-value">
-                  1000 baht
-                  <span class="month">100 ชิ้น</span>
-                </span>
+                <span class="price-value">1000 baht</span>
               </div>
               <div class="pricingTable-sign-up">
                 <b-button block @click="form.amount = 1000">Donate</b-button>
@@ -292,7 +289,7 @@
 <script>
 import myFooter from "@/components/Footer";
 import Events from "../components/EventItem";
-import InvoiceList from '@/components/invoice/InvoiceItemList';
+import InvoiceList from "@/components/invoice/InvoiceItemList";
 import auth from "@/firebase";
 const axios = require("axios");
 import { API_IP, PROTOCOL } from "@/util";
@@ -330,25 +327,17 @@ export default {
       qrmessage: "",
       loadingQR: false,
       currentUser: null,
-      eventsFields: [
-        {
-          key: "event"
-        },
-        {
-          key: "message"
-        },
-        {
-          key: "timestamp",
-          sortable: true
-        }
-      ],
+      sortBy: "time",
+      sortDesc: true,
       fields: [
         {
           key: "txid",
+          value: 'รหัสธุรกรรม',
           sortable: false
         },
         {
           key: "amount",
+          label: "จำนวน",
           sortable: true
         },
         {
@@ -356,7 +345,8 @@ export default {
         },
         {
           key: "time",
-          sortable: true
+          sortable: true,
+          sortDirection: "desc"
         }
       ]
     };
@@ -371,7 +361,7 @@ export default {
     },
     percent() {
       return (this.project.balance / this.project.goal) * 100;
-    },
+    }
   },
   watch: {
     project: function() {
@@ -503,7 +493,7 @@ export default {
 
 <style scoped>
 .donate-container {
-  background-color: #fcf2e0
+  background-color: #fcf2e0;
 }
 .qr {
   align-content: center;
@@ -716,5 +706,4 @@ a + a {
 div#project-info >>> .ql-align-center {
   text-align: center;
 }
-
 </style>

@@ -3,10 +3,19 @@ import { API_IP , PROTOCOL} from '../util';
 import { firestore } from 'firebase';
 
 const MAIN_API = `${PROTOCOL}//${API_IP}:8000`;
-const CREATOR_API = `${PROTOCOL}//${API_IP}:8001`;
-const RECEIVER_API = `${PROTOCOL}//${API_IP}:8002`;
+// const CREATOR_API = `${PROTOCOL}//${API_IP}:8001`;
+// const RECEIVER_API = `${PROTOCOL}//${API_IP}:8002`;
 
 const REVENUE_API = `${PROTOCOL}//${API_IP}:8080`;
+
+async function queryByKey(key) {
+    try {
+        const res = await axios.get(`${MAIN_API}/api/query/${key}`);
+        return res.data;
+    } catch (error) {
+        throw error;
+    }
+}
 
 // ###################
 //       Project
@@ -281,6 +290,7 @@ export default {
     donate,
     isRate,
     getEvents,
+    queryByKey,
     sendRating,
     updateUser,
     getInvoice,

@@ -16,6 +16,7 @@ import CreateProject from './views/CreateProject.vue';
 import EditProfile from './views/user/EditProfile.vue';
 import ProjectDetail2 from './views/ProjectDetail2.vue';
 import RegisCreator from './views/user/RegisCreator.vue';
+import InvoiceView from './views/invoice/InvoiceView.vue';
 import ConfirmDonation from './views/ConfirmDonation.vue';
 import ConfirmProject from './views/receiver/ConfirmProject.vue';
 import auth from './firebase';
@@ -135,6 +136,12 @@ export default new Router({
       path: '/regis/creator',
       name: 'regisCreator',
       component: RegisCreator
+    },
+    {
+      path: '/invoice/:txid',
+      name: 'invoice-view',
+      props: true,
+      component: InvoiceView
     }
   ]
 })
