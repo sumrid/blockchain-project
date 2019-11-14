@@ -83,7 +83,9 @@
               </div>
             </b-form>
           </template>
+          <!--
           {{userInfo}}
+          -->
         </div>
       </div>
     </div>

@@ -20,6 +20,7 @@
             <div class="fb-profile-text">
               <h1>{{getUser.displayName}}</h1>
             </div>
+            <div>Credit: {{datablock.balance | currency}}</div>
           </div>
         </div>
       </div>
@@ -44,7 +45,11 @@
                   <div class="col" v-if="Boolean(donations)">
                     <b-table striped hover :items="donations" :fields="donationFields">
                       <template v-slot:cell(invoice)="data">
-                        <b-button variant="outline-primary" size="sm" :to="{ name: 'invoice-view', params: { txid: data.item.txid }}">รายละเอียด</b-button>
+                        <b-button
+                          variant="outline-primary"
+                          size="sm"
+                          :to="{ name: 'invoice-view', params: { txid: data.item.txid }}"
+                        >รายละเอียด</b-button>
                       </template>
                     </b-table>
                   </div>
@@ -60,7 +65,7 @@
                     <p>โครงการของฉัน</p>
                     <project v-for="(item, index) in myprojects" :key="index" :id="item.id"></project>
                   </b-tab>
-
+                  <!--
                   <b-tab title="โครงการที่รับบริจาค">
                     <p>โครงการที่บริจาค</p>
                     <b-table-simple hover responsive>
@@ -90,6 +95,7 @@
                       </b-tbody>
                     </b-table-simple>
                   </b-tab>
+                  -->
 
                   <!--
                   <b-tab title="ตรวจสอบความเคลื่อนไหว">
@@ -184,6 +190,7 @@ export default {
   data() {
     return {
       profile: {},
+      datablock: {},
       donations: [],
       myReceive: [],
       isCreator: false,
@@ -218,6 +225,7 @@ export default {
         this.getMyProject(user.uid);
         this.getMyReceive(user.uid);
         this.getProfile(user.uid);
+        this.getDataBlock(user.uid);
       } else {
         if (this.$route.name == "me") this.$router.replace("/");
       }
@@ -237,6 +245,9 @@ export default {
       this.profile = await service.getUserInfo(id);
       const role = this.profile.role;
       this.isCreator = role.includes("creator");
+    },
+    async getDataBlock(id) {
+      this.datablock = await service.getUserByID(id);
     }
   },
   computed: {

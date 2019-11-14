@@ -153,8 +153,14 @@ export default {
   },
   methods: {
     getProject: async function(id) {
-      // this.form = await service.getProjectByID(id);
       this.form = await service.getProjectInfo(id); // firebase
+      const block = await service.getProjectByID(id); // block
+
+      // check owner
+      if (block.owner != this.getUser.uid) {
+        console.info(`[info] not owner for this project`);
+        this.$router.replace({ name: "project", params: { id } });
+      }
       console.info(`[info] [get project]`);
     },
     async uploadMainImage() {

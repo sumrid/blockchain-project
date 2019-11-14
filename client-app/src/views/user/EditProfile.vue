@@ -8,16 +8,22 @@
               <legend>Edit Profile</legend>
 
               <b-form-group label="Your Name:">
-                <b-form-input required placeholder="Enter name" class="col-md-4" v-model="form.displayName"></b-form-input>
+                <b-form-input
+                  required
+                  placeholder="Enter name"
+                  class="col-md-4"
+                  v-model="form.displayName"
+                ></b-form-input>
               </b-form-group>
 
+              <!--
               <b-form-group>
                 <b-form-checkbox-group >
                   <b-form-checkbox value="me">Check me out</b-form-checkbox>
                   <b-form-checkbox value="that">Check that out</b-form-checkbox>
                 </b-form-checkbox-group>
               </b-form-group>
-
+              -->
             </fieldset>
           </b-form>
         </div>
@@ -37,13 +43,13 @@ export default {
     return {
       form: {},
       user: {}
-    }
+    };
   },
-  computed:{
+  computed: {
     ...mapGetters(["getUser"])
   },
   created() {
     this.form = this.getUser;
-  },
+  }
 };
 </script>

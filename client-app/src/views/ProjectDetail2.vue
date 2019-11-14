@@ -24,18 +24,26 @@
               <p style="font-family:RSU;">เป้าหมาย</p>
               <p style="font-family:RSU;">{{ project.goal | currency}}</p>
             </div>
-            <div>
-              <b-progress height="2rem" variant="success" animated>
-                <b-progress-bar :value="percent">
-                  Progress:
-                  <strong>{{percent}}%</strong>
-                </b-progress-bar>
-              </b-progress>
+            <div class="row">
+              <div class="col">
+                <b-progress height="2rem" variant="success">
+                  <b-progress-bar :value="percent" striped>
+                    <p class="text-center">
+                      Progress:
+                      <strong>{{percent}}%</strong>
+                    </p>
+                  </b-progress-bar>
+                </b-progress>
+              </div>
             </div>
             <!-- donate button -->
-            <button class="button-donate" @click.prevent="scrollToDonate">
-              <span>Donate</span>
-            </button>
+            <div class="row">
+              <div class="col">
+                <button class="button-donate" @click.prevent="scrollToDonate">
+                  <span>Donate</span>
+                </button>
+              </div>
+            </div>
             <br />
             <!-- sendto -->
             <div>
@@ -332,7 +340,7 @@ export default {
       fields: [
         {
           key: "txid",
-          value: 'รหัสธุรกรรม',
+          value: "รหัสธุรกรรม",
           sortable: false
         },
         {
@@ -554,13 +562,15 @@ a + a {
 
 .card {
   /* card ของ ยอด donate */
-  border: 2px solid #ff8d1e;
+  border: 2px solid #fff3d9;
   /*กรอบของ card*/
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   padding: 16px;
   margin: 1rem;
+  /**
   border-radius: 10px;
-  background-color: #fff4f4;
+   */
+  background-color: #fff9eb;
 }
 
 .cardprofile {

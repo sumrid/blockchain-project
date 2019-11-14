@@ -12,7 +12,7 @@ CHANNEL_NAME=donation
 # remove previous crypto material and config transactions
 # ลบของเก่าทิ้งแล้วสร้างไฟล์ใหม่
 rm -fr config/*
-# rm -fr crypto-config/*
+# rm -fr crypto-config/*  # key ต่างๆ
 
 echo "######## 1.generate crypto material"
 #############################
