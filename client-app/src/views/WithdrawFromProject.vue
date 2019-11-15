@@ -1,12 +1,12 @@
 <template>
   <div class="container">
-    <div class="row">
+    <div class="row mt-4">
       <div class="col">
         <h1>ขอถอนเงิน</h1>
+        <p>ชื่อโครงการ: {{project.title}}</p>
       </div>
     </div>
     <hr />
-    {{canWithdraw}} ,,,,,,,,,,, {{form.amount}}
     <div class="row">
       <div class="col">
         <p>ยอดเงินปัจจุบัน: {{ project.balance | currency }}</p>

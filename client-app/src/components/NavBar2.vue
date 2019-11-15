@@ -1,5 +1,5 @@
 <template>
-  <b-navbar class="navbar-dark bg-dark" toggleable="lg" type="dark">
+  <b-navbar class="navbar-dark bg-dark custom-font-nav" toggleable="lg" type="dark">
     <b-navbar-brand href="#/">DoWeb</b-navbar-brand>
     
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
@@ -151,5 +151,10 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+@import url('https://fonts.googleapis.com/css?family=Mitr&display=swap');
+
+.custom-font-nav {
+  font-family: 'Mitr', sans-serif;
+}
 </style>

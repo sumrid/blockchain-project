@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row">
       <div class="col m-4">
-        <H1 class="text-center">เพิ่มโครงการ</H1>
+        <H1 class="text-center">แก้ไขโครงการ</H1>
       </div>
     </div>
     <div class="row">

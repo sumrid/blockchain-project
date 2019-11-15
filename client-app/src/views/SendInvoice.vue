@@ -1,24 +1,30 @@
 <template>
   <div class="container">
     <div class="row">
-      <div class="col text-center">
+      <div class="col text-center m-4">
         <h1>ส่งใบกำกับภาษี</h1>
       </div>
     </div>
     <div class="row">
       <div class="col">
+        <p>ชื่อโครงการ: {{project.title}}</p>
         <b-form-group label="รหัสโครงการ">
           <b-form-input id="input-horizontal" v-model="project.id" disabled></b-form-input>
         </b-form-group>
 
-        <b-input label="รหัสใบกำกับภาษี" v-model="invID"></b-input>
+        <b-form-group label="กรอกรหัสใบกำกับภาษี">
+          <b-input v-model="invID"></b-input>
+        </b-form-group>
         <b-btn @click="getInvoice" :disabled="!invID">Check</b-btn>
         <hr />
         <pre>{{inv}}</pre>
         <hr />
 
         <template v-if="showAlert">
-          <b-alert variant="danger" show>เงินของโครงการมีไม่พอ (โครงการมีเงิน {{project.balance}} แต่ใบกำกับภาษีต้องจ่าย {{inv.total | currency}})</b-alert>
+          <b-alert
+            variant="danger"
+            show
+          >เงินของโครงการมีไม่พอ (โครงการมีเงิน {{project.balance}} แต่ใบกำกับภาษีต้องจ่าย {{inv.total | currency}})</b-alert>
         </template>
         <template v-else>
           <b-btn @click="sendInvoice" :disabled="!canSend" v-if="!isLoading">ส่งใบกำกับภาษี</b-btn>
@@ -51,8 +57,7 @@ export default {
     canSend() {
       if (this.project && this.user && this.inv) return true;
       else false;
-    },
-    
+    }
   },
   methods: {
     checkBalance: function() {
@@ -64,6 +69,12 @@ export default {
     },
     getProject: async function(id) {
       this.project = await service.getProjectByID(id);
+
+      // check owner
+      if (this.project.owner != this.getUser.uid) {
+        console.info(`[info] not owner for this project`);
+        this.$router.replace({ name: "project", params: { id } });
+      }
     },
     getInvoice: async function() {
       try {

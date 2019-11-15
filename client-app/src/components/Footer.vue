@@ -145,9 +145,12 @@
 </template>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css?family=Prompt&display=swap');
+
 footer .main-footer {
   padding: 20px 0;
   background: #252525;
+  font-family: 'Prompt', sans-serif;
 }
 footer ul {
   padding-left: 0;

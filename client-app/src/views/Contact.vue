@@ -148,6 +148,9 @@ export default {
         send: faPaperPlane
       }
     };
-  }
+  },
+  created() {
+    document.title = "Donate-web | ติดต่อเรา";
+  },
 };
 </script>

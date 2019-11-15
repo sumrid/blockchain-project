@@ -19,7 +19,7 @@
             <h1 class="large-font" style="columns: #ff8d1e;">
               <b>ขาดสารอาหารทั่วประเทศ</b>
             </h1>
-            <p>
+            <p class="detail-font">
               <span style="font-size:24px">โรคขาดสารอาหาร</span> เป็นภาวะที่ร่างกายขาดสารอาหารและอาจทำให้เกิดปัญหาสุขภาพตามมา โดยอาจมีอาการ เช่น อ่อนเพลีย ผิวหนังมีลักษณะผิดปกติ กระดูกหยุดเจริญเติบโต หรือมีภาวะสมองเสื่อม เป็นต้น ซึ่งโรคขาดสารอาหารมักเกิดขึ้นเมื่อร่างกายได้รับสารอาหารที่จำเป็นไม่เพียงพอ โดยเฉพาะอาหารหลักอย่างโปรตีน คาร์โบไฮเดรต ไขมัน วิตามิน หรือแร่ธาตุต่าง ๆ หากผู้ป่วยไม่ได้รับการรักษาอย่างเหมาะสมทันท่วงที อาจมีอาการร้ายแรงถึงขั้นเสียชีวิตได้
             </p>
             <button class="btn btn-outline-secondary" style="background-color:#ff8d1e">Read More</button>
@@ -34,7 +34,7 @@
           <div class="card">
             <b-img-lazy rounded :src="imageUrl(p.id)" width="500" height="200"></b-img-lazy>
             <h3>{{p.title}}</h3>
-            <p>ในชีวิตคุณ คงจะมีหลายครั้งที่คุณเจอแมวถูกทิ้งและแมวจรจัด สัตว์ที่อาศัยอยู่นอกบ้านเหล่านี้ทำบุญกับใครไม่ค่อยขึ้น ไม่ว่าคุณจะเห็นมันหลังบ้านของคุณ รอบ ๆ ที่ทำงาน สวนสาธารณะ หรือขณะเดินทางไปต่างประเทศ</p>
+            <p class="detail-font">ในชีวิตคุณ คงจะมีหลายครั้งที่คุณเจอแมวถูกทิ้งและแมวจรจัด สัตว์ที่อาศัยอยู่นอกบ้านเหล่านี้ทำบุญกับใครไม่ค่อยขึ้น ไม่ว่าคุณจะเห็นมันหลังบ้านของคุณ รอบ ๆ ที่ทำงาน สวนสาธารณะ หรือขณะเดินทางไปต่างประเทศ</p>
             <router-link :to="{ name: 'project', params: { id: p.id }}">
               <button type="button" class="btn btn-outline-secondary">Read more</button>
             </router-link>
@@ -104,6 +104,8 @@ export default {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css?family=Sarabun&display=swap');
+
 * {
   box-sizing: border-box;
 }
@@ -319,5 +321,9 @@ ul.social-footer2 li a {
   -ms-transition: all 250ms ease-in-out 0s;
   -o-transition: all 250ms ease-in-out 0s;
   transition: all 250ms ease-in-out 0s;
+}
+
+.detail-font {
+  font-family: 'Sarabun', sans-serif;
 }
 </style>

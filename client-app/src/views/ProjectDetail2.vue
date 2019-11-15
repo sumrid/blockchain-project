@@ -2,11 +2,14 @@
   <div>
     <!-- info -->
     <div class="container">
+      <!-- ชื่อโครงการ -->
       <div class="row">
         <div class="col title">
           <h1 class="text-center">{{project.title}}</h1>
         </div>
       </div>
+
+      <!-- รูปโครงการ -->
       <div class="row">
         <div class="col-lg-8">
           <div class="row justify-content-center">
@@ -21,8 +24,8 @@
               <p>{{ project.balance | currency }}</p>
             </div>
             <div class="successvalue">
-              <p style="font-family:RSU;">เป้าหมาย</p>
-              <p style="font-family:RSU;">{{ project.goal | currency}}</p>
+              <p>เป้าหมาย</p>
+              <p>{{ project.goal | currency}}</p>
             </div>
             <div class="row">
               <div class="col">
@@ -47,7 +50,7 @@
             <br />
             <!-- sendto -->
             <div>
-              <p style="font-family:RSU;">ส่งต่อ</p>
+              <p>ส่งต่อ</p>
               <!-- Add font awesome icons -->
               <div class="effect aeneas">
                 <div class="buttons">
@@ -128,6 +131,7 @@
         </div>
       </div>
 
+     <hr>
       <!-- donation history -->
       <div class="row">
         <div class="col text-center m-4">
@@ -146,6 +150,7 @@
               :sort-desc.sync="sortDesc"
             >
               <template v-slot:cell(amount)="data">{{data.value | currency}}</template>
+              <template v-slot:cell(txid)="data"><router-link :to="{name: 'tx', params: {txid: data.value}}" target="_blank">{{data.value}}</router-link></template>
             </b-table>
           </div>
         </div>
@@ -340,7 +345,7 @@ export default {
       fields: [
         {
           key: "txid",
-          value: "รหัสธุรกรรม",
+          label: "รหัสธุรกรรม",
           sortable: false
         },
         {
@@ -500,6 +505,8 @@ export default {
 
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css?family=Sarabun&display=swap');
+
 .donate-container {
   background-color: #fcf2e0;
 }
@@ -715,5 +722,9 @@ a + a {
 /* แสดงข้อมูลโครงการ */
 div#project-info >>> .ql-align-center {
   text-align: center;
+}
+
+#project-info {
+  font-family: 'Sarabun', sans-serif;
 }
 </style>
