@@ -63,6 +63,13 @@
                 <b-tabs content-class="mt-3">
                   <b-tab title="โครงการของฉัน">
                     <p>โครงการของฉัน</p>
+                    <router-link to="createproject" v-if="isCreator">
+                      <button class="btn">
+                        <icon :icon="iconPlus" /> สร้างโครงการ
+                      </button>
+                    </router-link>
+
+                    <!-- project list -->
                     <project v-for="(item, index) in myprojects" :key="index" :id="item.id"></project>
                   </b-tab>
                   <!--
@@ -103,14 +110,6 @@
                   </b-tab>
                   -->
                 </b-tabs>
-
-                <div class="row">
-                  <router-link to="createproject" v-if="isCreator">
-                    <button class="btn">
-                      <icon :icon="iconPlus" />สร้างโครงการ
-                    </button>
-                  </router-link>
-                </div>
               </b-tab>
             </b-tabs>
           </b-card>

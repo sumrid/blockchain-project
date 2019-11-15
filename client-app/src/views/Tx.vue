@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="container">
-      <div class="row m-4">
+      <div class="row mt-4">
         <div class="col">
-          <h3>รหัสธุรกรรม: {{id}}</h3>
+          <h4>รหัสธุรกรรม: {{id}}</h4>
         </div>
       </div>
       <div class="row">

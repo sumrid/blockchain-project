@@ -28,6 +28,18 @@ services:
     networks:
       - default
 
+  store:
+    image: node:10.15.3-stretch-slim
+    container_name: store
+    volumes:
+      - ./store:/store
+    working_dir: /store
+    command: npm run serve
+    ports:
+      - 82:8080
+    networks:
+      - default
+
   socket:
     image: node:10.15.3-stretch-slim
     container_name: socket
