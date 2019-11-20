@@ -650,6 +650,10 @@ func (C *Chaincode) transfer(stub shim.ChaincodeStubInterface, args []string) pe
 		return shim.Error("Not enough money to transfer.")
 	}
 
+	if prj.Owner != ursID {
+		return shim.Error("This user is not the project owner.")
+	}
+
 	usr.Balance += amt
 	prj.Balance -= amt
 
@@ -663,6 +667,16 @@ func (C *Chaincode) transfer(stub shim.ChaincodeStubInterface, args []string) pe
 	t, _ := stub.GetTxTimestamp()
 	trnsf.Time = time.Unix(t.GetSeconds(), 0)
 
+	wth := Withdraw{}
+	wth.ID = "withdraw_" + stub.GetTxID()
+	wth.Type = "withdraw"
+	wth.User = ursID
+	wth.Project = prjID
+	wth.Amount = amt
+	wth.Status = "withdraw"
+	wth.Time = time.Unix(t.GetSeconds(), 0)
+	// wth.InvoiceNumber = ""
+
 	// Create event
 	evt := Event{}
 	evt.ID = "event_" + stub.GetTxID()
@@ -675,6 +689,7 @@ func (C *Chaincode) transfer(stub shim.ChaincodeStubInterface, args []string) pe
 
 	usrAsByte, err = json.Marshal(usr)
 	prjAsByte, err = json.Marshal(prj)
+	wthAsByte, err := json.Marshal(wth)
 	evtAsByte, err := json.Marshal(evt)
 	trnsfAsByte, err := json.Marshal(trnsf)
 	if err != nil {
@@ -684,6 +699,7 @@ func (C *Chaincode) transfer(stub shim.ChaincodeStubInterface, args []string) pe
 	stub.PutState(ursID, usrAsByte)
 	stub.PutState(prj.ID, prjAsByte)
 	stub.PutState(evt.ID, evtAsByte)
+	stub.PutState(wth.ID, wthAsByte)
 	stub.PutState(trnsf.ID, trnsfAsByte)
 
 	return shim.Success(trnsfAsByte)

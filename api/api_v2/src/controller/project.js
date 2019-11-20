@@ -178,6 +178,24 @@ async function getProjectInvoices(req, res) {
     }
 }
 
+async function getWithdraw(req, res) {
+    try {
+        const projectID = req.params.project;
+        const query = queryObj();
+        query.selector.type.$eq = "withdraw";
+        query.selector.project = { $eq: projectID };
+        const queryString = JSON.stringify(query);
+
+        const result = await service.queryWithSelector(queryString);
+        const withdraw = JSON.parse(String(result));
+
+        if (withdraw) res.json(withdraw);
+        else res.status(404).json([]);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
 /**
  * Check time has expired.
  */
@@ -219,6 +237,7 @@ module.exports = {
     approveProject,
     deleteProject,
     getAllProjects,
+    getWithdraw,
     getProjectByID,
     getProjectEvents,
     getProjectDonations,

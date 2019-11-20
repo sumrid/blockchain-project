@@ -7,6 +7,12 @@ install:
 	@(cd dashboard-ui && npm i)
 	@(cd store && npm i)
 
+build:
+	@echo "Building web..."
+	@(cd client-app && npm run build)
+	@(cd dashboard-ui && npm run build)
+	@(cd store && npm run build)
+
 start:
 	@echo "Starting project..."
 	docker-compose up

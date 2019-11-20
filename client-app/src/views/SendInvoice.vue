@@ -15,7 +15,8 @@
         <b-form-group label="กรอกรหัสใบกำกับภาษี">
           <b-input v-model="invID"></b-input>
         </b-form-group>
-        <b-btn @click="getInvoice" :disabled="!invID">Check</b-btn>
+        <b-btn disabled v-if="isLoadingInvoice"><b-spinner></b-spinner> Checking</b-btn>
+        <b-btn @click="getInvoice" :disabled="!invID" v-else>Check</b-btn>
         <hr />
         <pre>{{inv}}</pre>
         <hr />
@@ -46,6 +47,7 @@ export default {
     return {
       showAlert: false,
       isLoading: false,
+      isLoadingInvoice: false,
       project: null,
       invID: null,
       user: null,
@@ -78,11 +80,14 @@ export default {
     },
     getInvoice: async function() {
       try {
+        this.isLoadingInvoice = true;
         this.inv = await service.getInvoiceByID(this.invID);
         this.checkBalance();
+        this.isLoadingInvoice = false;
       } catch (error) {
         this.showAlert = false;
         this.inv = null;
+        this.isLoadingInvoice = false;
         alert(error);
       }
     },

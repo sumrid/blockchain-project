@@ -180,6 +180,24 @@ async function getReceiveProject(req, res) {
     }
 }
 
+async function getWithdraw(req, res) {
+    try {
+        const userID = req.params.id;
+        const query = queryObj();
+        query.selector.type.$eq = "withdraw";
+        query.selector.user = { $eq: userID };
+        const queryString = JSON.stringify(query);
+
+        const result = await service.queryWithSelector(queryString);
+        const withdraw = JSON.parse(String(result));
+
+        if (withdraw) res.json(withdraw);
+        else res.status(404).json([]);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
 async function rating(req, res) {
     try {
         const creator = req.params.id;
@@ -259,9 +277,9 @@ async function sendConfirmEmail(req, res) {
     try {
         const email = req.params.email;
         firebase.sendConfirmEmail(email);
-        res.json({email});
+        res.json({ email });
     } catch (error) {
-        res.status(500).json(error);        
+        res.status(500).json(error);
     }
 }
 
@@ -272,6 +290,7 @@ module.exports = {
     regisUser,
     deleteUser,
     updateUser,
+    getWithdraw,
     getAllUsers,
     getProjects,
     getDonations,

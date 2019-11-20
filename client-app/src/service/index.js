@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_IP , PROTOCOL} from '../util';
+import { API_IP, PROTOCOL } from '../util';
 import { firestore } from 'firebase';
 
 const MAIN_API = `${PROTOCOL}//${API_IP}:8000`;
@@ -48,7 +48,6 @@ async function updateProjectStatus(user, project, status) {
     return res.data;
 }
 
-
 /**
  * ดึงรายการโครงการทั้งหมดที่มีจาก chaincode
  */
@@ -71,6 +70,24 @@ async function getProjectByID(id) {
         return res.data;
     } catch (err) {
         throw err;
+    }
+}
+
+async function getProjectWithdraw(id) {
+    try {
+        const res = await axios.get(MAIN_API + '/api/project/' + id + "/withdraw");
+        return res.data;
+    } catch (err) {
+        throw err;
+    }
+}
+
+async function projectWithdraw(user, project, amount) {
+    try {
+        const res = await axios.post(`${MAIN_API}/api/withdraw`, { user, project, amount });
+        return res.data;
+    } catch (error) {
+        throw error;
     }
 }
 
@@ -127,7 +144,7 @@ async function getCreatorRating(uid) {
 }
 
 async function sendRating(creator, rater, rate) {
-    await axios.post(MAIN_API + `/api/user/${creator}/rating`, {rater, rate});
+    await axios.post(MAIN_API + `/api/user/${creator}/rating`, { rater, rate });
 }
 
 async function isRate(creator, rater) {
@@ -275,7 +292,7 @@ async function getProjectsInfo() {
         console.info(`[service] [getProjectsInfo] get all project`);
         const res = await firestore().collection('projects').get();
         let project = [];
-        res.forEach((sp)=> {
+        res.forEach((sp) => {
             project.push(sp.data());
         });
         return project;
@@ -305,10 +322,12 @@ export default {
     getProjectByID,
     getProjectInfo,
     getInvoiceByID,
+    projectWithdraw,
     checkUserExists,
     getProjectsInfo,
     getCreatorRating,
     sendConfirmEmail,
+    getProjectWithdraw,
     getDonationHistory,
     updateProjectStatus,
     getDonationByUserID,

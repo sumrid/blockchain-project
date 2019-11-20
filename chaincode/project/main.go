@@ -67,13 +67,26 @@ type Event struct {
 	Type      string `json:"type"`
 }
 
-// WithdrawRequest ขอเงินโอนเงิน
+// WithdrawRequest ขอโอนเงิน
 type WithdrawRequest struct {
 	ID            string `json:"id"`
 	Type          string `json:"type"`
+	User          string `json:"user"`
 	Project       string `json:"project"` // uid ของโครงการ
 	Status        string `json:"status"`
 	InvoiceNumber string `json:"invoice"`
+}
+
+// Withdraw การขอเงินออกจากโครงการ
+type Withdraw struct {
+	ID            string    `json:"id"`
+	Type          string    `json:"type"`
+	User          string    `json:"user"`
+	Project       string    `json:"project"`
+	Amount        float64   `json:"amount"`
+	Status        string    `json:"status"`
+	InvoiceNumber string    `json:"invoice"`
+	Time          time.Time `json:"time"`
 }
 
 // Item สินค้าในใบกำกับภาษี
