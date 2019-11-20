@@ -12,12 +12,12 @@ const ccpPath = path.resolve(__dirname, 'connection_profile', 'connection.json')
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
 const ccp = JSON.parse(ccpJSON);
 
-const WALLET_NAME = 'wallet2';
+const WALLET_NAME = 'wallet1';
 const ADMIN = 'admin';
-const USER = 'user1';
-const AFFILIATION = 'org2.department1';
-const MSP = 'Org2MSP';
-ccp.client.organization = "Org2";
+const USER = 'creator1';
+const AFFILIATION = 'org1.department1';
+const MSP = 'Org1MSP';
+ccp.client.organization = "Org1";
 
 async function main() {
     try {
@@ -57,10 +57,14 @@ async function main() {
         // Register the user, enroll the user, and import the new identity into the wallet.
         // 1. register
         // 2. enroll
-        const secret = await ca.register({ affiliation: AFFILIATION, enrollmentID: USER, role: 'client' }, adminIdentity);
+        // const secret = await ca.register({ affiliation: AFFILIATION, enrollmentID: USER, role: 'client' }, adminIdentity);
+        const secret = await ca.register({ affiliation: AFFILIATION, enrollmentID: USER, role: 'creator' }, adminIdentity);
         const enrollment = await ca.enroll({ enrollmentID: USER, enrollmentSecret: secret });
         const userIdentity = X509WalletMixin.createIdentity(MSP, enrollment.certificate, enrollment.key.toBytes());
+
+        // เก็บไฟล์เข้า wallet
         wallet.import(USER, userIdentity);
+        console.log(userIdentity);
         console.log(`Successfully registered and enrolled admin user "${USER}" and imported it into the wallet`);
 
     } catch (error) {
