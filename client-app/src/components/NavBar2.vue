@@ -1,5 +1,5 @@
 <template>
-  <b-navbar class="navbar-dark bg-dark custom-font-nav" toggleable="lg" type="dark">
+  <b-navbar class="navbar-dark bg-dark custom-font-nav" toggleable="lg" type="dark" fixed="top">
     <b-navbar-brand href="#/">DoWeb</b-navbar-brand>
     
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
@@ -30,12 +30,12 @@
         <!-- item group user -->
         <li class="nav-item">
           <router-link class="nav-link" to="/regis">
-            <icon icon="user-secret" />Sign Up
+            <icon icon="user-secret" />&nbsp;Sign Up
           </router-link>
         </li>
         <li class="nav-item">
           <a class="nav-link" href @click.prevent="showModal">
-            <icon icon="sign-in-alt" />Login
+            <icon icon="sign-in-alt" />&nbsp;Login
           </a>
         </li>
       </b-navbar-nav>
@@ -46,7 +46,7 @@
         </li>
         <li class="nav-item">
           <a class="nav-link" href @click.prevent="logout">
-            <icon :icon="icon.signout" />Logout
+            <icon :icon="icon.signout" />&nbsp;Logout
           </a>
         </li>
       </b-navbar-nav>

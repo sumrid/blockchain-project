@@ -122,9 +122,9 @@
             <div class="form-group">
               <label class="col-md-4 control-label"></label>
               <div class="col-md-4">
-                <button type="submit" class="btn btn-warning">
-                  <icon :icon="icon.send" />ส่ง
-                </button>
+                <b-button block type="submit" class="btn btn-warning">
+                  <icon :icon="icon.send" />&nbsp;ส่ง
+                </b-button>
               </div>
             </div>
           </b-form>

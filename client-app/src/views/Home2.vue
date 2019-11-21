@@ -36,7 +36,7 @@
             <h3>{{p.title}}</h3>
             <p class="detail-font">ในชีวิตคุณ คงจะมีหลายครั้งที่คุณเจอแมวถูกทิ้งและแมวจรจัด สัตว์ที่อาศัยอยู่นอกบ้านเหล่านี้ทำบุญกับใครไม่ค่อยขึ้น ไม่ว่าคุณจะเห็นมันหลังบ้านของคุณ รอบ ๆ ที่ทำงาน สวนสาธารณะ หรือขณะเดินทางไปต่างประเทศ</p>
             <router-link :to="{ name: 'project', params: { id: p.id }}">
-              <button type="button" class="btn btn-outline-secondary">Read more</button>
+              <button type="button" class="btn btn-outline-secondary">อ่านเพิ่มเติม</button>
             </router-link>
           </div>
         </div>

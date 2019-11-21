@@ -28,6 +28,7 @@ export default {
   /* text-align: center; */
   color: #3c5369;
   font-family: 'Prompt', sans-serif;
+  margin-top: 3.5rem;
 }
 
 #nav a.router-link-exact-active {

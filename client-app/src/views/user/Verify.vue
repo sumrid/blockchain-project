@@ -4,84 +4,88 @@
       <div class="row">
         <div class="col">
           <h2>ยืนยันตัวตน</h2>
-
           <hr />
-
           <h4>E-mail</h4>
           <b-alert variant="success" v-if="user.emailVerified" show>ยืนยัน E-mail เรียบร้อยแล้ว</b-alert>
           <template v-else>
             <b-alert show variant="danger">กรุณายืนยัน E-mail {{user.email}}</b-alert>
             <b-button variant="outline-primary" @click="sendEmail" v-if="!isSent">Resend e-mail</b-button>
-            <b-button variant="outline-primary"  v-else disabled>ส่ง email แล้ว</b-button>
+            <b-button variant="outline-primary" v-else disabled>ส่ง email แล้ว</b-button>
           </template>
 
           <hr />
 
-          <h4>บัตรประชาชน</h4>
-          <template v-if="userInfo.id_card_img">
-            <b-alert variant="success" show v-if="userInfo.verifyIDCard">
-              ยืนยันบัตรแล้ว
-              <br />
-              รหัสธุรกรรม: {{userInfo.verifyID_tx}}
-            </b-alert>
-            <b-alert variant="warning" show v-else>รอการยืนยัน</b-alert>
-            <!-- ID card image -->
-            <div class="row">
-              <div class="col">
-                <b-img class="idcard" :src="userInfo.id_card_img" rounded fluid></b-img>
-              </div>
-            </div>
-          </template>
-
-          <template v-else>
-            <!-- ID card image -->
-            <div class="row" v-if="form.id_card_img">
-              <div class="col">
-                <b-img class="idcard" :src="form.id_card_img" rounded fluid></b-img>
-              </div>
-            </div>
-
-            <b-form @submit.prevent="submitIDCard">
-              <!-- input file -->
-              <b-form-group label="รูปบัตรประชาชน" label-for="file-default" label-cols-sm="2">
-                <b-form-file
-                  v-model="file"
-                  label-cols-sm="5"
-                  :state="Boolean(file)"
-                  placeholder="รูปบัตรประชาชน"
-                  drop-placeholder="Drop file here..."
-                  accept="image/jpeg, image/png, image/gif"
-                  @input="uploadImage()"
-                ></b-form-file>
-                <div class="mt-3">Selected file: {{ file ? file.name : '' }}</div>
-              </b-form-group>
-
-              <!-- loading -->
-              <div class="row" v-if="isUploading">
+          <template v-if="isCreator">
+            <h4>บัตรประชาชน</h4>
+            <template v-if="userInfo.id_card_img">
+              <b-alert variant="success" show v-if="userInfo.verifyIDCard">
+                ยืนยันบัตรแล้ว
+                <br />
+                รหัสธุรกรรม: {{userInfo.verifyID_tx}}
+              </b-alert>
+              <b-alert variant="warning" show v-else>รอการยืนยัน</b-alert>
+              <!-- ID card image -->
+              <div class="row">
                 <div class="col">
-                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="false"></span>
-                  กำลังอัปโหลดรูผปภาพ
+                  <b-img class="idcard" :src="userInfo.id_card_img" rounded fluid></b-img>
+                </div>
+              </div>
+            </template>
+
+            <template v-else>
+              <!-- ID card image -->
+              <div class="row" v-if="form.id_card_img">
+                <div class="col">
+                  <b-img class="idcard" :src="form.id_card_img" rounded fluid></b-img>
                 </div>
               </div>
 
-              <div class="row" v-if="!isLoadingCardSubmit">
-                <b-col cols="4" align-self="end">
-                  <b-btn type="submit">ส่งข้อมูล</b-btn>
-                </b-col>
-              </div>
-              <div class="row" v-else>
-                <b-col cols="4" align-self="end">
-                  <b-btn disabled>
+              <b-form @submit.prevent="submitIDCard">
+                <!-- input file -->
+                <b-form-group label="รูปบัตรประชาชน" label-for="file-default" label-cols-sm="2">
+                  <b-form-file
+                    v-model="file"
+                    label-cols-sm="5"
+                    :state="Boolean(file)"
+                    placeholder="รูปบัตรประชาชน"
+                    drop-placeholder="Drop file here..."
+                    accept="image/jpeg, image/png, image/gif"
+                    @input="uploadImage()"
+                  ></b-form-file>
+                  <div class="mt-3">Selected file: {{ file ? file.name : '' }}</div>
+                </b-form-group>
+
+                <!-- loading -->
+                <div class="row" v-if="isUploading">
+                  <div class="col">
                     <span
                       class="spinner-border spinner-border-sm"
                       role="status"
                       aria-hidden="false"
                     ></span>
-                    ส่งข้อมูล
-                  </b-btn>
-                </b-col>
-              </div>
-            </b-form>
+                    กำลังอัปโหลดรูผปภาพ
+                  </div>
+                </div>
+
+                <div class="row" v-if="!isLoadingCardSubmit">
+                  <b-col cols="4" align-self="end">
+                    <b-btn type="submit">ส่งข้อมูล</b-btn>
+                  </b-col>
+                </div>
+                <div class="row" v-else>
+                  <b-col cols="4" align-self="end">
+                    <b-btn disabled>
+                      <span
+                        class="spinner-border spinner-border-sm"
+                        role="status"
+                        aria-hidden="false"
+                      ></span>
+                      ส่งข้อมูล
+                    </b-btn>
+                  </b-col>
+                </div>
+              </b-form>
+            </template>
           </template>
           <!--
           {{userInfo}}
@@ -106,7 +110,8 @@ export default {
       file: null,
       isUploading: false,
       isLoadingCardSubmit: false,
-      isSent: false
+      isSent: false,
+      isCreator: false
     };
   },
   computed: {
@@ -115,6 +120,8 @@ export default {
   async created() {
     this.user = this.getUser;
     this.userInfo = await service.getUserInfo(this.user.uid);
+    const role = this.userInfo.role;
+    this.isCreator = role.includes("creator");
   },
   methods: {
     async uploadImage() {
@@ -134,6 +141,8 @@ export default {
     },
     async loadUserInfo() {
       this.userInfo = await service.getUserInfo(this.user.uid);
+      const role = this.userInfo.role;
+      this.isCreator = role.includes("creator");
     },
     async submitIDCard() {
       try {

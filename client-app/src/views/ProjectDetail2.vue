@@ -17,19 +17,23 @@
           </div>
         </div>
         <!-- Donate card ด้านข้าง -->
-        <div class="col-lg-4 text-center">
-          <div class="card">
-            <div class="progressvalue">
-              <p>ยอดขณะนี้</p>
-              <p>{{ project.balance | currency }}</p>
-            </div>
-            <div class="successvalue">
-              <p>เป้าหมาย</p>
-              <p>{{ project.goal | currency}}</p>
+        <div class="col-lg-4">
+          <div class="container card">
+            <div class="row">
+              <div class="col">
+                <p class="progressmessage">ยอดขณะนี้</p>
+                <p class="progressvalue">{{ project.balance | currency }}</p>
+              </div>
             </div>
             <div class="row">
               <div class="col">
-                <b-progress height="2rem" variant="success">
+                <p class="successmessage">เป้าหมาย</p>
+                <p class="successvalue">{{ project.goal | currency}}</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <b-progress max="100" height="2rem" variant="success">
                   <b-progress-bar :value="percent" striped>
                     <p class="text-center">
                       Progress:
@@ -40,19 +44,19 @@
               </div>
             </div>
             <!-- donate button -->
-            <div class="row">
+            <div class="row text-center m-2">
               <div class="col">
                 <button class="button-donate" @click.prevent="scrollToDonate">
-                  <span>Donate</span>
+                  <span>บริจาค</span>
                 </button>
               </div>
             </div>
             <br />
             <!-- sendto -->
-            <div>
-              <p>ส่งต่อ</p>
-              <!-- Add font awesome icons -->
-              <div class="effect aeneas">
+            <div class="row">
+              <div class="col">
+                <p>ส่งต่อ</p>
+                <!-- Add font awesome icons -->
                 <div class="buttons">
                   <a href="https://www.facebook.com/" class="fb" title="Join us on Facebook">
                     <i class="fa fa-facebook w3-xlarge" aria-hidden="true"></i>
@@ -131,7 +135,7 @@
         </div>
       </div>
 
-     <hr>
+      <hr />
       <!-- donation history -->
       <div class="row">
         <div class="col text-center m-4">
@@ -150,7 +154,11 @@
               :sort-desc.sync="sortDesc"
             >
               <template v-slot:cell(amount)="data">{{data.value | currency}}</template>
-              <template v-slot:cell(txid)="data"><router-link :to="{name: 'tx', params: {txid: data.value}}" target="_blank">{{data.value}}</router-link></template>
+              <template v-slot:cell(txid)="data">
+                <router-link :to="{name: 'tx', params: {txid: data.value}}" target="_blank">
+                  <p class="text-truncate">{{data.value}}</p>
+                </router-link>
+              </template>
             </b-table>
           </div>
         </div>
@@ -158,7 +166,7 @@
     </div>
 
     <!-- donation input -->
-    <div class="container-fluid donate-container" v-if="project.status == 'open'">
+    <div class="container-fluid donate-container" v-if="project.status == 'open'" id="donate">
       <div class="container">
         <div class="row">
           <div class="col text-center m-4">
@@ -505,7 +513,7 @@ export default {
 
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css?family=Sarabun&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Sarabun&display=swap");
 
 .donate-container {
   background-color: #fcf2e0;
@@ -527,22 +535,6 @@ export default {
 
 a + a {
   margin-left: 20px;
-}
-
-.progress {
-  /* หลอดความสำเร็จ */
-  height: 18px;
-}
-
-.progress {
-  /* หลอดความสำเร็จ */
-  width: 300px;
-}
-
-.progress {
-  /* หลอดความสำเร็จ */
-  right: 50px;
-  top: 410px;
 }
 
 .progressmessage {
@@ -572,8 +564,6 @@ a + a {
   border: 2px solid #fff3d9;
   /*กรอบของ card*/
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  padding: 16px;
-  margin: 1rem;
   /**
   border-radius: 10px;
    */
@@ -725,6 +715,6 @@ div#project-info >>> .ql-align-center {
 }
 
 #project-info {
-  font-family: 'Sarabun', sans-serif;
+  font-family: "Sarabun", sans-serif;
 }
 </style>
