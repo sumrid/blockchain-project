@@ -123,6 +123,16 @@ async function queryTx(txID) {
     }
 }
 
+async function queryHash(hash) {
+    try {
+        const ch = await getChannal(USER);
+        const result = await ch.queryBlockByHash(hash);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
 // #####################
 // #       โครงการ
 // #####################
@@ -419,6 +429,7 @@ module.exports = {
     test,
     query,
     queryTx,
+    queryHash,
     addInvoice,
     queryWithSelector,
     closeProject,

@@ -10,6 +10,7 @@ const transferController = require('./controller/transfer');
 
 router.get('/tx/:txid', contorller.getTx);
 router.get('/query/:key', contorller.query);
+router.get('/hash/:hash', contorller.getBlockByHash);
 
 router.put('/project', projectController.updateProject);
 router.post('/project', projectController.createProject);

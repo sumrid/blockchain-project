@@ -11,13 +11,13 @@
 
       <!-- รูปโครงการ -->
       <div class="row">
-        <div class="col-lg-8">
+        <div class="col-lg-8 p-2">
           <div class="row justify-content-center">
             <b-img :src="info.image" fluid rounded />
           </div>
         </div>
         <!-- Donate card ด้านข้าง -->
-        <div class="col-lg-4">
+        <div class="col-lg-4 p-2">
           <div class="container card">
             <div class="row">
               <div class="col">
@@ -43,20 +43,24 @@
                 </b-progress>
               </div>
             </div>
+            <div class="row mt-2">
+              <div class="col text-center">
+                <p>เหลือเวลา ขข วัน</p>
+              </div>
+            </div>
             <!-- donate button -->
             <div class="row text-center m-2">
               <div class="col">
-                <button class="button-donate" @click.prevent="scrollToDonate">
+                <b-button block class="button-donate" @click.prevent="scrollToDonate">
                   <span>บริจาค</span>
-                </button>
+                </b-button>
               </div>
             </div>
             <br />
-            <!-- sendto -->
+            <!-- sendto
             <div class="row">
               <div class="col">
                 <p>ส่งต่อ</p>
-                <!-- Add font awesome icons -->
                 <div class="buttons">
                   <a href="https://www.facebook.com/" class="fb" title="Join us on Facebook">
                     <i class="fa fa-facebook w3-xlarge" aria-hidden="true"></i>
@@ -70,6 +74,7 @@
                 </div>
               </div>
             </div>
+            -->
           </div>
         </div>
       </div>
@@ -539,7 +544,7 @@ a + a {
 
 .progressmessage {
   /* ยอดขณะนี้ */
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .progressvalue {
@@ -549,12 +554,12 @@ a + a {
 
 .successmessage {
   /* ยอดที่ต้องการ */
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .successvalue {
   /* ยอดที่ต้องการ int */
-  font-size: 34px;
+  font-size: 26px;
 }
 
 /* Style the counter cards */

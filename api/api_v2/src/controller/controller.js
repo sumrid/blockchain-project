@@ -21,6 +21,16 @@ exports.getTx = async (req, res) => {
     }
 }
 
+exports.getBlockByHash = async (req, res) => {
+    try {
+        const hash = req.params.hash;
+        const result = await service.queryHash(hash);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
 // ##############################
 // #   check time has expired.
 // ##############################

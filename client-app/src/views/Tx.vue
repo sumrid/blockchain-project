@@ -29,9 +29,23 @@
           </div>
 
           <hr />
+          <!-- Input -->
           <div class="row">
             <dt class="col-sm-3">Input</dt>
             <dd class="col-sm-9">{{getInput}}</dd>
+          </div>
+
+          <hr>
+          <p class="h5">- Read Write set -</p>
+          <div class="row">
+            <dt class="col-sm-3">Read</dt>
+            <dd class="col-sm-9">{{find('reads')}}</dd>
+
+            <dt class="col-sm-3">Write</dt>
+            <dd class="col-sm-9">{{find('writes')}}</dd>
+          </div>
+          <div class="row">
+
           </div>
           <!--
           <b-table-simple>
@@ -51,11 +65,13 @@
 
 <script>
 import service from "../service";
+import jsonFind from "json-find";
 export default {
   data() {
     return {
       id: null,
-      tx: {}
+      tx: {},
+      txObj: {}
     };
   },
   async created() {
@@ -63,6 +79,7 @@ export default {
     document.title = "Donate-web | Tx " + id;
     this.id = id;
     this.tx = await service.getTx(id);
+    this.txObj = jsonFind(this.tx);
   },
   computed: {
     getNonce() {
@@ -71,13 +88,19 @@ export default {
       return data.toString();
     },
     getInput() {
-      const inputArgs = this.tx.data.data[0].payload.data.actions[0].payload.chaincode_proposal_payload.input.chaincode_spec.input.args;
+      const inputArgs = this.tx.data.data[0].payload.data.actions[0].payload
+        .chaincode_proposal_payload.input.chaincode_spec.input.args;
       let inputStrs = [];
-      for(let arg of inputArgs) {
+      for (let arg of inputArgs) {
         const str = Buffer.from(arg.data);
-        inputStrs.push(str.toString())
+        inputStrs.push(str.toString());
       }
       return inputStrs.join(", ");
+    }
+  },
+  methods: {
+    find(key) {
+      return this.txObj.checkKey(key);
     }
   }
 };
