@@ -31,14 +31,7 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-6 col-lg-4" v-for="p in projects" :key="p.id">
-          <div class="card">
-            <b-img-lazy rounded :src="imageUrl(p.id)" width="500" height="200"></b-img-lazy>
-            <h3>{{p.title}}</h3>
-            <p class="detail-font">ในชีวิตคุณ คงจะมีหลายครั้งที่คุณเจอแมวถูกทิ้งและแมวจรจัด สัตว์ที่อาศัยอยู่นอกบ้านเหล่านี้ทำบุญกับใครไม่ค่อยขึ้น ไม่ว่าคุณจะเห็นมันหลังบ้านของคุณ รอบ ๆ ที่ทำงาน สวนสาธารณะ หรือขณะเดินทางไปต่างประเทศ</p>
-            <router-link :to="{ name: 'project', params: { id: p.id }}">
-              <button type="button" class="btn btn-outline-secondary">อ่านเพิ่มเติม</button>
-            </router-link>
-          </div>
+          <project-item :project="p" :img="imageUrl(p.id)"></project-item>
         </div>
       </div>
     </div>
@@ -52,13 +45,15 @@
 const moment = require("moment");
 import service from "../service";
 import myFooter from "../components/Footer";
+import projectItem from "../components/project/projectItem";
 
 moment.locale("th");
 
 export default {
   name: "home",
   components: {
-    myFooter
+    myFooter,
+    projectItem
   },
   data() {
     return {
@@ -76,22 +71,9 @@ export default {
     document.title = "Donate-Web | หน้าแรก";
   },
   methods: {
-    updateTime: function(end) {
-      const endtime = moment(end, moment.ISO_8601);
-      return endtime.fromNow();
-    },
-    isTimeExpired: function(endtime) {
-      return moment(endtime, moment.ISO_8601).diff(moment()) <= 0
-        ? "table-danger"
-        : "";
-    },
-    onDecode(result) {
-      this.result = result;
-    },
     imageUrl: function(id) {
       console.info(`[home] [imageUrl] project id: ${id}`);
       const p = this.info.find(p => p.id === id); // find in array.
-      console.info(`[home] [imageUrl] ${JSON.stringify(p)}`);
       return p.image;
     }
   },
@@ -104,7 +86,7 @@ export default {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css?family=Sarabun&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Sarabun&display=swap");
 
 * {
   box-sizing: border-box;
@@ -203,13 +185,14 @@ img {
   }
 }
 
-/* Style the counter cards */
+/* Style the counter cards 
 .card {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   padding: 16px;
   text-align: center;
   background-color: #f1f1f1;
 }
+*/
 
 /*==================== 
             Widgets 
@@ -324,6 +307,6 @@ ul.social-footer2 li a {
 }
 
 .detail-font {
-  font-family: 'Sarabun', sans-serif;
+  font-family: "Sarabun", sans-serif;
 }
 </style>

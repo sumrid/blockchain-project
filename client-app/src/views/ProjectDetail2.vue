@@ -9,15 +9,15 @@
         </div>
       </div>
 
-      <!-- รูปโครงการ -->
+      <!-- รูปโครงการ แถบด้านข้าง -->
       <div class="row">
-        <div class="col-lg-8 p-2">
+        <div class="col-8">
           <div class="row justify-content-center">
             <b-img :src="info.image" fluid rounded />
           </div>
         </div>
         <!-- Donate card ด้านข้าง -->
-        <div class="col-lg-4 p-2">
+        <div class="col-4">
           <div class="container card">
             <div class="row">
               <div class="col">
@@ -45,7 +45,7 @@
             </div>
             <div class="row mt-2">
               <div class="col text-center">
-                <p>เหลือเวลา ขข วัน</p>
+                <p>{{remainingTime}}</p>
               </div>
             </div>
             <!-- donate button -->
@@ -387,6 +387,15 @@ export default {
     },
     percent() {
       return (this.project.balance / this.project.goal) * 100;
+    },
+    remainingTime() {
+      const time = moment(this.project.endtime).fromNow();
+      const diff = moment(this.project.endtime).diff();
+      if (diff < 0) {
+        return "หมดเวลาแล้ว";
+      } else {
+        return `เหลือเวลา ${time}`;
+      }
     }
   },
   watch: {
@@ -555,11 +564,13 @@ a + a {
 .successmessage {
   /* ยอดที่ต้องการ */
   font-size: 20px;
+  color: #777777;
 }
 
 .successvalue {
   /* ยอดที่ต้องการ int */
   font-size: 26px;
+  color: #777777;
 }
 
 /* Style the counter cards */
@@ -721,5 +732,10 @@ div#project-info >>> .ql-align-center {
 
 #project-info {
   font-family: "Sarabun", sans-serif;
+}
+
+div#project-info >>> img {
+  width: 80%;
+  border-radius: 8px;
 }
 </style>

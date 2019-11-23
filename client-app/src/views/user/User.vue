@@ -41,31 +41,15 @@
 
               <b-tab title="การบริจาค">
                 <p>ประวัติการบริจาค</p>
-                <div class="row">
-                  <div class="col" v-if="Boolean(donations)">
-                    <b-table striped hover :items="donations" :fields="donationFields">
-                      <template v-slot:cell(invoice)="data">
-                        <b-button
-                          variant="outline-primary"
-                          size="sm"
-                          :to="{ name: 'invoice-view', params: { txid: data.item.txid }}"
-                        >รายละเอียด</b-button>
-                      </template>
-                    </b-table>
-                  </div>
-                  <div class="col" v-else>
-                    <p class="text-center">ยังไม่มีการบริจาค</p>
-                  </div>
-                </div>
+                <donation-list :user="getUser.uid"></donation-list>
               </b-tab>
 
               <b-tab title="โครงการ" v-if="isCreator">
                 <b-tabs content-class="mt-3">
                   <b-tab title="โครงการของฉัน">
-                    <p>โครงการของฉัน</p>
                     <router-link to="createproject" v-if="isCreator">
                       <button class="btn">
-                        <icon :icon="iconPlus" /> สร้างโครงการ
+                        <icon :icon="iconPlus" />&nbsp;สร้างโครงการ
                       </button>
                     </router-link>
 
@@ -176,12 +160,14 @@ import { mapGetters } from "vuex";
 import service from "../../service";
 import EditProfile from "./EditProfile";
 import Project from "../../components/MyProject";
+import DonationList from '@/components/donation/DonationList';
 import confirmProject from "../receiver/ConfirmProject";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 export default {
   components: {
     confirmProject,
+    DonationList,
     EditProfile,
     Project,
     Verify
@@ -194,23 +180,6 @@ export default {
       myReceive: [],
       isCreator: false,
       myprojects: [],
-      donationFields: [
-        {
-          key: "project"
-        },
-        {
-          key: "amount",
-          sortable: true
-        },
-        {
-          key: "time",
-          sortable: true
-        },
-        {
-          key: "invoice",
-          label: "ใบเสร็จ"
-        }
-      ],
       iconPlus: faPlus
     };
   },

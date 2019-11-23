@@ -1,6 +1,6 @@
 <template>
   <b-container>
-    <b-row class="mt-5">
+    <b-row>
       <b-col>
         <div id="invoice" class="invoice-box">
           <table cellpadding="0" cellspacing="0">
@@ -16,9 +16,9 @@
                     </td>
 
                     <td>
-                      Invoice #: 00123
+                      หมายเลข #: 00123
                       <br />
-                      Created: {{createDate}}
+                      วันที่: {{createDate}}
                     </td>
                   </tr>
                 </table>
@@ -30,9 +30,10 @@
                 <table>
                   <tr>
                     <td>
-                      Sparksuite, Inc.
-                      <br />12345 Sunny Road
-                      <br />Sunnyville, CA 12345
+                      Donate-web
+                      <br />111/1 กรุงเทพฯ
+                      <br />12345
+                      <br>เลขประจำตัวผู้เสียภาษี/ Tax ID: xxxxxxxxxxxxx
                     </td>
 
                     <td>
@@ -118,13 +119,13 @@ export default {
       return moment().format("LL");
     },
     donateDate() {
-        return moment(this.donataion.time).format('LLL');
+      return moment(this.donataion.time).format("LLL");
     }
   },
   methods: {
     onSave() {
-        this.isShow = false;
-        setTimeout(this.saveStaticDataToFile, 500)
+      this.isShow = false;
+      setTimeout(this.saveStaticDataToFile, 500);
     },
     saveStaticDataToFile() {
       window.print();
@@ -280,7 +281,8 @@ export default {
   #actions {
     visibility: hidden;
   }
-  #invoice, #invoice * {
+  #invoice,
+  #invoice * {
     visibility: visible;
   }
 }
