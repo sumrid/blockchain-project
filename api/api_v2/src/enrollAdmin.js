@@ -13,13 +13,20 @@ const ccpPath = path.resolve(__dirname, 'connection_profile', 'connection.json')
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');  // อ่านไฟล์
 const ccp = JSON.parse(ccpJSON);         // เปลี่ยน string เป็น json
 
-const WALLET_NAME = 'wallet1';
-const ADMIN = 'admin';
-const ORG_MSP = 'Org1MSP';
-const CA_NAME = 'ca1.example.com';
-ccp.client.organization = "Org1";
+const ADMIN = `admin`;
 
 async function main() {
+    for (let i = 1; i < 4; i++) {
+        const WALLET_NAME = `wallet${i}`;
+        const ORG_MSP = `Org${i}MSP`;
+        const CA_NAME = `ca${i}.example.com`;
+        ccp.client.organization = `Org${i}`;
+        console.log(ccp.client.organization);
+        await enroll(WALLET_NAME, ORG_MSP, CA_NAME);
+    }
+}
+
+async function enroll(WALLET_NAME, ORG_MSP, CA_NAME) {
     try {
 
         // Create a new CA client for interacting with the CA.

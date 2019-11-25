@@ -7,7 +7,9 @@
     "dev": "nodemon src/main.js",
     "start": "node src/main.js",
     "test": "jest --coverage --forceExit",
-    "init": "node src/init/syncUser.js"
+    "sync": "node src/init/syncUser.js",
+    "regis-admin": "node src/enrollAdmin.js",
+    "regis-user": "node src/registerUser.js"
   },
   "keywords": [
     "api"

@@ -12,18 +12,25 @@ const ccpPath = path.resolve(__dirname, 'connection_profile', 'connection.json')
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
 const ccp = JSON.parse(ccpJSON);
 
-const WALLET_NAME = 'wallet2';
-const ADMIN = 'admin';
-const USER = 'user1';
-const AFFILIATION = 'org2.department1';
-const MSP = 'Org2MSP';
-ccp.client.organization = "Org2";
+const ADMIN = `admin`;
+const USER = `user1`;
 
 async function main() {
+    for (let i = 1; i < 4; i++) {
+        const WALLET_NAME = `wallet${i}`;
+        const AFFILIATION = `org1.department1`;
+        const MSP = `Org${i}MSP`;
+        ccp.client.organization = `Org${i}`;
+
+        await regis(WALLET_NAME, AFFILIATION, MSP);
+    }
+}
+
+async function regis(WALLET_NAME, AFFILIATION, MSP) {
     try {
 
         // Create a new file system based wallet for managing identities.
-        const walletPath = path.join(__dirname,'..','..', WALLET_NAME);
+        const walletPath = path.join(__dirname, '..', '..', WALLET_NAME);
         const wallet = new FileSystemWallet(walletPath);
         console.log(`Wallet path: ${walletPath}`);
 

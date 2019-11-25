@@ -13,6 +13,12 @@ build:
 	@(cd dashboard-ui && npm run build)
 	@(cd store && npm run build)
 
+register:
+	@echo "Register admin and user..."
+	@(cd api/api_v2 && npm run regis-admin)
+	@(cd api/api_v2 && npm run regis-user)
+	@(cd api/api_v2 && npm run sync)
+
 start:
 	@echo "Starting project..."
 	docker-compose up
