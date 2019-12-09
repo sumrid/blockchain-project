@@ -8,10 +8,10 @@
       </div>
       <div class="row m-3">
         <b-card-group deck>
-          <b-card img-src="http://placehold.it/600x500">
+          <b-card img-src="https://i.imgur.com/fXpZtTI.png">
             <b-button block to="/regis/user" variant="warning">ผู้บริจาคทั่วไป</b-button>
           </b-card>
-          <b-card img-src="http://placehold.it/600x500">
+          <b-card img-src="https://i.imgur.com/lfNx0pE.png">
             <b-button block to="/regis/creator" variant="warning">ผู้ดูแลโครงการ</b-button>
           </b-card>
         </b-card-group>

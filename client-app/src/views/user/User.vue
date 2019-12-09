@@ -47,12 +47,15 @@
               <b-tab title="โครงการ" v-if="isCreator">
                 <b-tabs content-class="mt-3">
                   <b-tab title="โครงการของฉัน">
-                    <router-link to="createproject" v-if="isCreator">
+                    <!-- ปุ่มสร้างโครงการ -->
+                    <router-link to="createproject" v-if="canCreate">
                       <button class="btn">
                         <icon :icon="iconPlus" />&nbsp;สร้างโครงการ
                       </button>
                     </router-link>
 
+                    <b-alert show variant="warning" v-else>ต้องทำการยืนยันตัวตนก่อน</b-alert>
+                    
                     <!-- project list -->
                     <project v-for="(item, index) in myprojects" :key="index" :id="item.id"></project>
                   </b-tab>
@@ -160,7 +163,7 @@ import { mapGetters } from "vuex";
 import service from "../../service";
 import EditProfile from "./EditProfile";
 import Project from "../../components/MyProject";
-import DonationList from '@/components/donation/DonationList';
+import DonationList from "@/components/donation/DonationList";
 import confirmProject from "../receiver/ConfirmProject";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
@@ -179,6 +182,7 @@ export default {
       donations: [],
       myReceive: [],
       isCreator: false,
+      canCreate: false,
       myprojects: [],
       iconPlus: faPlus
     };
@@ -213,6 +217,10 @@ export default {
       this.profile = await service.getUserInfo(id);
       const role = this.profile.role;
       this.isCreator = role.includes("creator");
+      this.checkCanCreate();
+    },
+    checkCanCreate() {
+      this.canCreate = this.profile.verifyIDCard;
     },
     async getDataBlock(id) {
       this.datablock = await service.getUserByID(id);

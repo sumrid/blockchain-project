@@ -5,7 +5,7 @@
         <div class="col">
           <h2>ยืนยันตัวตน</h2>
           <hr />
-          <h4>E-mail</h4>
+          <h4>E-mail</h4>({{user.email}})
           <b-alert variant="success" v-if="user.emailVerified" show>ยืนยัน E-mail เรียบร้อยแล้ว</b-alert>
           <template v-else>
             <b-alert show variant="danger">กรุณายืนยัน E-mail {{user.email}}</b-alert>
