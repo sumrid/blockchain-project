@@ -31,6 +31,16 @@ exports.getBlockByHash = async (req, res) => {
     }
 }
 
+exports.getBlockByNumber = async (req, res) => {
+    try {
+        const number = req.params.number;
+        const result = await service.queryBlockByNumber(parseInt(number));
+        res.json(result);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
 // ##############################
 // #   check time has expired.
 // ##############################

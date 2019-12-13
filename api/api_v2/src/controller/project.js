@@ -96,6 +96,26 @@ async function deleteProject(req, res) {
     }
 }
 
+async function payback(req, res) {
+    try {
+        const projectID = req.params.project;
+        const result = await service.payBack(projectID);
+        res.json(JSON.parse(String(result)));
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
+async function closeProject(req, res) {
+    try {
+        const projectID = req.params.project;
+        const result = await service.closeProject(projectID);
+        res.json(JSON.parse(String(result)));
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
 async function getAllProjects(req, res) {
     try {
         const query = queryObj();
@@ -212,8 +232,8 @@ async function checkProjectIfTimeout() {
             const endtime = moment(project.endtime, moment.ISO_8601);
             if (endtime.diff(moment()) <= 0) {
                 console.info(`[check] project ${project.id} is timeout.`);
-                if (project.accumulated < project.goal) { // ถ้ายอดสะสมไม่ถึงเป้าหมาย
-                    service.payBack(project.id);
+                if (project.accumulated < project.goal) { // เช็คถ้ายอดสะสมไม่ถึงเป้าหมาย
+                    service.payBack(project.id); // คืนเงินบริจาค
                 } else {
                     service.closeProject(project.id); // ทำการปิดโปรเจค
                 }
@@ -236,6 +256,8 @@ module.exports = {
     updateProjectStatus,
     approveProject,
     deleteProject,
+    payback,
+    closeProject,
     getAllProjects,
     getWithdraw,
     getProjectByID,

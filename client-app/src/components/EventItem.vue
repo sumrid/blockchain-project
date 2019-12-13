@@ -15,13 +15,6 @@
           </h5>
         </div>
 
-        <div class="col-md-12 col-xs-12">
-          <h5 style="color: white; font-weight: normal;">
-            <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
-            <span style="color: #B7B7B7">Mohali, Punjab</span>
-          </h5>
-        </div>
-
         <div class="col-md-12 col-sm-12 col-xs-12">
           <p style="color:#B7B7B7 ">{{e.message}}</p>
         </div>
@@ -62,7 +55,7 @@ export default {
 
 .activity-feed .feed-item {
   position: relative;
-  padding-bottom: 220px;
+  padding-bottom: 140px;
   padding-left: 30px;
   margin-bottom: 5rem;
   border-left: 2px solid #e2b104;

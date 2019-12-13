@@ -9,6 +9,13 @@
         </div>
       </div>
 
+      <div class="row" v-if="project.status != 'open'">
+        <div class="col">
+          <b-alert show variant="warning" v-if="project.status == 'pending'">โครงการรอการอนุมัติ</b-alert>
+          <b-alert show variant="danger" v-else>โครงการปิดแล้ว</b-alert>
+        </div>
+      </div>
+
       <!-- รูปโครงการ แถบด้านข้าง -->
       <div class="row">
         <div class="col-8">
@@ -94,23 +101,18 @@
             </b-tab>
             <b-tab title="ติดต่อโครงการ">
               <h3 class="text-center text-uppercase">contact us</h3>
-              <p class="text-center">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris interdum purus at
-                sem
-                ornare sodales. Morbi leo nulla, pharetra vel felis nec, ullamcorper condimentum quam.
-              </p>
               <div class="row">
                 <div class="col">
                   <div class="cardprofile">
                     <img
                       class="card-img-top"
                       src="@/assets/user.png"
-                      alt="Card image"
-                      style="width:50%"
+                      alt="project owner image"
+                      style="width:20%"
                     />
                     <div class="card-body">
                       <h4 class="card-title">{{owner.name}}</h4>
-                      <p class="card-text">Project owner</p>
+                      <p class="card-text">เจ้าของโครงการ</p>
                       <router-link :to="{name: 'owner', params: { id: owner.uid } }">
                         <a href class="btn btn-primary">See Profile</a>
                       </router-link>
@@ -171,7 +173,7 @@
     </div>
 
     <!-- donation input -->
-    <div class="container-fluid donate-container" v-if="project.status == 'open'" id="donate">
+    <div class="container-fluid donate-container" v-if="canDonate" id="donate">
       <div class="container">
         <div class="row">
           <div class="col text-center m-4">
@@ -261,6 +263,7 @@
                     placeholder="จำนวนเงิน"
                   ></b-form-input>
                 </b-form-group>
+
                 <button class="btn btn-info" :disabled="!amountState">
                   <span
                     v-if="loading"
@@ -270,25 +273,27 @@
                   ></span>
                   Submit
                 </button>
-                <p>{{form}}</p>
+
                 <p v-if="error">{{error}}</p>
               </form>
-              <div class="col">
-                <button
-                  class="btn btn-success"
-                  @click="createQR(1)"
-                  :disabled="!amountState"
-                >promptpay QR</button>
-                <button
-                  class="btn btn-success"
-                  @click="createQR(2)"
-                  :disabled="!amountState"
-                >custom QR v2</button>
-                <button
-                  class="btn btn-success"
-                  @click="createQR(3)"
-                  :disabled="!amountState"
-                >custom QR v3</button>
+              <div class="row">
+                <div class="col">
+                  <button
+                    class="btn btn-success"
+                    @click="createQR(1)"
+                    :disabled="!amountState"
+                  >promptpay QR</button>
+                  <button
+                    class="btn btn-success"
+                    @click="createQR(2)"
+                    :disabled="!amountState"
+                  >custom QR v2</button>
+                  <button
+                    class="btn btn-success"
+                    @click="createQR(3)"
+                    :disabled="!amountState"
+                  >custom QR v3</button>
+                </div>
               </div>
               <br />
               <span
@@ -304,6 +309,14 @@
         </div>
       </div>
     </div>
+
+    <!-- Toast แจ้งเตือน -->
+    <b-toast id="donate-success-toast" title="สำเร็จ" variant="success">บริจาคสำเร็จแล้ว</b-toast>
+    <b-toast
+      id="error-toast"
+      title="เกิดข้อผิดผลาด"
+      variant="danger"
+    >เกิดข้อผิดผลาด !! กรุณาลองใหม่อีกครั้ง</b-toast>
 
     <!-- footer -->
     <div>
@@ -378,6 +391,14 @@ export default {
     };
   },
   computed: {
+    canDonate() {
+      if (this.project.status == "open") {
+        if (this.currentUser.uid == this.project.owner) return false;
+        else return true;
+      } else {
+        return false;
+      }
+    },
     amountState() {
       if (this.form.amount <= 0) {
         return false;
@@ -460,6 +481,7 @@ export default {
         this.getDetail(donation.project);
         this.getDontions(donation.project);
         socket.emit("donate");
+        this.showToast(1);
       } catch (err) {
         this.loading = false;
         this.error = err;
@@ -494,6 +516,10 @@ export default {
     },
     scrollToDonate() {
       document.getElementById("donate").scrollIntoView();
+    },
+    showToast(type) {
+      if (type == 1) this.$bvToast.show("donate-success-toast");
+      else this.$bvToast.show("error-toast");
     }
   },
   mounted() {
@@ -505,6 +531,7 @@ export default {
         this.form.user = user.uid; // UID of user.
       } else {
         this.form.user = "";
+        this.currentUser = "";
       }
     });
     // Event listener

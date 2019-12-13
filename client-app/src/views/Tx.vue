@@ -3,7 +3,8 @@
     <div class="container">
       <div class="row mt-4">
         <div class="col">
-          <h4>รหัสธุรกรรม: {{id}}</h4>
+          <h4>รหัสธุรกรรม:</h4>
+          <p>{{id}}</p>
         </div>
       </div>
       <div class="row">
@@ -24,25 +25,27 @@
             <dt class="col-sm-3">tiemstamp</dt>
             <dd class="col-sm-9">{{tx.data.data[0].payload.header.channel_header.timestamp}}</dd>
 
+            <!--
             <dt class="col-sm-3">nonce</dt>
             <dd class="col-sm-9">{{getNonce}}</dd>
+            -->
           </div>
 
           <hr />
           <!-- Input -->
           <div class="row">
             <dt class="col-sm-3">Input</dt>
-            <dd class="col-sm-9">{{getInput}}</dd>
+            <dd class="col-sm-9"><pre>{{getInput}}</pre></dd>
           </div>
 
           <hr>
           <p class="h5">- Read Write set -</p>
           <div class="row">
             <dt class="col-sm-3">Read</dt>
-            <dd class="col-sm-9">{{find('reads')}}</dd>
+            <dd class="col-sm-9"><pre>{{find('reads')}}</pre></dd>
 
             <dt class="col-sm-3">Write</dt>
-            <dd class="col-sm-9">{{find('writes')}}</dd>
+            <dd class="col-sm-9"><pre>{{find('writes')}}</pre></dd>
           </div>
           <div class="row">
 

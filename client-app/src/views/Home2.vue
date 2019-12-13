@@ -2,31 +2,16 @@
   <div>
     <!-- Clarity Section -->
     <div class="container-fluid" style="background-color:#fcf2e0">
+
       <div class="container">
-        <div class="row">
-          <div class="column-33">
-            <img
-              src="https://d2e111jq13me73.cloudfront.net/sites/default/files/styles/blog_article/public/blog/csm-blog/raise-kid-conscience2-blog-1138x658.jpg?itok=VUcKiAz8"
-              alt="App"
-              width="335"
-              height="471"
-            />
-          </div>
-          <div class="column-66">
-            <h1 class="xlarge-font">
-              <b>ช่วยเหลือเด็กๆ</b>
-            </h1>
-            <h1 class="large-font" style="columns: #ff8d1e;">
-              <b>ขาดสารอาหารทั่วประเทศ</b>
-            </h1>
-            <p class="detail-font">
-              <span style="font-size:24px">โรคขาดสารอาหาร</span> เป็นภาวะที่ร่างกายขาดสารอาหารและอาจทำให้เกิดปัญหาสุขภาพตามมา โดยอาจมีอาการ เช่น อ่อนเพลีย ผิวหนังมีลักษณะผิดปกติ กระดูกหยุดเจริญเติบโต หรือมีภาวะสมองเสื่อม เป็นต้น ซึ่งโรคขาดสารอาหารมักเกิดขึ้นเมื่อร่างกายได้รับสารอาหารที่จำเป็นไม่เพียงพอ โดยเฉพาะอาหารหลักอย่างโปรตีน คาร์โบไฮเดรต ไขมัน วิตามิน หรือแร่ธาตุต่าง ๆ หากผู้ป่วยไม่ได้รับการรักษาอย่างเหมาะสมทันท่วงที อาจมีอาการร้ายแรงถึงขั้นเสียชีวิตได้
-            </p>
-            <button class="btn btn-outline-secondary" style="background-color:#ff8d1e">Read More</button>
-          </div>
-        </div>
+        <carousel :perPage="1" loop autoplay :autoplayTimeout="4000">
+          <slide v-for="(p, index) in projects" :key="index">
+            <project-carousel-item :project="p" :img="imageUrl(p.id)"></project-carousel-item>
+          </slide>
+        </carousel>
       </div>
     </div>
+
     <!-- สร้างคอลัมน์ ซ้าย กลาง ขวา -->
     <div class="container">
       <div class="row">
@@ -35,10 +20,10 @@
         </div>
       </div>
     </div>
+
     <!-- Footer -->
     <my-footer />
   </div>
-  <!-- main div -->
 </template>
 
 <script>
@@ -46,6 +31,7 @@ const moment = require("moment");
 import service from "../service";
 import myFooter from "../components/Footer";
 import projectItem from "../components/project/projectItem";
+import ProjectCarouselItem from "../components/project/ProjectCarouselItem";
 
 moment.locale("th");
 
@@ -53,7 +39,8 @@ export default {
   name: "home",
   components: {
     myFooter,
-    projectItem
+    projectItem,
+    ProjectCarouselItem
   },
   data() {
     return {
@@ -68,7 +55,7 @@ export default {
     this.info = await service.getProjectsInfo();
   },
   created() {
-    document.title = "Donate-Web | หน้าแรก";
+    document.title = "Donate-web | หน้าแรก";
   },
   methods: {
     imageUrl: function(id) {
@@ -153,11 +140,6 @@ img {
   }
 }
 
-/* สไลด์รูป */
-.mySlides {
-  display: none;
-}
-
 .column {
   float: left;
   width: 25%;
@@ -183,75 +165,6 @@ img {
     display: block;
     margin-bottom: 20px;
   }
-}
-
-/* Style the counter cards 
-.card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  padding: 16px;
-  text-align: center;
-  background-color: #f1f1f1;
-}
-*/
-
-/*==================== 
-            Widgets 
-====================== */
-.widget {
-  padding: 20px;
-  margin-bottom: 40px;
-}
-.widget.widget-last {
-  margin-bottom: 0px;
-}
-.widget.no-box {
-  padding: 0;
-  background-color: transparent;
-  margin-bottom: 40px;
-  box-shadow: none;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  -ms-box-shadow: none;
-  -o-box-shadow: none;
-}
-.widget.subscribe p {
-  margin-bottom: 18px;
-}
-.widget li a {
-  color: #ff8d1e;
-}
-.widget li a:hover {
-  color: #4b92dc;
-}
-.widget-title {
-  margin-bottom: 20px;
-}
-.widget-title span {
-  background: #839fad none repeat scroll 0 0;
-  display: block;
-  height: 1px;
-  margin-top: 25px;
-  position: relative;
-  width: 20%;
-}
-.widget-title span::after {
-  background: inherit;
-  content: "";
-  height: inherit;
-  position: absolute;
-  top: -4px;
-  width: 50%;
-}
-.widget-title.text-center span,
-.widget-title.text-center span::after {
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
-}
-.widget .badge {
-  float: right;
-  background: #7f7f7f;
 }
 
 .typo-light h1,

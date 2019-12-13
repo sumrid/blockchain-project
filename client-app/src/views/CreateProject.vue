@@ -98,14 +98,16 @@
               @tags-changed="newTags => form.tags = newTags"
             />
           </div>
-          <button type="submit" class="btn btn-primary">
-            <span
-              v-if="isLoading"
-              class="spinner-border spinner-border-sm"
-              role="status"
-              aria-hidden="false"
-            ></span>Submit
-          </button>
+
+          <!-- Button submit -->
+          <template v-if="isLoading">
+            <b-button disabled variant="secondary">
+              <b-spinner small type="grow"></b-spinner>&nbsp;Submit...
+            </b-button>
+          </template>
+          <template v-else>
+            <button type="submit" class="btn btn-primary" :disabled="!isSelectDate">Submit</button>
+          </template>
         </form>
       </div>
     </div>
@@ -120,12 +122,12 @@
     </b-row>
 
     <!--### Toast ###-->
-    <b-toast id="success-toast" title="สำเร็จ" variant="success">
-      เพิ่มโครงการสำเร็จแล้ว
-    </b-toast>
-    <b-toast id="error-toast" title="เกิดข้อผิดผลาด" variant="danger">
-      เกิดข้อผิดผลาด !! กรุณาลองใหม่อีกครั้ง
-    </b-toast>
+    <b-toast id="success-toast" title="สำเร็จ" variant="success">เพิ่มโครงการสำเร็จแล้ว</b-toast>
+    <b-toast
+      id="error-toast"
+      title="เกิดข้อผิดผลาด"
+      variant="danger"
+    >เกิดข้อผิดผลาด !! กรุณาลองใหม่อีกครั้ง</b-toast>
   </div>
 </template>
 
@@ -181,7 +183,11 @@ export default {
   },
   computed: {
     ...mapGetters(["getUser"]),
-    ...mapState(["user"])
+    ...mapState(["user"]),
+    isSelectDate() {
+      if (this.form.date) return true;
+      else return false;
+    }
   },
   created() {
     document.title = "Donate-web | สร้างโครงการ";
@@ -251,8 +257,8 @@ export default {
       }
     },
     showToast(type) {
-      if (type == 1) this.$bvToast.show('success-toast');
-      else this.$bvToast.show('error-toast');
+      if (type == 1) this.$bvToast.show("success-toast");
+      else this.$bvToast.show("error-toast");
     }
   },
   mounted() {

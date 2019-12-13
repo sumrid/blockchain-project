@@ -10,7 +10,8 @@ const transferController = require('./controller/transfer');
 
 router.get('/tx/:txid', contorller.getTx);
 router.get('/query/:key', contorller.query);
-router.get('/hash/:hash', contorller.getBlockByHash);
+router.get('/block/hash/:hash', contorller.getBlockByHash);
+router.get('/block/number/:number', contorller.getBlockByNumber);
 
 router.put('/project', projectController.updateProject);
 router.post('/project', projectController.createProject);
@@ -24,6 +25,8 @@ router.get('/project/:project/withdraw', projectController.getWithdraw);
 router.get('/project/:project/invoice', projectController.getProjectInvoices);
 router.get('/project/:project/history', projectController.getProjectDonations);
 router.get('/project/:project/donations', projectController.getProjectDonations);
+router.get('/project/:project/payback', projectController.payback);
+router.get('/project/:project/close', projectController.closeProject);
 
 // TODO : verify token
 router.post('/project/donate', donationController.donate);

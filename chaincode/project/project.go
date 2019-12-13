@@ -489,7 +489,7 @@ func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) pee
 	percent := (p.Balance / p.Accumulated) * 100
 	for _, donation := range donations {
 		toPayBack := (donation.Amount * percent) / 100
-		p.Balance -= toPayBack // เอาเงินออก
+		p.Balance -= toPayBack // เอาเงินออกจากโครงการ
 
 		// คืนเงิน user
 		usr := User{}
@@ -497,7 +497,7 @@ func (C *Chaincode) payBack(stub shim.ChaincodeStubInterface, agrs []string) pee
 		if usrAsByte == nil {
 			usr.ID = donation.UserID
 			usr.Type = "user"
-			usr.Balance += toPayBack
+			usr.Balance += toPayBack // นำเงินคืนผู้ใช้
 		} else {
 			err = json.Unmarshal(usrAsByte, &usr)
 			usr.Balance += toPayBack

@@ -126,7 +126,17 @@ async function queryTx(txID) {
 async function queryHash(hash) {
     try {
         const ch = await getChannal(USER);
-        const result = await ch.queryBlockByHash(hash);
+        const result = await ch.queryBlockByHash(Buffer.from(hash));
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function queryBlockByNumber(number) {
+    try {
+        const ch = await getChannal(USER);
+        const result = await ch.queryBlock(number);
         return result;
     } catch (error) {
         throw error;
@@ -216,6 +226,7 @@ async function deleteProject(userID, projectID) {
 }
 
 /**
+ * ปิดโครงการ
  * @param {string} key project id
  */
 async function closeProject(key) {
@@ -430,6 +441,7 @@ module.exports = {
     query,
     queryTx,
     queryHash,
+    queryBlockByNumber,
     addInvoice,
     queryWithSelector,
     closeProject,

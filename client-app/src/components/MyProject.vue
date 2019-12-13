@@ -48,7 +48,7 @@ export default {
   },
   data() {
     return {
-      project: null
+      project: {}
     };
   },
   async created() {

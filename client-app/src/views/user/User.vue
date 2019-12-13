@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <!-- profile image -->
     <div>
       <div class="row">
@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    <div class="container-fluid">
+    <div>
       <div class="row">
         <div class="col">
           <b-card no-body>
