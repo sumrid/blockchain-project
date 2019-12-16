@@ -58,7 +58,7 @@ func (C *Chaincode) addInvioceAndTransfer(stub shim.ChaincodeStubInterface, args
 	inv.Type = "invoice"
 	inv.TxID = stub.GetTxID()
 
-	// check if exists
+	// check if invoice exists
 	ck, err := stub.GetState(inv.ID)
 	if err != nil {
 		return shim.Error(err.Error())

@@ -30,9 +30,18 @@ export default {
   props: {
     events: null
   },
+  created() {
+    console.info(`[info] create event list.`);
+    this.sortEvents();
+  },
   methods: {
     unixToDate(unix) {
       return moment.unix(unix).format("LL");
+    },
+    sortEvents() {
+      this.events.sort((a, b) => {
+        return a.timestamp - b.timestamp;
+      });
     }
   }
 };
@@ -44,7 +53,7 @@ export default {
   border-radius: 12px;
   position: absolute;
   margin-left: -3rem;
-  margin-top: 4rem;
+  margin-top: 2rem;
   padding-top: 1rem;
 }
 
@@ -55,7 +64,7 @@ export default {
 
 .activity-feed .feed-item {
   position: relative;
-  padding-bottom: 140px;
+  padding-bottom: 100px;
   padding-left: 30px;
   margin-bottom: 5rem;
   border-left: 2px solid #e2b104;
