@@ -110,7 +110,7 @@ async function closeProject(req, res) {
     try {
         const projectID = req.params.project;
         const result = await service.closeProject(projectID);
-        res.json(JSON.parse(String(result)));
+        res.json(String(result));
     } catch (error) {
         res.status(500).json(error);
     }
@@ -237,6 +237,8 @@ async function checkProjectIfTimeout() {
                 } else {
                     service.closeProject(project.id); // ทำการปิดโปรเจค
                 }
+            } else if (project.accumulated > project.goal) { // ถ้าโครงการได้เงินครบก่อนหมดเวลา
+
             }
         });
     } catch (error) {

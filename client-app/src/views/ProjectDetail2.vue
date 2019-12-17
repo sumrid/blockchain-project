@@ -12,7 +12,8 @@
       <div class="row" v-if="project.status != 'open'">
         <div class="col">
           <b-alert show variant="warning" v-if="project.status == 'pending'">โครงการรอการอนุมัติ</b-alert>
-          <b-alert show variant="danger" v-else>โครงการปิดแล้ว</b-alert>
+          <b-alert show variant="success" v-if="project.status == 'closed'">โครงการปิด เนื่องจากได้เงินบริจาคครบ</b-alert>
+          <b-alert show variant="danger" v-else-if="project.status == 'fail'">โครงการปิด เนื่องจากไม่ได้เงินบริจาคตามยอด</b-alert>
         </div>
       </div>
 
@@ -28,8 +29,8 @@
           <div class="container card">
             <div class="row">
               <div class="col">
-                <p class="progressmessage">ยอดขณะนี้</p>
-                <p class="progressvalue">{{ project.balance | currency }}</p>
+                <p class="progressmessage">ยอดเงินสะสม</p>
+                <p class="progressvalue">{{ project.accumulated | currency }}</p>
               </div>
             </div>
             <div class="row">
@@ -181,14 +182,16 @@
           </div>
         </div>
         <hr />
+
+        <!-- เลือกจำนวนเงิน -->
         <div class="row">
           <div class="col-md-3 col-sm-6">
             <div class="pricingTable">
               <div class="pricingTable-header">
                 <span class="heading">
-                  <h3>Lv.10</h3>
+                  <h3>จำนวน</h3>
                 </span>
-                <span class="price-value">100 baht</span>
+                <span class="price-value">100 บาท</span>
               </div>
               <div>
                 <b-button block @click="form.amount = 100">Donate</b-button>
@@ -199,9 +202,9 @@
             <div class="pricingTable">
               <div class="pricingTable-header">
                 <span class="heading">
-                  <h3>Lv.20</h3>
+                  <h3>จำนวน</h3>
                 </span>
-                <span class="price-value">200 baht</span>
+                <span class="price-value">200 บาท</span>
               </div>
               <div class="pricingTable-sign-up">
                 <b-button block @click="form.amount = 200">Donate</b-button>
@@ -212,9 +215,9 @@
             <div class="pricingTable">
               <div class="pricingTable-header">
                 <span class="heading">
-                  <h3>Lv.50</h3>
+                  <h3>จำนวน</h3>
                 </span>
-                <span class="price-value">500 baht</span>
+                <span class="price-value">500 บาท</span>
               </div>
               <div class="pricingTable-sign-up">
                 <b-button block @click="form.amount = 500">Donate</b-button>
@@ -225,9 +228,9 @@
             <div class="pricingTable">
               <div class="pricingTable-header">
                 <span class="heading">
-                  <h3>Lv.99</h3>
+                  <h3>จำนวน</h3>
                 </span>
-                <span class="price-value">1000 baht</span>
+                <span class="price-value">1000 บาท</span>
               </div>
               <div class="pricingTable-sign-up">
                 <b-button block @click="form.amount = 1000">Donate</b-button>
@@ -238,8 +241,8 @@
         <hr />
         <div class="row">
           <div class="col">
-            <credit-card-field v-model="card"></credit-card-field>
             <!-- 
+            <credit-card-field v-model="card"></credit-card-field>
             <inline-credit-card-field v-model="form.card"></inline-credit-card-field>
             -->
           </div>

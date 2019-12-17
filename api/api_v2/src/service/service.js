@@ -312,9 +312,9 @@ async function donateWithWallet(user, project, amount, displayname) {
     }
 }
 
-// #####################
+// ######################
 // #        User
-// #####################
+// ######################
 async function addUser(uid, role) {
     try {
         const contract = await getContractOrg(USER);
@@ -344,9 +344,9 @@ async function deleteUser(uid) {
     }
 }
 
-// ################
-//     Test zone
-// ################
+// ######################
+//       Test zone
+// ######################
 async function test() {
     try {
         // Get channel, client
