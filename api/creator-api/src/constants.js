@@ -1,1 +1,0 @@
-exports.REVENUE_URL = process.env.REVENUE_URL;

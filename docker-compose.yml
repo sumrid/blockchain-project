@@ -8,7 +8,7 @@ services:
     image: node:10.15.3-stretch-slim
     container_name: web
     volumes:
-      - ./client-app:/client-app
+      - ./web/client-app:/client-app
     working_dir: /client-app
     command: npm run serve
     ports:
@@ -20,7 +20,7 @@ services:
     image: node:10.15.3-stretch-slim
     container_name: dashboard
     volumes:
-      - ./dashboard-ui:/dashboard-ui
+      - ./web/dashboard-ui:/dashboard-ui
     working_dir: /dashboard-ui
     command: npm run serve
     ports:
@@ -32,7 +32,7 @@ services:
     image: node:10.15.3-stretch-slim
     container_name: store
     volumes:
-      - ./store:/store
+      - ./web/store:/store
     working_dir: /store
     command: npm run serve
     ports:
@@ -74,12 +74,14 @@ services:
       - HOST_IP=192.168.1.2 # ip ของเครื่องที่เรารันอยู่ สำหรับทำ qr
       - NODE_ENV=docker
       - CCP=connection.docker.json
+      - FIREBASE_KEY=/cert/firebase/adminKey.json
       - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
     volumes:
       - ./api/api_v2:/app
       - ./api/wallet1:/wallet1
       - ../cert:/cert # map Google gcp cert on server to container
-      - ./client-app/nginx/cert:/etc/letsencrypt
+      - ./cert/firebase:/cert/firebase
+      - ./web/client-app/nginx/cert:/etc/letsencrypt
     working_dir: /app
     command: npm run dev
     ports:
@@ -94,12 +96,14 @@ services:
       - NODE_ENV=docker
       - ORG=Org2
       - CCP=connection.docker.json
+      - FIREBASE_KEY=/cert/firebase/adminKey.json
       - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
     volumes:
       - ./api/api_v2:/app
       - ./api/wallet2:/wallet2
       - ../cert:/cert # map Google gcp cert on server to container
-      - ./client-app/nginx/cert:/etc/letsencrypt
+      - ./cert/firebase:/cert/firebase
+      - ./web/client-app/nginx/cert:/etc/letsencrypt
     working_dir: /app
     command: npm run dev
     ports:
@@ -114,12 +118,14 @@ services:
       - NODE_ENV=docker
       - ORG=Org3
       - CCP=connection.docker.json
+      - FIREBASE_KEY=/cert/firebase/adminKey.json
       - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
     volumes:
       - ./api/api_v2:/app
       - ./api/wallet3:/wallet3
       - ../cert:/cert # map Google gcp cert on server to container
-      - ./client-app/nginx/cert:/etc/letsencrypt
+      - ./cert/firebase:/cert/firebase
+      - ./web/client-app/nginx/cert:/etc/letsencrypt
     working_dir: /app
     command: npm run dev
     ports:
@@ -135,8 +141,10 @@ services:
     container_name: revenue-api
     environment:
       - NODE_ENV=docker
+      - FIREBASE_KEY=/cert/firebase/adminKey.json
     volumes:
       - ./api/revenue-api:/app
+      - ./cert/firebase:/cert/firebase
     working_dir: /app
     command: npm start
     ports:

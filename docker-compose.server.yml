@@ -65,9 +65,9 @@ services:
     image: nginx
     container_name: web_build
     volumes:
-      - ./client-app/dist:/usr/share/nginx/html                     # html file
-      - ./client-app/nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf  # config file
-      - ./client-app/nginx/cert:/etc/letsencrypt                    # cert file
+      - ./web/client-app/dist:/usr/share/nginx/html                     # html file
+      - ./web/client-app/nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf  # config file
+      - ./web/client-app/nginx/cert:/etc/letsencrypt                    # cert file
     ports:
       - 80:80
       - 443:443
