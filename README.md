@@ -1,7 +1,7 @@
 <h1 align="center">Donate-web</h1>
-<h3 align="center">เว็บไซต์การบริจาคเงินและการตรวจสอบความโปร่งใสด้วยเทคโนโลยีบล็อคเชน</h3>
 
-[![CircleCI](https://circleci.com/gh/sumrid/project.svg?style=svg&circle-token=cbaffc65d87b8510aa96e562e98809d08ff981f7)](https://circleci.com/gh/sumrid/project)
+[![CircleCI](https://circleci.com/gh/sumrid/blockchain-project.svg?style=svg&circle-token=cbaffc65d87b8510aa96e562e98809d08ff981f7)](https://circleci.com/gh/sumrid/blockchain-project)
+![Imgur](https://i.imgur.com/RzjoAKa.png)
 
 ## สิ่งที่ต้องติดตั้งบนเครื่อง
 * Docker and Docker-compose

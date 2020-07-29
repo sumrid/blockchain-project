@@ -1,158 +1,118 @@
 version: "3"
 
 services:
-  #################
-  #   Client web
-  #################
+  #####################
+  #   User Interface
+  #####################
   client-web:
-    image: node:10.15.3-stretch-slim
-    container_name: web
-    volumes:
-      - ./web/client-app:/client-app
-    working_dir: /client-app
-    command: npm run serve
+    container_name: bc-web
+    image: sumrid/bc_client-web:v1
+    build: ./web/client-app
     ports:
-      - 80:8080
+      - 80:80
     networks:
-      - default
+      - bc-network
 
   dashboard:
-    image: node:10.15.3-stretch-slim
-    container_name: dashboard
-    volumes:
-      - ./web/dashboard-ui:/dashboard-ui
-    working_dir: /dashboard-ui
-    command: npm run serve
+    container_name: bc-dashboard
+    image: sumrid/bc_dashboard:v1
+    build: ./web/dashboard-ui
     ports:
-      - 81:8080
+      - 81:80
     networks:
-      - default
+      - bc-network
 
   store:
-    image: node:10.15.3-stretch-slim
-    container_name: store
-    volumes:
-      - ./web/store:/store
-    working_dir: /store
-    command: npm run serve
+    container_name: bc-store
+    image: sumrid/bc_store:v1
+    build: ./web/store
     ports:
-      - 82:8080
+      - 82:80
     networks:
-      - default
+      - bc-network
 
   socket:
-    image: node:10.15.3-stretch-slim
-    container_name: socket
-    volumes:
-      - ./api/socket-io:/socket
-    working_dir: /socket
-    command: npm start
+    container_name: bc-socket
+    image: sumrid/bc_socket-io:v1
+    build: ./api/socket-io
     ports:
       - 9000:9000
     networks:
-      - default
+      - bc-network
 
-  # web:
-  #   image: nginx
-  #   container_name: web_build
-  #   volumes:
-  #     - ./client-app/dist:/usr/share/nginx/html                     # html file
-  #     - ./client-app/nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf  # config file
-  #     - ./client-app/nginx/cert:/etc/letsencrypt  
-  #   ports:
-  #     - 80:80
-  #     - 443:443
-
-  ###########################
-  #      api แต่ละ org
-  ########################### 
+  #####################
+  #        API
+  #####################
   donator-api:
-    image: node:10.15.3-stretch-slim
-    container_name: donator-api
+    container_name: bc-donator-api
+    image: sumrid/bc_api:v1
+    build: ./api/api_v2
     environment:
       - ORG=Org1
-      - HOST_IP=192.168.1.2 # ip ของเครื่องที่เรารันอยู่ สำหรับทำ qr
       - NODE_ENV=docker
+      # - HOST_IP=00.00.00.00
       - CCP=connection.docker.json
       - FIREBASE_KEY=/cert/firebase/adminKey.json
-      - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
     volumes:
-      - ./api/api_v2:/app
       - ./api/wallet1:/wallet1
-      - ../cert:/cert # map Google gcp cert on server to container
-      - ./cert/firebase:/cert/firebase
-      - ./web/client-app/nginx/cert:/etc/letsencrypt
-    working_dir: /app
-    command: npm run dev
+      - ./cert:/cert
     ports:
       - 8000:8000
     networks:
-      - default
+      - bc-network
 
   creator-api:
-    image: node:10.15.3-stretch-slim
-    container_name: creator-api
+    container_name: bc-creator-api
+    image: sumrid/bc_api:v1
+    build: ./api/api_v2
     environment:
-      - NODE_ENV=docker
       - ORG=Org2
+      - NODE_ENV=docker
       - CCP=connection.docker.json
       - FIREBASE_KEY=/cert/firebase/adminKey.json
-      - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
     volumes:
-      - ./api/api_v2:/app
       - ./api/wallet2:/wallet2
-      - ../cert:/cert # map Google gcp cert on server to container
-      - ./cert/firebase:/cert/firebase
-      - ./web/client-app/nginx/cert:/etc/letsencrypt
-    working_dir: /app
-    command: npm run dev
+      - ./cert:/cert
     ports:
       - 8001:8001
     networks:
-      - default
-  
+      - bc-network
+
   receiver-api:
-    image: node:10.15.3-stretch-slim
-    container_name: receiver-api
+    container_name: bc-receiver-api
+    image: sumrid/bc_api:v1
+    build: ./api/api_v2
     environment:
-      - NODE_ENV=docker
       - ORG=Org3
+      - NODE_ENV=docker
       - CCP=connection.docker.json
       - FIREBASE_KEY=/cert/firebase/adminKey.json
-      - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
     volumes:
-      - ./api/api_v2:/app
       - ./api/wallet3:/wallet3
-      - ../cert:/cert # map Google gcp cert on server to container
-      - ./cert/firebase:/cert/firebase
-      - ./web/client-app/nginx/cert:/etc/letsencrypt
-    working_dir: /app
-    command: npm run dev
+      - ./cert:/cert
     ports:
       - 8002:8002
     networks:
-      - default
+      - bc-network
 
-  ###########################
+  ##########################
   # Mock revenue department
-  ###########################
+  ##########################
   revenue-api:
-    image: node:10.15.3-stretch-slim
-    container_name: revenue-api
+    container_name: bc-revenue-api
+    image: sumrid/bc_revenue-api:v1
+    build: ./api/revenue-api
     environment:
       - NODE_ENV=docker
       - FIREBASE_KEY=/cert/firebase/adminKey.json
     volumes:
-      - ./api/revenue-api:/app
-      - ./cert/firebase:/cert/firebase
-    working_dir: /app
-    command: npm start
+      - ./cert:/cert
     ports:
       - 8080:8080
     networks:
-      - default
+      - bc-network
 
 networks:
-  default:
+  bc-network:
     external:
       name: netdonate_basic

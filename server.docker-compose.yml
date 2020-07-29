@@ -1,53 +1,6 @@
 version: "3"
 
 services:
-  # api:
-  #   image: node:10.15.3-stretch-slim
-  #   container_name: api
-  #   environment:
-  #     - DB_URL=mongodb://db:27017
-  #     - HOST_IP=donate-web.tk
-  #     - NODE_ENV=docker
-  #     - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
-  #   volumes:
-  #     - ./api/api_v2:/app
-  #     - ./api/wallet1:/wallet1
-  #     - ./api/wallet2:/wallet2
-  #     - ../cert:/cert # map Google gcp file on server to container
-  #   working_dir: /app
-  #   command: npm start
-  #   ports:
-  #     - 8000:8000
-  #   networks:
-  #     - default
-
-  # user-api:
-  #   image: node:10.15.3-stretch-slim
-  #   container_name: user-api
-  #   environment:
-  #     - NODE_ENV=docker
-  #   volumes:
-  #     - ./api/user-api:/user-api
-  #     - ./api/wallet1:/wallet1
-  #     - ./api/wallet2:/wallet2
-  #   working_dir: /user-api
-  #   command: npm start
-  #   ports:
-  #     - 8001:8001
-  #   networks:
-  #     - default
-
-  # client-web:
-  #   image: node:10.15.3-stretch-slim
-  #   container_name: web
-  #   volumes:
-  #     - ./client-app:/client-app
-  #   working_dir: /client-app
-  #   command: npm run serve
-  #   ports:
-  #     - 80:8080
-  #   networks:
-  #     - default
 
   socket:
     image: node:10.15.3-stretch-slim
@@ -86,7 +39,8 @@ services:
   #      api แต่ละ org
   ###########################
   donator-api:
-    image: node:10.15.3-stretch-slim
+    image: sumrid/bc_api:v1
+    build: ./api/api_v2
     container_name: donator-api
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/cert/donate-project-key.json # Google gcp in container
@@ -94,7 +48,8 @@ services:
       - NODE_ENV=docker
     volumes:
       - ../cert:/cert # map Google gcp cert on server to container
-      - ./api/donator-api:/app
+      - ./cert/firebase:/cert/firebase
+      - ./api/api_v2/:/app
       - ./api/wallet1:/wallet1
     working_dir: /app
     command: npm start
